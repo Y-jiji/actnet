@@ -1,3 +1,4 @@
+#![allow(warnings)]
 use parking_lot::Mutex;
 use std::{ptr::null_mut as nmut, marker::PhantomPinned};
 use std::collections::HashMap;
@@ -14,6 +15,8 @@ struct RawCuda {
     pmemseg: (*mut Void, *mut Void),
     funcmap: HashMap<String, *mut CUfunc_st>,
 }
+
+unsafe impl Send for RawCuda {}
 
 /// a small util to call host function indirectly
 unsafe extern "C" 
@@ -50,7 +53,8 @@ impl RawCuda {
     }
     /// initialize stream
     fn init_stream(&mut self) -> Result<(), RawCudaError> {
-        let errnr = unsafe{cudaStreamCreate(&mut self.pstream as *mut _)};
+        let errnr = unsafe{cuStreamCreate(&mut self.pstream as *mut _, 
+            CUstream_flags_enum_CU_STREAM_NON_BLOCKING as u32)};
         match RawCudaError::from(errnr) {
             RawCudaError::CUDA_SUCCESS => Ok(()),
             e => {self.pstream = nmut();Err(e)},
@@ -92,6 +96,7 @@ impl RawCuda {
         }
     }
     /// add a memory copy job to stream
+    pub(super)
     fn memcpy(&mut self, src: (*mut Void, Dev), dst: (*mut Void, Dev), len: usize) -> Result<(), RawCudaError> {
         let errnr = unsafe{cudaMemcpyAsync(
             dst.0, src.0, len as _, 
@@ -102,6 +107,7 @@ impl RawCuda {
         }
     }
     /// add a kernel function launch job to stream
+    pub(super)
     fn launch(
         &mut self, fname: String, data: Vec<*mut Void>, 
         layout: ((usize, usize, usize), (usize, usize, usize), usize)
@@ -122,6 +128,7 @@ impl RawCuda {
         }
     }
     /// add a host hook when current jobs are done
+    pub(super)
     fn hookup<T>(&mut self, hook: Box<T>) -> Result<(), RawCudaError>
     where T: FnOnce() + Send {
         let errnr = unsafe{cuLaunchHostFunc(
@@ -153,8 +160,6 @@ struct TaskPool {
     uselen: usize,
     /// signal should be pinned in memory
     pinpin: PhantomPinned,
-    /// mutex
-    lock: Mutex<()>
 }
 
 impl TaskPool {
@@ -164,20 +169,18 @@ impl TaskPool {
             signal: [0u8; 1024],
             offset: 0, uselen: 0, 
             pinpin: PhantomPinned, 
-            lock: Mutex::new(()),
         }
     }
+    /// get an empty task
     pub(super)
     fn get(&mut self) -> usize {
-        let hold = self.lock.lock();
         let task = (self.offset << 3 + self.uselen) & (1024*8-1);
         self.uselen += 1;
-        drop(hold);
         return task;
     }
+    /// set self.signal[task] to 1
     pub(super)
     fn put(&mut self, task: usize) {
-        let hold = self.lock.lock();
         self.signal[task >> 3] |= 1 << (task & 0x7);
         if (task >> 3) != self.offset { return; }
         while self.signal[self.offset] == 0xff {
@@ -186,6 +189,15 @@ impl TaskPool {
             self.offset &= 1024 - 1;
             self.uselen -= 8;
         }
-        drop(hold);
+    }
+    /// return the finished tasks, put these task bits back to pool
+    pub(super)
+    fn ack(&mut self) -> Vec<usize> {
+        unimplemented!("TaskPool ack");
+    }
+    /// return whether the task pool is 2/3 full
+    pub(super)
+    fn is_full(&self) -> bool {
+        self.uselen >= 1024*6
     }
 }

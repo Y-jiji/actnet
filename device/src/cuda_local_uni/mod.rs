@@ -36,7 +36,8 @@ for CudaLocalUni {
             Ok(msgi) => msgi,
         };
         match msgi {
-            rcver::MsgI::TaskOk{taskid} => {
+            rcver::MsgI::TaskOk{lstid} => {
+                // snder.snd(snder::MsgO::{})
             },
             msgi => {
                 todo!("{msgi:?}");
@@ -46,4 +47,7 @@ for CudaLocalUni {
     async fn start(self) {
         Self::run(self.state, self.rcver, self.snder).await;
     }
+}
+
+struct CudaLocalUniAPI {
 }

@@ -4,28 +4,73 @@ use super::error::*;
 use crate::devapi;
 use async_trait::async_trait;
 use std::sync::Arc;
+use std::sync::mpsc::Receiver;
+use parking_lot::Mutex;
+use std::thread;
+use std::time::{Instant, Duration};
 
 #[derive(Debug)]
 pub(super)
 enum MsgI {
+    // operation launch an operator
     Launch {fname: String, data: Vec<*mut Void>},
+    // operation: create a new box
     NewBox {size: usize},
+    // operation: delete box
     DelBox {boxid: usize},
+    // operation: fill box
     FilBox {boxid: usize, data: *mut Void},
-    TaskOk {taskid: usize},
-    TikTok,
+    // list of ok task
+    TaskOk {lstid: Vec<usize>},
+}
+
+unsafe impl Send for MsgI {}
+
+pub(super)
+struct TimerCheck {
+    timercv: Receiver<()>,
+    dur: u64
+}
+
+impl TimerCheck {
+    fn new(dur: u64) -> Self {
+        assert!(dur << 3 > 0);
+        let (snd, rcv) = std::sync::mpsc::sync_channel(1);
+        thread::spawn(move ||{
+            let mut start = Instant::now();
+            loop{
+                let duration = start.elapsed();
+                if duration > Duration::from_millis(dur) {
+                    snd.send(()).unwrap();
+                    start = Instant::now();
+                }
+            }
+        });
+        TimerCheck { timercv: rcv, dur }
+    }
+    fn rcv(&self) -> Option<()> {
+        match self.timercv.recv_timeout(std::time::Duration::from_millis(self.dur >> 3)) {
+            Ok(()) => Some(()),
+            Err(_) => None,
+        }
+    }
 }
 
 pub(super)
 struct Rcver {
-    taskpool: TaskPool,
+    // protected reference to task pool
+    taskpool: Arc<Mutex<TaskPool>>,
+    // timer
+    timerchk: TimerCheck,
+    // receiver from caller
+    loclrecv: Receiver<MsgI>,
 }
 
 impl Rcver {
-    fn new(taskpool: TaskPool) {
-    }
-    fn get_rawcuda_task(&mut self) -> usize {
-        self.taskpool.get()
+    const DUR : u64 = 1 << 7;
+    fn new(taskpool: Arc<Mutex<TaskPool>>, loclrecv: Receiver<MsgI>) -> Self {
+        let timerchk = TimerCheck::new(Self::DUR);
+        Rcver { taskpool, timerchk, loclrecv }
     }
 }
 
@@ -33,6 +78,13 @@ impl Rcver {
 impl devapi::Rcver<MsgI, DevErr> for
 Rcver {
     async fn rcv(&mut self) -> Result<MsgI, DevErr> {
-        unimplemented!("recieve");
+        // timer signal arrived, receive finished tasks
+        if self.timerchk.rcv() == Some(()) || self.taskpool.lock().is_full()
+        { return Ok(MsgI::TaskOk { lstid: self.taskpool.lock().ack() }); }
+        // a locally sent a message
+        match self.loclrecv.recv() {
+            Ok(msg) => Ok(msg),
+            Err(e) => Err(DevErr::RecvError),
+        }
     }
 }
