@@ -4,7 +4,9 @@ use super::error::*;
 use crate::devapi;
 
 use parking_lot::Mutex;
+use std::collections::HashMap;
 use std::sync::Arc;
+use std::sync::mpsc::Sender;
 
 #[derive(Debug)]
 pub(super)
@@ -34,7 +36,10 @@ unsafe impl Send for MsgO {}
 
 pub(super)
 struct ReplyPool {
-
+    map_newbox: HashMap<usize, Sender<usize>>,
+    map_delbox: HashMap<usize, Sender<()>>,
+    map_cpybox: HashMap<usize, Sender<usize>>,
+    map_filbox: HashMap<usize, Sender<usize>>,
 }
 
 pub(super)
