@@ -2,7 +2,7 @@ use super::{Dev, Void};
 use super::rawcuda::*;
 use super::error::*;
 use crate::devapi;
-use async_trait::async_trait;
+
 use std::sync::Arc;
 use std::sync::mpsc::Receiver;
 use parking_lot::Mutex;
@@ -38,11 +38,14 @@ impl TimerCheck {
         let (snd, rcv) = std::sync::mpsc::sync_channel(1);
         thread::spawn(move ||{
             let mut start = Instant::now();
-            loop{
+            loop {
                 let duration = start.elapsed();
                 if duration > Duration::from_millis(dur) {
                     snd.send(()).unwrap();
                     start = Instant::now();
+                }
+                if (Duration::from_millis(dur) - duration) > Duration::from_millis(20) {
+                    thread::sleep((Duration::from_millis(dur) - duration)/2);
                 }
             }
         });
@@ -74,10 +77,10 @@ impl Rcver {
     }
 }
 
-#[async_trait]
+
 impl devapi::Rcver<MsgI, DevErr> for
 Rcver {
-    async fn rcv(&mut self) -> Result<MsgI, DevErr> {
+    fn rcv(&mut self) -> Result<MsgI, DevErr> {
         // timer signal arrived, receive finished tasks
         if self.timerchk.rcv() == Some(()) || self.taskpool.lock().is_full()
         { return Ok(MsgI::TaskOk { lstid: self.taskpool.lock().ack() }); }

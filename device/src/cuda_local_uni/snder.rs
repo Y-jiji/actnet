@@ -2,7 +2,7 @@ use super::{Dev, Void};
 use super::rawcuda::*;
 use super::error::*;
 use crate::devapi;
-use async_trait::async_trait;
+
 use parking_lot::Mutex;
 use std::sync::Arc;
 
@@ -44,10 +44,9 @@ struct Snder {
     rplypool: ReplyPool,
 }
 
-#[async_trait]
 impl devapi::Snder<MsgO, DevErr> for
 Snder {
-    async fn snd(&mut self, msg: MsgO) -> Result<(), DevErr> {
+    fn snd(&mut self, msg: MsgO) -> Result<(), DevErr> {
         match msg {
             MsgO::RawLaunch { fname, data, layout } => {
                 match self.rawcuda.launch(fname, data, layout) {

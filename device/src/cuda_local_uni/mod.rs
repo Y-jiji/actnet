@@ -4,7 +4,7 @@ mod rcver;
 mod state;
 mod error;
 use super::devapi::*;
-use async_trait::async_trait;
+
 
 type Void = std::ffi::c_void;
 
@@ -21,7 +21,7 @@ struct CudaLocalUni {
     snder: snder::Snder,
 }
 
-#[async_trait]
+
 impl DevActor
 for CudaLocalUni {
     type Error = error::DevErr;
@@ -30,8 +30,8 @@ for CudaLocalUni {
     type Snder = snder::Snder;
     type Rcver = rcver::Rcver;
     type State = state::ShadowMem;
-    async fn run(state: Self::State, mut rcver: Self::Rcver, mut snder: Self::Snder) {loop {
-        let msgi = match rcver.rcv().await {
+    fn run(state: Self::State, mut rcver: Self::Rcver, mut snder: Self::Snder) {loop {
+        let msgi = match rcver.rcv() {
             Err(e) => panic!("{e:?}"),
             Ok(msgi) => msgi,
         };
@@ -44,8 +44,8 @@ for CudaLocalUni {
             }
         }
     }}
-    async fn start(self) {
-        Self::run(self.state, self.rcver, self.snder).await;
+    fn start(self) {
+        Self::run(self.state, self.rcver, self.snder);
     }
 }
 

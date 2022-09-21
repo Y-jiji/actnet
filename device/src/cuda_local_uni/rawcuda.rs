@@ -18,7 +18,7 @@ struct RawCuda {
 
 unsafe impl Send for RawCuda {}
 
-/// a small util to call host function indirectly
+/// a small utility to call host function indirectly
 unsafe extern "C" 
 fn callback_wrapper<T>(callback: *mut Void)
 where
@@ -34,8 +34,12 @@ where
 impl RawCuda {
     /// a new RawCuda stream
     pub(super)
-    fn new(size: usize, image: &'static str) -> Result<Self, RawCudaError> {
+    fn new(size: usize, image: &'static str, devnr: i32) -> Result<Self, RawCudaError> {
         let mut rawcuda = Self::new_uninit();
+        match RawCudaError::from(unsafe{cudaSetDevice(devnr)}) {
+            RawCudaError::CUDA_SUCCESS => {},
+            x => Err(x)?
+        };
         rawcuda.init_stream()?;
         rawcuda.init_memory(size)?;
         rawcuda.init_module(image)?;
@@ -127,7 +131,7 @@ impl RawCuda {
             e => Err(e),
         }
     }
-    /// add a host hook when current jobs are done
+    /// add a host hook that will launch when current jobs are done
     pub(super)
     fn hookup<T>(&mut self, hook: Box<T>) -> Result<(), RawCudaError>
     where T: FnOnce() + Send {
@@ -145,7 +149,7 @@ impl RawCuda {
 
 impl Drop for RawCuda {
     fn drop(&mut self) {
-        unimplemented!("Drop RawCuda");
+        todo!("Drop RawCuda");
     }
 }
 
@@ -174,7 +178,8 @@ impl TaskPool {
     /// get an empty task
     pub(super)
     fn get(&mut self) -> usize {
-        let task = (self.offset << 3 + self.uselen) & (1024*8-1);
+        if self.uselen == 1024*8 { return 1024*8; }
+        let task = (self.offset + self.uselen) & (1024*8-1);
         self.uselen += 1;
         return task;
     }
@@ -182,22 +187,78 @@ impl TaskPool {
     pub(super)
     fn put(&mut self, task: usize) {
         self.signal[task >> 3] |= 1 << (task & 0x7);
-        if (task >> 3) != self.offset { return; }
-        while self.signal[self.offset] == 0xff {
-            self.signal[self.offset] = 0;
-            self.offset += 1;
-            self.offset &= 1024 - 1;
-            self.uselen -= 8;
-        }
     }
     /// return the finished tasks, put these task bits back to pool
     pub(super)
     fn ack(&mut self) -> Vec<usize> {
-        unimplemented!("TaskPool ack");
+        let mut ret = Vec::with_capacity(16);
+        while self.signal[self.offset >> 3] == u8::MAX {
+            self.signal[self.offset >> 3] = 0u8;
+            ret.extend(self.offset..self.offset+8);
+            self.offset += 8;
+            self.offset &= 1024*8 - 1;
+            self.uselen -= 8;
+        }
+        while self.signal[self.offset >> 3] & (1 << (self.offset & 0x7)) != 0 {
+            self.signal[self.offset >> 3] ^= (1 << (self.offset & 0x7));
+            ret.push(self.offset);
+            self.offset += 1;
+            self.offset &= 1024*8 - 1;
+            self.uselen -= 1;
+        }
+        ret.shrink_to_fit();
+        return ret;
     }
     /// return whether the task pool is 2/3 full
     pub(super)
     fn is_full(&self) -> bool {
         self.uselen >= 1024*6
+    }
+    /// print the task pool
+    #[cfg(test)]
+    pub(super)
+    fn print(&self) {
+        let each_row = 16;
+        let sep = "=".repeat(each_row*8 + each_row-1);
+        println!("{sep}");
+        for i in 0..(1024/each_row) {
+            for j in 0..each_row {
+                for k in 0..8 {
+                    print!("{}", (self.signal[i*each_row+j] >> k) & 1);
+                }
+                print!(" ");
+            }
+            print!("\n");
+        }
+        println!("{sep}");
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::TaskPool;
+    #[test]
+    fn test_task_pool() {
+        let mut x = TaskPool::new();
+        x.print();
+        for _ in 0..2019 {
+            for _ in 0..2109 {
+                let tid = x.get();
+                x.put(tid);
+            }
+            x.ack();
+        }
+        for _ in 0..20 {
+            for _ in 0..7 {
+                let tid = x.get();
+                x.put(tid);
+                x.print();
+            }
+            x.ack();
+            x.print();
+        }
+        for _ in 0..(1024*8-1) {x.get();}
+        println!("{}", x.get());
+        println!("{}", x.get());
     }
 }
