@@ -7,6 +7,7 @@ use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::mpsc::Sender;
+use std::cell::RefCell;
 
 #[derive(Debug)]
 pub(super)
@@ -46,7 +47,7 @@ pub(super)
 struct Snder {
     rawcuda: RawCuda,
     taskpool: Arc<Mutex<TaskPool>>,
-    rplypool: ReplyPool,
+    rplypool: RefCell<ReplyPool>,
 }
 
 impl devapi::Snder<MsgO, DevErr> for
@@ -75,6 +76,40 @@ Snder {
                     Err(raw) => Err(DevErr::Raw(raw))
                 }
             }
+            MsgO::RplNewBox { rplid, boxid } => {
+                let sender = self.rplypool.borrow_mut().map_newbox.remove(&rplid);
+                match sender {
+                    Some(sender) => 
+                    match sender.send(boxid) {
+                        Ok(()) => Ok(()),
+                        Err(e) => Err(DevErr::ReplyError),
+                    },
+                    None => Err(DevErr::NoReplySender),
+                }
+            }
+            MsgO::RplCpyBox { rplid, boxid } => {
+                let sender = self.rplypool.borrow_mut().map_cpybox.remove(&rplid);
+                match sender {
+                    Some(sender) => 
+                    match sender.send(boxid) {
+                        Ok(()) => Ok(()),
+                        Err(e) => Err(DevErr::ReplyError),
+                    },
+                    None => Err(DevErr::NoReplySender),
+                }
+            }
+            MsgO::RplDelBox { rplid } => {
+                let sender = self.rplypool.borrow_mut().map_delbox.remove(&rplid);
+                match sender {
+                    Some(sender) => 
+                    match sender.send(()) {
+                        Ok(()) => Ok(()),
+                        Err(e) => Err(DevErr::ReplyError),
+                    },
+                    None => Err(DevErr::NoReplySender),
+                }
+            }
+            // MsgO::RplFilBox { rplid, boxid } => {}
             x => unimplemented!("send {x:?}")
         }
     }

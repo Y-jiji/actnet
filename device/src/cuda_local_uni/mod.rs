@@ -4,7 +4,7 @@ mod rcver;
 mod state;
 mod error;
 use super::devapi::*;
-
+use std::net::IpAddr;
 
 type Void = std::ffi::c_void;
 
@@ -15,12 +15,7 @@ enum Dev { Cuda=1, Host=0 }
 /// tests for cuda_local_uni
 mod tests;
 
-struct CudaLocalUni {
-    state: state::ShadowMem,
-    rcver: rcver::Rcver,
-    snder: snder::Snder,
-}
-
+struct CudaLocalUni;
 
 impl DevActor
 for CudaLocalUni {
@@ -30,6 +25,8 @@ for CudaLocalUni {
     type Snder = snder::Snder;
     type Rcver = rcver::Rcver;
     type State = state::ShadowMem;
+    /// this is a big TODO(Y-jiji)
+    type LocalDevAPI = ();
     fn run(state: Self::State, mut rcver: Self::Rcver, mut snder: Self::Snder) {loop {
         let msgi = match rcver.rcv() {
             Err(e) => panic!("{e:?}"),
@@ -44,8 +41,9 @@ for CudaLocalUni {
             }
         }
     }}
-    fn start(self) {
-        Self::run(self.state, self.rcver, self.snder);
+    fn start(ipaddr: Option<IpAddr>) {
+        if let Some(x) = ipaddr {unimplemented!("net address not supported {x:?}");}
+        
     }
 }
 

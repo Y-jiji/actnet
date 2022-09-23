@@ -1,6 +1,5 @@
 use std::fmt::{Display, Debug};
-
-
+use std::net::IpAddr;
 
 /// communicate with a device
 pub trait DevAPI {
@@ -29,7 +28,6 @@ pub trait DevActor where
     Self::Rcver : Rcver<Self::MsgI, Self::Error>,
     Self::Error : Debug
 {
-    /// TODO(Y-jiji): Add DevAPI as a type, return DevAPI after start
     /// internal state
     type State;
     /// device error
@@ -42,8 +40,10 @@ pub trait DevActor where
     type MsgI;
     /// output message
     type MsgO;
+    /// local device api, if this actor is not net-positioned
+    type LocalDevAPI;
     /// start a service with a receiver
     fn run(state: Self::State, rcver: Self::Rcver, snder: Self::Snder);
     /// start a service
-    fn start(self);
+    fn start(address: Option<IpAddr>) -> Self::LocalDevAPI;
 }

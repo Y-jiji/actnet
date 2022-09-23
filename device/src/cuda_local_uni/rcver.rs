@@ -18,9 +18,9 @@ enum MsgI {
     NewBox {size: usize},
     // operation: delete box
     DelBox {boxid: usize},
-    // operation: fill box
-    FilBox {boxid: usize, data: *mut Void},
-    // list of ok task
+    // operation: fill box with given data
+    FilBox {size: usize, data: *mut Void},
+    // list of ok tasks
     TaskOk {lstid: Vec<usize>},
 }
 
@@ -76,7 +76,6 @@ impl Rcver {
         Rcver { taskpool, timerchk, loclrecv }
     }
 }
-
 
 impl devapi::Rcver<MsgI, DevErr> for
 Rcver {

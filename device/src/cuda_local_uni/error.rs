@@ -7,4 +7,6 @@ enum DevErr {
     BoxNotEnough,
     Raw(RawCudaError),
     RecvError,
+    ReplyError,
+    NoReplySender,
 }
