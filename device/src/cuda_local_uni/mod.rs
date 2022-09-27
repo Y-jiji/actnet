@@ -42,8 +42,13 @@ for CudaLocalUni {
         }
     }}
     fn start(ipaddr: Option<IpAddr>) {
-        if let Some(x) = ipaddr {unimplemented!("net address not supported {x:?}");}
-        
+        if let Some(x) = ipaddr 
+        {unimplemented!("net address {x:?} not supported on *local* device");}
+        let rawcuda = rawcuda::RawCuda::new(
+            4 << 20, /* <-- this might be configurable later */
+            include_str!(concat!(env!("OUT_DIR"), "/cuops.ptx")), 0
+        ).unwrap();
+        todo!("initialize CudaLocalUni");
     }
 }
 
