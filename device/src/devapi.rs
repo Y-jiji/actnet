@@ -10,7 +10,7 @@ pub trait DevAPI {
     fn newbox(size: usize) -> Result<Self::DevBox, Self::DevErr>;
     fn cpybox(srcbox: &Self::DevBox) -> Result<Self::DevBox, Self::DevErr>;
     fn delbox(srcbox: Self::DevBox) -> Result<(), Self::DevErr>;
-    fn filbox(dstbox: Self::DevBox, data: Self::MemSeg) -> Result<(), Self::DevErr>;
+    fn filbox(data: Self::MemSeg) -> Result<Self::DevBox, Self::DevErr>;
     fn launch(name: String, data: [&mut Self::DevBox], meta: [usize]) -> Result<(), Self::DevErr>;
 }
 
@@ -23,7 +23,7 @@ pub trait Snder<T, E> {
 }
 
 /// a device as an actor
-pub trait DevActor where 
+pub trait DevActor where
     Self::Snder : Snder<Self::MsgO, Self::Error>, 
     Self::Rcver : Rcver<Self::MsgI, Self::Error>,
     Self::Error : Debug
