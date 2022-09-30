@@ -113,7 +113,7 @@ fn ptx_build (
 
 fn main() -> Result<(), Box<dyn Error>> {
 
-    let cu_file_dir = PathBuf::from(env::current_dir()?).join("cuops");
+    let cu_file_dir = PathBuf::from(env::current_dir()?).join("src/cuda_physic/ops");
     let ptx_out_file = PathBuf::from(env::var("OUT_DIR")?).join("cuops.ptx");
     ptx_build(
         cu_file_dir, 
