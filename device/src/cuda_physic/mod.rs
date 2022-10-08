@@ -11,5 +11,6 @@ struct CudaPhys {
     // tskpool: TaskPool,
 }
 
+// distribute 
 impl CudaPhys {
 }
