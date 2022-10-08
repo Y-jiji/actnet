@@ -3,8 +3,6 @@ use std::ptr::*;
 use std::mem::*;
 use crate::*;
 
-pub type Void = std::ffi::c_void;
-
 pub struct ToyBox {
     ptr: *mut Void,
     len: usize,
@@ -24,9 +22,9 @@ impl Drop for ToyBox {
     }
 }
 
-pub struct ToyUniStream;
+pub struct ToyStream;
 
-impl ToyUniStream {
+impl ToyStream {
     fn add_f32(a: &ToyBox, b: &ToyBox, c: &ToyBox) {
         let aptr = a.ptr as *mut f32;
         let bptr = b.ptr as *mut f32;
@@ -38,10 +36,12 @@ impl ToyUniStream {
     }
 }
 
-impl Device for ToyUniStream {
+impl Device for ToyStream {
     type DevBox = ToyBox;
     type DevErr = String;
+    /// implement device message sending for toy stream
     fn send(msg: DevMsg<Self>) -> Result<(), Self::DevErr> {
+        // since this is a toy stream, a messy monolithic implementation may not cause so much problems
         match msg {
             DevMsg::NewBox { size, dst } =>
                 unsafe{*dst = ToyBox::new(size)},
@@ -56,15 +56,14 @@ impl Device for ToyUniStream {
                     if src[0].len != src[1].len || src[1].len == dst.len
                     { return Err("size doesn't match".to_string()); }
                     Self::add_f32(&src[0], &src[1], &dst)
-                }
+                } else { return Err(format!("unimplemented function {function:?}")); }
             },
             DevMsg::CpyBox { src, dst } => {
                 if src.len != dst.len { return Err("size doesn't match".to_string()) }
                 unsafe{copy(src.ptr, dst.ptr, src.len)}
             },
-            DevMsg::HookUp { src } => {
-                (src)();
-            }
+            DevMsg::HookUp { src } => 
+                (src)()
         };
         Ok(())
     }

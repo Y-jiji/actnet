@@ -9,6 +9,7 @@ edition = "2021"
 async-trait = "0.1.57"     # Type erasure for async trait methods
 num_enum = "0.5.7"         # Procedural macros to make inter-operation between primitives and enums easier.
 parking_lot = "0.12.1"     # More compact and efficient implementations of the standard synchronization primitives.
+rand = "0.8.5"             # Random number generators and other randomness functionality. 
 
 [build-dependencies]
 bindgen = "*"              # Automatically generates Rust FFI bindings to C and C++ libraries.
