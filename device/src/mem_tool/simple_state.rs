@@ -89,6 +89,8 @@ impl<const ALIGN: usize> SimpleState<ALIGN> {
         (*this).phys_size = (*this).phys_size - size;
         UnsafeListNode::insert_as_phys_next(this_left, this_right);
         self.info_map.insert((*this_right).phys_addr, this_right);
+        assert!((*this_left).phys_size & 1 == 0);
+        assert!((*this_right).phys_size & 1 == 0);
         return (this_left, this_right);
     }
     unsafe fn merge_as_phys_node(&mut self, this: *mut UnsafeListNode) -> *mut UnsafeListNode {
@@ -101,7 +103,7 @@ impl<const ALIGN: usize> SimpleState<ALIGN> {
             self.info_map.remove(&(*this).phys_addr);
             *self.info_map.get_mut(&(*last).phys_addr).unwrap() = this;
             (*this).phys_size += (*last).phys_size & Self::ALIGN_MASK;
-            (*this).phys_addr = (*this).phys_addr.offset(-((*last).phys_size as isize));
+            (*this).phys_addr = (*last).phys_addr;
             UnsafeListNode::delete_as_phys_node(last);
         }
         if next_is_free {
@@ -114,24 +116,25 @@ impl<const ALIGN: usize> SimpleState<ALIGN> {
     }
     fn calc_which_free_list(&mut self, size: &usize) -> usize {
         let size_f = f64::from((size/Self::ALIGN_SIZE) as u32);
-        let index = usize::min(size_f.log(1.1) as usize, self.free_list.len() - 1);
+        let index = usize::min(size_f.log(1.6) as usize, self.free_list.len() - 1);
         return index;
     }
     unsafe fn get_from_free_list(&mut self, size: usize) -> *mut UnsafeListNode {
         let index = self.calc_which_free_list(&size);
-        let mut list_ptr = null_mut();
         for i in index..self.free_list.len() {
             let list_head = self.free_list[i];
-            list_ptr = (*list_head).list_next;
-            while (*list_ptr).phys_size < size {
+            let mut list_ptr = (*list_head).list_next;
+            while (*list_ptr).phys_size < size && list_ptr != list_head {
                 list_ptr = (*list_ptr).list_next;
-                if list_ptr == list_head {break;}
             }
-            if list_ptr != list_head { return UnsafeListNode::delete_as_list_node(list_ptr); }
+            if list_ptr != list_head { 
+                return UnsafeListNode::delete_as_list_node(list_ptr); 
+            }
         }
         return null_mut();
     }
     unsafe fn put_into_free_list(&mut self, node: *mut UnsafeListNode) {
+        assert!((*node).phys_size & 1 == 0);
         let index = self.calc_which_free_list(&(*node).phys_size);
         UnsafeListNode::insert_as_list_next(self.free_list[index], node);
     }
@@ -157,7 +160,22 @@ impl<const ALIGN: usize> SimpleState<ALIGN> {
             population_str += "\n";
         }
         population_str.pop();
-        return population_str
+        population_str
+    }
+    #[cfg(test)]
+    fn print_free_list(&self) -> String {
+        let mut population_str = String::new();
+        for head in &self.free_list {
+            let head = *head;
+            let mut ptr = unsafe{(*head).list_next};
+            while ptr != head {
+                population_str += &format!("-> {:?}+{:?} ", unsafe{(*ptr).phys_addr}, unsafe{(*ptr).phys_size});
+                ptr = unsafe{(*ptr).list_next};
+            }
+            population_str += "\n";
+        }
+        population_str.pop();
+        population_str
     }
 }
 
@@ -166,6 +184,7 @@ impl<const ALIGN: usize> MemState for SimpleState<ALIGN> {
         let size = (size + Self::ALIGN_SIZE - 1) & Self::ALIGN_MASK;
         let node = unsafe{self.get_from_free_list(size)};
         if node == null_mut() { return Err(MemErr::OutOfMemory); }
+        if unsafe{(*node).phys_size & Self::ALIGN_MASK} == size { return Ok(unsafe{(*node).phys_addr}); }
         let (lhalf, rhalf) = unsafe{self.split_as_phys_node(node, size)};
         unsafe{UnsafeListNode::mark_as_used(lhalf)};
         unsafe{self.put_into_free_list(rhalf)};
@@ -186,9 +205,10 @@ impl<const ALIGN: usize> MemState for SimpleState<ALIGN> {
             info_map: HashMap::new(),
         };
         let list_num = usize::max(
-            1+f64::from((unsafe{rbound.offset_from(lbound)} as usize/Self::ALIGN_SIZE) as u32).log(1.1) as usize, 1);
-        new_self.free_list.resize(
-            list_num, UnsafeListNode::new(null_mut(), 0));
+            1+f64::from((unsafe{rbound.offset_from(lbound)} as usize/Self::ALIGN_SIZE) as u32).log(1.6) as usize, 1);
+        for i in 0..list_num {
+            new_self.free_list.push(UnsafeListNode::new(null_mut(), 0));
+        }
         let new_node = UnsafeListNode::new(lbound, unsafe{rbound.offset_from(lbound) as usize});
         new_self.info_map.insert(lbound, new_node);
         unsafe{new_self.put_into_free_list(new_node)};
@@ -209,28 +229,20 @@ mod test {
         let mut test_state = SimpleState::<5>::new(unsafe{null_mut::<Void>().add(10000)}, unsafe{null_mut::<Void>().offset(1000000)});
         let mut err_cnt = 0;
         // random alloc with random free
-        for i in 0..10 {
-            if i % 100 == 0 { println!("{i}/100000") }
+        for i in 0..5 {
+            println!("test {i}/5");
             let x = random::<usize>() % 10000usize;
+            println!("{}", ['-'; 128].into_iter().collect::<String>());
+            println!("{}", test_state.print_free_list());
+            println!("{}", ['-'; 128].into_iter().collect::<String>());
             let ptr = match test_state.alloc(x) {
                 Ok(p) => p,
                 Err(e) => {err_cnt += 1; continue;},
             };
-            // println!("{:?}", ptr);
+            println!("{}", ['-'; 128].into_iter().collect::<String>());
+            println!("{}", test_state.print_free_list());
+            println!("{}", ['-'; 128].into_iter().collect::<String>());
             p_alloc.insert(ptr);
-            let ptr = match p_alloc.iter().nth(random::<usize>() & 0xff) {
-                Some(x) => *x,
-                None => {continue;}
-            };
-            if random::<usize>() & 0xf == 0 {
-                match test_state.free(ptr) {
-                    Ok(()) => {},
-                    Err(e) => {err_cnt += 1}
-                }
-            }
-            // println!("{}", ['-'; 128].into_iter().collect::<String>());
-            // println!("{}", test_state.print());
-            // println!("{}", ['-'; 128].into_iter().collect::<String>());
         }
         // print the state before free all
         println!("{}", ['-'; 128].into_iter().collect::<String>());

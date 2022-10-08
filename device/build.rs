@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             &["cuda", "cuda_runtime", "cuda_runtime_api"],
             &["cuda", "cudart", "cudadevrt", "cudart_static"],
             &(env::var("CUDA_PATH_V11_7")? + "/include"),
-            &(env::var("CUDA_PATH_V11_7")? + "/lib"),
+            &(env::var("CUDA_PATH_V11_7")? + "/lib/x64"),
             cuda_out_dir,
         )?;
     }
