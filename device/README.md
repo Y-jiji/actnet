@@ -42,15 +42,22 @@ Weak FIFO property means for every message sequence that ends with `Terminate` a
 
 The only difference operator reordering is permitted, as far as it doesn't change the termination state. 
 
+***
+
 # The Shadow Memory Technic
 
 Given the computation model above, it is possible to use a special technic to optimize asynchronous launchs. 
 
 ## A CUDA Stream Example
 
-TODO@Y-jiji(easy desc, also about it's goodness in modular design)
+TODO@Y-jiji(easy desc, shadow mem is also good in modular design)
 
 ## Take Error State into Consideration
 
 TODO@Y-jiji(slow shadow, checkpoints)
 
+***
+
+# Stream Intergration Problem
+
+TODO@Y-jiji(pack streams into one stream)
