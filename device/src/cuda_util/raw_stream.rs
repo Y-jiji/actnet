@@ -17,7 +17,7 @@ type Void = std::ffi::c_void;
 include!(concat!(env!("OUT_DIR"), "/nvtk/cuda.rs"));
 
 #[derive(Clone, Debug)]
-pub(super)
+pub(crate)
 struct RawCuda {
     pstream: *mut CUstream_st,
 }
@@ -37,26 +37,14 @@ where
 
 impl RawCuda {
     /// a new RawCuda stream
-    pub(super)
+    pub(crate)
     fn new(size: usize, image: &'static str, devnr: i32) -> Result<Self, RawCudaError> {
-        let mut rawcuda = Self::new_uninit();
-        match RawCudaError::from(unsafe{cudaSetDevice(devnr)}) {
-            RawCudaError::CUDA_SUCCESS => {},
-            x => Err(x)?
-        };
+        let mut rawcuda = RawCuda {pstream: nmut() as *mut _};
         rawcuda.init_stream()?;
-        rawcuda.init_memory(size)?;
-        rawcuda.init_module(image)?;
         return Ok(rawcuda);
     }
-    /// a new uninitialized RawCuda stream
-    fn new_uninit() -> Self {
-        let nptr: *mut Void = nmut();
-        RawCuda {
-            pstream: nptr as *mut _,
-        }
-    }
     /// initialize stream
+    pub(crate)
     fn init_stream(&mut self) -> Result<(), RawCudaError> {
         let errnr = unsafe{cuStreamCreate(&mut self.pstream as *mut _, 
             CUstream_flags_enum_CU_STREAM_NON_BLOCKING as u32)};
@@ -66,6 +54,7 @@ impl RawCuda {
         }
     }
     /// initialize stream memory
+    pub(crate)
     fn init_memory(&mut self, size: usize) -> Result<*mut Void, RawCudaError> {
         let mbase = null_mut::<Void>();
         let errnr = unsafe{cuMemAllocAsync(
@@ -77,7 +66,8 @@ impl RawCuda {
             e => {Err(e)}
         }
     }
-    /// initialize cuda module
+    /// initialize cuda module, this should be moved to raw_module
+    pub(crate)
     fn init_module(&mut self, image: &'static str) -> Result<*mut Void, RawCudaError> {
         let mut pmodule = null_mut::<CUmod_st>();
         let errnr  = unsafe{cuModuleLoadData(
@@ -100,7 +90,7 @@ impl RawCuda {
         }
     }
     /// add a memory copy job to stream
-    pub(super)
+    pub(crate)
     fn memcpy(&mut self, src: (*mut Void, PhysDev), dst: (*mut Void, PhysDev), len: usize) -> Result<(), RawCudaError> {
         let errnr = unsafe{cudaMemcpyAsync(
             dst.0, src.0, len as _, 
@@ -114,7 +104,7 @@ impl RawCuda {
     /// pfunc: a device pointer to function
     /// layout: memory layout (gridx, gridy, gridz) (blockx, blocky, blockz) shardedMemBytes
     /// data: pointers to data in host, should be suffixed by nullptrs
-    pub(super)
+    pub(crate)
     fn launch(
         &mut self, pfunc: *mut Void, data: [*mut Void; 16], 
         layout: ((usize, usize, usize), (usize, usize, usize), usize)
@@ -131,7 +121,7 @@ impl RawCuda {
         }
     }
     /// add a host hook that will launch when current jobs are done
-    pub(super)
+    pub(crate)
     fn hookup<T>(&mut self, hook: Box<T>) -> Result<(), RawCudaError>
     where T: FnOnce() + Send {
         let errnr = unsafe{cuLaunchHostFunc(
