@@ -312,7 +312,6 @@ impl MemState for SimpleState {
 mod test {
     use super::*;
     use rand::random;
-    use std::{collections::*, os::windows::prelude::RawHandle};
 
     #[test]
     fn test_free_list() {
@@ -329,7 +328,6 @@ mod test {
             free_list.insert(node);
             println!("--------------------------------------");
             print!("{}", free_list.debug_print());
-            println!("======================================");
         }
         for _ in 0..100 {
             println!("======================================");
@@ -339,7 +337,6 @@ mod test {
             println!("--------------------------------------");
             print!("{}", free_list.debug_print());
             println!("--------------------------------------");
-            println!("======================================");
         }
     }
 

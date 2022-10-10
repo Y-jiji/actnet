@@ -28,7 +28,7 @@ pub enum DevMsg<D: Device + ?Sized> {
 }
 
 pub mod cuda_physic;
-pub mod mem_tool;
+pub mod mem_util;
 
 mod toy_uni;
 pub use toy_uni::*;

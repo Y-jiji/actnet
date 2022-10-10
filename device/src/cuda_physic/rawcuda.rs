@@ -4,6 +4,7 @@ use std::{ptr::null_mut as nmut, marker::PhantomPinned};
 use std::collections::HashMap;
 use std::os::raw::c_uint;
 use std::pin::Pin;
+use std::ptr::*;
 
 pub(crate)
 enum PhysDev {
@@ -19,9 +20,6 @@ include!(concat!(env!("OUT_DIR"), "/nvtk/cuda.rs"));
 pub(super)
 struct RawCuda {
     pstream: *mut CUstream_st,
-    pmodule: *mut CUmod_st,
-    pmemseg: (*mut Void, *mut Void),
-    funcmap: HashMap<String, *mut CUfunc_st>,
 }
 
 /// a small utility to call host function indirectly
@@ -55,10 +53,7 @@ impl RawCuda {
     fn new_uninit() -> Self {
         let nptr: *mut Void = nmut();
         RawCuda {
-            pstream: nptr as *mut _, 
-            pmodule: nptr as *mut _, 
-            pmemseg: (nptr, nptr),
-            funcmap: HashMap::new(),
+            pstream: nptr as *mut _,
         }
     }
     /// initialize stream
@@ -71,28 +66,27 @@ impl RawCuda {
         }
     }
     /// initialize stream memory
-    fn init_memory(&mut self, size: usize) -> Result<(), RawCudaError> {
+    fn init_memory(&mut self, size: usize) -> Result<*mut Void, RawCudaError> {
+        let mbase = null_mut::<Void>();
         let errnr = unsafe{cuMemAllocAsync(
-            &mut(self.pmemseg.0 as u64) as *mut _,
+            &mut(mbase as u64) as *mut _,
             size as u64, self.pstream
         )};
         match errnr {
-            RawCudaError::CUDA_SUCCESS => unsafe
-            {self.pmemseg.1 = self.pmemseg.0.add(size); Ok(())},
-            e => 
-            {self.pmemseg.0 = nmut(); Err(e)},
+            RawCudaError::CUDA_SUCCESS => {Ok(mbase)},
+            e => {Err(e)}
         }
     }
     /// initialize cuda module
-    fn init_module(&mut self, image: &'static str) -> Result<(), RawCudaError> {
+    fn init_module(&mut self, image: &'static str) -> Result<*mut Void, RawCudaError> {
+        let mut pmodule = null_mut::<CUmod_st>();
         let errnr  = unsafe{cuModuleLoadData(
-            &mut self.pmodule as *mut _,
+            &mut pmodule as *mut _,
             image as *const _ as *mut _,
         )};
         match errnr {
-            RawCudaError::CUDA_SUCCESS => Ok(()),
-            e => 
-            {self.pmodule = nmut(); Err(e)},
+            RawCudaError::CUDA_SUCCESS => Ok(pmodule as *mut _),
+            e => Err(e),
         }
     }
     /// get copy kind from device type
@@ -116,18 +110,17 @@ impl RawCuda {
             e => Err(e),
         }
     }
-    /// add a kernel function launch job to stream
+    /// add a kernel function launch job to stream\n
+    /// pfunc: a device pointer to function
+    /// layout: memory layout (gridx, gridy, gridz) (blockx, blocky, blockz) shardedMemBytes
+    /// data: pointers to data in host, should be suffixed by nullptrs
     pub(super)
     fn launch(
-        &mut self, fname: String, data: Vec<*mut Void>, 
+        &mut self, pfunc: *mut Void, data: [*mut Void; 16], 
         layout: ((usize, usize, usize), (usize, usize, usize), usize)
     ) -> Result<(), RawCudaError> {
         let pstream = self.pstream;
-        let pfunc = match self.funcmap.get(&fname) {
-            Some(pfunc) => pfunc.clone(),
-            None => Err(RawCudaError::CUDA_ERROR_NOT_FOUND)?,
-        };
-        let errnr = unsafe{cuLaunchKernel(pfunc, 
+        let errnr = unsafe{cuLaunchKernel(pfunc as *mut _, 
             layout.0.0 as c_uint, layout.0.1 as c_uint, layout.0.2 as c_uint, 
             layout.1.0 as c_uint, layout.1.1 as c_uint, layout.1.2 as c_uint, 
             layout.2 as c_uint, pstream, 
