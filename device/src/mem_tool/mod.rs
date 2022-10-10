@@ -10,6 +10,7 @@ trait MemState {
 }
 
 /// memory error
+#[derive(Debug)]
 enum MemErr {
     OutOfMemory,
     InvalidPtr,

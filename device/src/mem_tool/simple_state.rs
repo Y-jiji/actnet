@@ -1,265 +1,454 @@
 use super::*;
+use std::alloc::*;
+use std::marker::PhantomPinned;
+use std::ptr::*;
 
-/// this is unsafely implemented, because there are no cross linked lists in rust
-struct UnsafeListNode {
-    list_last: *mut UnsafeListNode,
-    list_next: *mut UnsafeListNode,
-    phys_last: *mut UnsafeListNode,
-    phys_next: *mut UnsafeListNode,
-    phys_addr: *mut Void,
-    phys_size: usize,
+struct MemNode {
+    addr: *mut Void,
+    size: usize,
+    l_prev: *mut MemNode,
+    l_succ: *mut MemNode,
+    m_prev: *mut MemNode,
+    m_succ: *mut MemNode,
+    pin: PhantomPinned,
 }
 
-impl UnsafeListNode {
-    fn new(phys_addr: *mut Void, phys_size: usize) -> *mut UnsafeListNode {
-        let nptr = null_mut();
-        let node = Box::leak(Box::new(
-            UnsafeListNode{list_next: nptr, list_last: nptr, phys_last: nptr, phys_next: nptr, phys_addr, phys_size}));
-        node.phys_last = node;
-        node.phys_next = node;
-        node.list_last = node;
-        node.list_next = node;
-        return node as *mut UnsafeListNode;
-    }
-    unsafe fn insert_as_list_next(this: *mut UnsafeListNode, next: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        (*next).list_next = (*this).list_next;
-        (*next).list_last = this;
-        (*(*this).list_next).list_last = next;
-        (*this).list_next = next;
-        return this;
-    }
-    unsafe fn insert_as_list_last(this: *mut UnsafeListNode, last: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        (*last).list_last = (*this).list_last;
-        (*last).list_next = this;
-        (*(*this).list_last).list_next = last;
-        (*this).list_last = last;
-        return this;
-    }
-    unsafe fn delete_as_list_node(this: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        (*(*this).list_next).list_last = (*this).list_last;
-        (*(*this).list_last).list_next = (*this).list_next;
-        (*this).list_last = this;
-        (*this).list_next = this;
-        return this;
-    }
-    unsafe fn insert_as_phys_next(this: *mut UnsafeListNode, next: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        (*next).phys_next = (*this).phys_next;
-        (*next).phys_last = this;
-        (*(*this).phys_next).phys_last = next;
-        (*this).phys_next = next;
-        return this;
-    }
-    unsafe fn insert_as_phys_last(this: *mut UnsafeListNode, last: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        (*last).phys_last = (*this).phys_last;
-        (*last).phys_next = this;
-        (*(*this).phys_last).phys_next = last;
-        (*this).phys_last = last;
-        return this;
-    }
-    unsafe fn delete_as_phys_node(this: *mut UnsafeListNode) {
-        (*(*this).phys_next).phys_last = (*this).phys_last;
-        (*(*this).phys_last).phys_next = (*this).phys_next;
-        drop(Box::from_raw(this));
-    }
-    unsafe fn mark_as_used(this: *mut UnsafeListNode) {
-        (*this).phys_size |= 1;
-    }
-    unsafe fn mark_as_free(this: *mut UnsafeListNode) {
-        (*this).phys_size &= usize::MAX ^ 1;
+impl MemNode {
+    fn new(addr: *mut Void, size: usize) -> *mut MemNode {
+        let node = unsafe{&mut*(alloc(Layout::new::<MemNode>()) as *mut _)};
+        *node = MemNode {addr, size,
+            l_prev: node, l_succ: node,
+            m_prev: node, m_succ: node, 
+            pin: PhantomPinned};
+        node
     }
 }
 
-/// ALIGN mean align bits
-pub(crate)
-struct SimpleState<const ALIGN: usize> {
-    /// memory segment it monitors
-    lbound: *mut Void, rbound: *mut Void,
-    /// the state of free memory
-    free_list: Vec<*mut UnsafeListNode>,
-    /// info
-    info_map: HashMap<*mut Void, *mut UnsafeListNode>,
+struct FreeList {
+    head: Vec<*mut MemNode>,
+    rate: f64,
+    smallest: usize,
 }
 
-impl<const ALIGN: usize> SimpleState<ALIGN> {
-    const ALIGN_MASK: usize = usize::MAX << ALIGN;
-    const ALIGN_SIZE: usize = 1 << ALIGN;
-    unsafe fn split_as_phys_node(&mut self, this: *mut UnsafeListNode, size: usize) -> (*mut UnsafeListNode, *mut UnsafeListNode) {
-        let this_left = this;
-        let this_right = UnsafeListNode::new((*this).phys_addr.add(size), (*this).phys_size - size);
-        (*this).phys_size = (*this).phys_size - size;
-        UnsafeListNode::insert_as_phys_next(this_left, this_right);
-        self.info_map.insert((*this_right).phys_addr, this_right);
-        assert!((*this_left).phys_size & 1 == 0);
-        assert!((*this_right).phys_size & 1 == 0);
-        return (this_left, this_right);
-    }
-    unsafe fn merge_as_phys_node(&mut self, this: *mut UnsafeListNode) -> *mut UnsafeListNode {
-        let last = (*this).phys_last;
-        let next = (*this).phys_next;
-        let last_is_free = (*last).phys_size & 1 == 0;
-        let next_is_free = (*next).phys_size & 1 == 0;
-        if last_is_free {
-            UnsafeListNode::delete_as_list_node(last);
-            self.info_map.remove(&(*this).phys_addr);
-            *self.info_map.get_mut(&(*last).phys_addr).unwrap() = this;
-            (*this).phys_size += (*last).phys_size & Self::ALIGN_MASK;
-            (*this).phys_addr = (*last).phys_addr;
-            UnsafeListNode::delete_as_phys_node(last);
+impl FreeList {
+    const MASK: usize = usize::MAX << 1;
+    fn new(size: usize, rate: f64, smallest: usize) -> Self {
+        assert!(size % 2 == 0);
+        assert!(size >= smallest);
+        let log = f64::log((size / smallest) as f64, rate) as usize;
+        let mut head = Vec::new();
+        for i in 0..log {
+            head.push(MemNode::new(null_mut(), 0));
         }
-        if next_is_free {
-            UnsafeListNode::delete_as_list_node(next);
-            self.info_map.remove(&(*next).phys_addr);
-            (*this).phys_size += (*next).phys_size & Self::ALIGN_MASK;
-            UnsafeListNode::delete_as_phys_node(next);
-        }
-        return this;
+        return Self { head, rate, smallest }
     }
-    fn calc_which_free_list(&mut self, size: &usize) -> usize {
-        let size_f = f64::from((size/Self::ALIGN_SIZE) as u32);
-        let index = usize::min(size_f.log(1.6) as usize, self.free_list.len() - 1);
+    fn index(&self, size: usize) -> usize {
+        let log = f64::log(size as f64 / self.smallest as f64, self.rate);
+        let index = usize::max(0, usize::min(log as usize, self.head.len() - 1));
         return index;
     }
-    unsafe fn get_from_free_list(&mut self, size: usize) -> *mut UnsafeListNode {
-        let index = self.calc_which_free_list(&size);
-        for i in index..self.free_list.len() {
-            let list_head = self.free_list[i];
-            let mut list_ptr = (*list_head).list_next;
-            while (*list_ptr).phys_size < size && list_ptr != list_head {
-                list_ptr = (*list_ptr).list_next;
-            }
-            if list_ptr != list_head { 
-                return UnsafeListNode::delete_as_list_node(list_ptr); 
-            }
+    /// insert node into free list
+    fn insert(&mut self, node: *mut MemNode) {
+        // set the mask as free
+        // println!("free list insert {:?}", unsafe{(*node).addr});
+        unsafe{(*node).size &= Self::MASK};
+        let i = self.index(unsafe{(*node).size});
+        let head = self.head[i];
+        unsafe {
+            // head <- node -> succ
+            (*node).l_prev = head;
+            (*node).l_succ = (*head).l_succ;
+            // head -> node <- succ
+            (*(*head).l_succ).l_prev = node;
+            (*head).l_succ = node;
         }
+    }
+    /// remove node from free list
+    fn remove(&mut self, node: *mut MemNode) {unsafe{
+        #[cfg(test)] {
+            assert!(!node.is_null());
+            for head in &self.head 
+            { assert!(*head != node); }
+        }
+        (*node).size |= 1;
+        let l_prev = (*node).l_prev;
+        let l_succ = (*node).l_succ;
+        // l_prev <-> l_succ
+        (*l_prev).l_succ = l_succ;
+        (*l_succ).l_prev = l_prev;
+        // node <-> node
+        (*node).l_prev = node;
+        (*node).l_succ = node;
+    }}
+    /// find a node greater or equal to size
+    fn find_ge(&mut self, size: usize) -> *mut MemNode {
+        let size = usize::max(size, self.smallest);
+        for i in self.index(size)..self.head.len() {unsafe{
+            let head = self.head[i];
+            let mut node = (*head).l_prev;
+            while node != head {
+                if (*node).size >= size
+                { return node; }
+                else
+                { node = (*node).l_prev; }
+            }
+        }}
         return null_mut();
     }
-    unsafe fn put_into_free_list(&mut self, node: *mut UnsafeListNode) {
-        assert!((*node).phys_size & 1 == 0);
-        let index = self.calc_which_free_list(&(*node).phys_size);
-        UnsafeListNode::insert_as_list_next(self.free_list[index], node);
-    }
+    /// print debug info
     #[cfg(test)]
-    // a good plotter for debugging
-    fn print(&self) -> String {
-        let mut population_vec = ['#'; 128*128];
-        for x in self.info_map.values().into_iter() {
-            if unsafe{(**x).phys_size} & 1 == 0 {continue;}
-            let phys_size = unsafe{(**x).phys_size} & Self::ALIGN_MASK;
-            let ptr = unsafe{(**x).phys_addr};
-            assert!(unsafe{ptr.offset_from(self.rbound) as isize} < 0);
-            assert!(unsafe{ptr.offset_from(self.rbound) + phys_size as isize} < 0);
-            let istart = (128*128*unsafe{ptr.offset_from(self.lbound)}) / unsafe{self.rbound.offset_from(self.lbound)};
-            let iend = (128*128*unsafe{ptr.offset_from(self.lbound) + phys_size as isize}) / unsafe{self.rbound.offset_from(self.lbound)};
-            for i in istart..iend {
-                population_vec[i as usize] = ' ';
-            }
-        }
-        let mut population_str = String::new();
-        for x in population_vec.chunks(128).into_iter() {
-            population_str += &(*x).into_iter().collect::<String>();
-            population_str += "\n";
-        }
-        population_str.pop();
-        population_str
-    }
-    #[cfg(test)]
-    fn print_free_list(&self) -> String {
-        let mut population_str = String::new();
-        for head in &self.free_list {
+    fn debug_print(&self) -> String {
+        let mut return_string = String::new();
+        for head in &self.head {
             let head = *head;
-            let mut ptr = unsafe{(*head).list_next};
+            let mut ptr = unsafe{(*head).l_prev};
             while ptr != head {
-                population_str += &format!("-> {:?}+{:?} ", unsafe{(*ptr).phys_addr}, unsafe{(*ptr).phys_size});
-                ptr = unsafe{(*ptr).list_next};
+                unsafe{assert!((*ptr).size & 1 == 0);}
+                return_string += &format!("-> {:?} ", unsafe{(*ptr).addr});
+                ptr = unsafe{(*ptr).l_prev};
+                unsafe{assert!((*(*ptr).l_prev).l_succ == ptr);}
             }
-            population_str += "\n";
+            return_string += "\n"
         }
-        population_str.pop();
-        population_str
+        return_string
+    }
+    /// a sanity check when memory segment are ought to be a whole
+    #[cfg(test)]
+    fn san_check(&self, lbound: *mut Void, rbound: *mut Void) {
+        let x = unsafe{(*self.head).last().unwrap()};
+        let x = unsafe{(**x).l_succ};
+        unsafe{
+            assert!((*x).addr == lbound);
+            assert!((*x).addr.add((*x).size) == rbound);
+        }
     }
 }
 
-impl<const ALIGN: usize> MemState for SimpleState<ALIGN> {
+struct PhysList {
+    addr_info: HashMap<*mut Void, *mut MemNode>,
+    smallest: usize,
+    lbound: *mut Void,
+    rbound: *mut Void,
+}
+
+impl PhysList {
+    const MASK: usize = usize::MAX << 1;
+    fn new(lbound: *mut Void, rbound: *mut Void, smallest: usize) -> Self {
+        let mut addr_info = HashMap::new();
+        addr_info.insert(lbound, MemNode::new(lbound, unsafe{rbound.offset_from(lbound)} as usize));
+        return Self { lbound, rbound, smallest, addr_info }
+    }
+    /// split a node
+    fn split(&mut self, node: *mut MemNode, size: usize) -> (*mut MemNode, *mut MemNode) {unsafe{
+        // satisfy align requirement(keep size greater than size)
+        assert!(size & Self::MASK == size);
+        // if splitting is bad
+        if size < self.smallest || ((*node).size & Self::MASK) - size < self.smallest { 
+            return (node, null_mut());
+        }
+        // split node into left half and right half
+        let (lhalf, rhalf) = 
+            (node, MemNode::new((*node).addr.add(size), ((*node).size & Self::MASK) - size));
+        // adapt node's size
+        (*node).size = size | ((*node).size & 1);
+        // lhalf <- rhalf -> m_succ
+        (*rhalf).m_prev = lhalf;
+        (*rhalf).m_succ = (*lhalf).m_succ;
+        // lhalf -> rhalf <- m_succ
+        (*(*rhalf).m_prev).m_succ = rhalf;
+        (*(*rhalf).m_succ).m_prev = rhalf;
+        // register rhalf to address info
+        self.addr_info.insert((*rhalf).addr, rhalf);
+        return (lhalf, rhalf);
+    }}
+    /// whether the segement is the last one
+    fn is_rbound(&self, node: *mut MemNode) -> bool {unsafe{
+        (*node).addr.add((*node).size & Self::MASK) == self.rbound
+    }}
+    /// whether the segement is the first one
+    fn is_lbound(&self, node: *mut MemNode) -> bool {unsafe{
+        (*node).addr == self.lbound
+    }}
+    /// merge this node and its adjacently next node
+    fn merge(&mut self, node: *mut MemNode) {unsafe{
+        // println!("merge {:?}", (*node).addr);
+        // remove address from address infomation
+        self.addr_info.remove(&(*(*node).m_succ).addr);
+        // a m_succ var for easy access
+        let m_succ = (*node).m_succ;
+        // extend size to cover the m_succ
+        (*node).size += (*m_succ).size & Self::MASK;
+        // assert m_succ is right to node
+        assert!(0 < (*m_succ).addr.offset_from((*node).addr));
+        // delete m_succ from physical list
+        (*(*m_succ).m_succ).m_prev = node;
+        (*node).m_succ = (*m_succ).m_succ;
+        // dealloc m_succ
+        dealloc(m_succ as *mut _, Layout::new::<MemNode>());
+    }}
+    /// print debug info about list
+    #[cfg(test)]
+    fn debug_print_list(&self) -> String {unsafe{
+        let mut return_string = String::new();
+        let head = *self.addr_info.get(&self.lbound).unwrap();
+        return_string += &format!("-> {:?}|{:?} ", (*head).addr, (*head).size & 1);
+        let mut ptr = (*head).m_succ;
+        while ptr != head {
+            return_string += &format!("-> {:?}|{:?} ", (*ptr).addr, (*ptr).size & 1);
+            ptr = (*ptr).m_succ;
+        }
+        return_string
+    }}
+    /// print debug info about memory usage
+    #[cfg(test)]
+    fn debug_print_free(&self) -> String {
+        // create a masking array, where '#' represents free space, ' ' represents used space
+        let mut return_array = ['#'; 32*128];
+        // project a pointer to array index
+        let project = |ptr: *mut Void|-> usize {
+            let total = unsafe{self.rbound.offset_from(self.lbound)} as usize;
+            let offset = unsafe{ptr.offset_from(self.lbound)} as usize;
+            32*128*offset / total
+        };
+        // modify the masking array
+        for (ptr, node) in self.addr_info.iter() {
+            if unsafe{&(**node).size} & 1 == 0 { continue; }
+            let (lower, upper) = (*ptr, unsafe{(*ptr).add((**node).size & Self::MASK)});
+            for i in project(lower)..project(upper) {
+                return_array[i] = ' ';
+            }
+        }
+        // convert the masking array into string
+        let mut return_string = String::new();
+        for chunk in return_array.chunks(128) {
+            return_string += &String::from_iter(chunk);
+            return_string += "\n";
+        }
+        return return_string;
+    }
+    #[cfg(test)]
+    fn san_check(&self) {
+        for (ptr, node) in self.addr_info.iter() {unsafe{
+            let node = *node;
+            let ptr = *ptr;
+            assert!((*node).addr == ptr);
+        }}
+    }
+}
+
+struct SimpleState {
+    phys_list: PhysList,
+    free_list: FreeList,
+}
+
+impl MemState for SimpleState {
+    fn new(lbound: *mut Void, rbound: *mut Void) -> Self {
+        // initialize physical list
+        let phys_list = PhysList::new(lbound, rbound, 64);
+        let size = unsafe{rbound.offset_from(lbound) as usize};
+        let first_node = phys_list.addr_info.values().next().unwrap();
+        // initialize free list
+        let mut free_list = FreeList::new(size, 1.2, 64);
+        free_list.insert(*first_node);
+        Self { phys_list, free_list }
+    }
     fn alloc(&mut self, size: usize) -> Result<*mut Void, MemErr> {
-        let size = (size + Self::ALIGN_SIZE - 1) & Self::ALIGN_MASK;
-        let node = unsafe{self.get_from_free_list(size)};
-        if node == null_mut() { return Err(MemErr::OutOfMemory); }
-        if unsafe{(*node).phys_size & Self::ALIGN_MASK} == size { return Ok(unsafe{(*node).phys_addr}); }
-        let (lhalf, rhalf) = unsafe{self.split_as_phys_node(node, size)};
-        unsafe{UnsafeListNode::mark_as_used(lhalf)};
-        unsafe{self.put_into_free_list(rhalf)};
-        return Ok(unsafe{(*lhalf).phys_addr});
+        // align size
+        let size = (usize::max(size, self.phys_list.smallest) + 1) & PhysList::MASK;
+        // try to find a large enough node
+        let node = self.free_list.find_ge(size);
+        // if there are is such node, raise error
+        if node.is_null() { return Err(MemErr::OutOfMemory); }
+        // remove node from free list
+        self.free_list.remove(node);
+        // split node into two halves
+        let (lhalf, rhalf) = self.phys_list.split(node, size);
+        // insert the right half into free list
+        if !rhalf.is_null()
+        { self.free_list.insert(rhalf); }
+        return Ok(unsafe {(*lhalf).addr});
     }
     fn free(&mut self, ptr: *mut Void) -> Result<(), MemErr> {
-        let node = match self.info_map.get(&ptr) {
+        if ptr.is_null() { Err(MemErr::InvalidPtr)?; }
+        // get the node from address pointer
+        let mut node = match self.phys_list.addr_info.get(&ptr) {
             Some(x) => *x,
-            None => return Err(MemErr::InvalidPtr),
+            None => Err(MemErr::InvalidPtr)?,
         };
-        let node = unsafe{self.merge_as_phys_node(node)};
-        unsafe{self.put_into_free_list(node)};
+        // println!("free {ptr:?}");
+        unsafe{assert!(ptr == (*node).addr);}
+        if !self.phys_list.is_lbound(node)
+        && unsafe {(*(*node).m_prev).size & 1 == 0} {
+            // is left bound
+            let is_rbound = self.phys_list.is_rbound(node);
+            // merge previous node with this node
+            let prev = unsafe{(*node).m_prev};
+            // remove node from free list
+            self.free_list.remove(prev);
+            // merge current node with next
+            self.phys_list.merge(prev);
+            assert!(self.phys_list.is_rbound(prev) == is_rbound);
+            node = prev;
+        }
+        if !self.phys_list.is_rbound(node)
+        && unsafe {(*(*node).m_succ).size & 1 == 0} {
+            // remove node from free list
+            self.free_list.remove(unsafe{(*node).m_succ});
+            // merge current node with next
+            self.phys_list.merge(node);
+        }
+        // insert node back into free list
+        self.free_list.insert(node);
         Ok(())
     }
-    fn new(lbound: *mut Void, rbound: *mut Void) -> Self {
-        let mut new_self = Self {
-            lbound, rbound, free_list: Vec::new(),
-            info_map: HashMap::new(),
-        };
-        let list_num = usize::max(
-            1+f64::from((unsafe{rbound.offset_from(lbound)} as usize/Self::ALIGN_SIZE) as u32).log(1.6) as usize, 1);
-        for i in 0..list_num {
-            new_self.free_list.push(UnsafeListNode::new(null_mut(), 0));
-        }
-        let new_node = UnsafeListNode::new(lbound, unsafe{rbound.offset_from(lbound) as usize});
-        new_self.info_map.insert(lbound, new_node);
-        unsafe{new_self.put_into_free_list(new_node)};
-        return new_self;
-    }
 }
-
 
 #[cfg(test)]
 mod test {
     use super::*;
     use rand::random;
-    use std::collections::HashSet;
+    use std::{collections::*, os::windows::prelude::RawHandle};
 
     #[test]
-    fn random_alloc() {
-        let mut p_alloc = HashSet::new();
-        let mut test_state = SimpleState::<5>::new(unsafe{null_mut::<Void>().add(10000)}, unsafe{null_mut::<Void>().offset(1000000)});
-        let mut err_cnt = 0;
-        // random alloc with random free
-        for i in 0..5 {
-            println!("test {i}/5");
-            let x = random::<usize>() % 10000usize;
-            println!("{}", ['-'; 128].into_iter().collect::<String>());
-            println!("{}", test_state.print_free_list());
-            println!("{}", ['-'; 128].into_iter().collect::<String>());
-            let ptr = match test_state.alloc(x) {
-                Ok(p) => p,
-                Err(e) => {err_cnt += 1; continue;},
-            };
-            println!("{}", ['-'; 128].into_iter().collect::<String>());
-            println!("{}", test_state.print_free_list());
-            println!("{}", ['-'; 128].into_iter().collect::<String>());
-            p_alloc.insert(ptr);
+    fn test_free_list() {
+        let mut free_list = FreeList::new(1 << 20, 1.5, 64);
+        let mut vec_allocated = Vec::new();
+        println!("-----------test free list-------------");
+        for _ in 0..100 {
+            println!("======================================");
+            let size = random::<usize>() % 100000;
+            let ptr = unsafe{null_mut::<Void>().add(random::<usize>() % 100)};
+            println!("insert ({ptr:?}, {size})");
+            let node = MemNode::new(ptr, size);
+            vec_allocated.push(node);
+            free_list.insert(node);
+            println!("--------------------------------------");
+            print!("{}", free_list.debug_print());
+            println!("======================================");
         }
-        // print the state before free all
-        println!("{}", ['-'; 128].into_iter().collect::<String>());
-        println!("{}", test_state.print());
-        println!("{}", ['-'; 128].into_iter().collect::<String>());
-        // free the rest pointers
-        for ptr in p_alloc.into_iter() {
-            match test_state.free(ptr) {
-                Ok(()) => {},
-                Err(e) => {err_cnt += 1}
-            };
+        for _ in 0..100 {
+            println!("======================================");
+            let node = vec_allocated.pop().unwrap();
+            println!("remove ({:?}, {})", unsafe{(*node).addr}, unsafe{(*node).size});
+            free_list.remove(node);
+            println!("--------------------------------------");
+            print!("{}", free_list.debug_print());
+            println!("--------------------------------------");
+            println!("======================================");
         }
-        // print the state after free all
-        println!("{}", ['-'; 128].into_iter().collect::<String>());
-        println!("{}", test_state.print());
-        println!("{}", ['-'; 128].into_iter().collect::<String>());
-        // print the final state
-        println!("{err_cnt}/10000");
     }
+
+    #[test]
+    fn test_phys_list() {unsafe{
+        const MEM_SIZE: usize = 10000;
+        let lbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000);
+        let rbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000 + MEM_SIZE);
+        let mut phys_list = PhysList::new(lbound, rbound, 64);
+        for i in 0..20 {
+            let node = phys_list.addr_info.get(&lbound).unwrap();
+            let (lhalf, rhalf) = phys_list.split(*node, ((**node).size >> 2) << 1);
+            if !rhalf.is_null() {
+                assert!((*lhalf).m_succ == rhalf);
+                assert!((*rhalf).m_prev == lhalf);
+            }
+            println!("--------------------------------------");
+            println!("{}", phys_list.debug_print_list());
+        }
+        for i in 0..20 {
+            let node = *phys_list.addr_info.get(&lbound).unwrap();
+            if (*node).m_prev != node 
+            { phys_list.merge(node); }
+            println!("--------------------------------------");
+            println!("{}", phys_list.debug_print_list());
+        }
+        phys_list.san_check();
+        let node = *phys_list.addr_info.get(&lbound).unwrap();
+        assert!((*node).addr == lbound);
+        assert!((*node).addr.add((*node).size) == rbound);
+    }}
+
+    #[test]
+    fn test_init_sanity() {unsafe{
+        const MEM_SIZE: usize = 10000;
+        let lbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000);
+        let rbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000 + MEM_SIZE);
+        println!("{:?}", lbound);
+        let simple_state = SimpleState::new(lbound, rbound);
+        println!("--------------------------------------");
+        print!("{}", simple_state.free_list.debug_print());
+        println!("--------------------------------------");
+        simple_state.free_list.san_check(lbound, rbound);
+    }}
+
+    #[test]
+    fn test_rand_alloc() {unsafe{
+        const TEST_CNT: usize = 100000;
+        const RAND_BOND: usize = 1562;
+        const MEM_SIZE: usize = 1000000;
+        let lbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000);
+        let rbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000 + MEM_SIZE);
+        let mut simple_state = SimpleState::new(lbound, rbound);
+        let mut err_cnt = 0;
+        let mut not_free = HashMap::new();
+        let mut max_occ = 0;
+        let mut occ = 0;
+        for i in 0..TEST_CNT {
+            let size = random::<usize>() % 1000 + 64;
+            let ptr = match simple_state.alloc(size) {
+                Ok(p) => p,
+                Err(_) => {err_cnt += 1; continue;},
+            };
+            occ += size;
+            simple_state.phys_list.san_check();
+            // println!("======================================");
+            // println!("alloc {:?}", ptr);
+            // println!("--------------------------------------");
+            // println!("free list");
+            // print!("{}", simple_state.free_list.debug_print());
+            // println!("--------------------------------------");
+            // println!("phys list");
+            // println!("{}", simple_state.phys_list.debug_print_list());
+            // println!("======================================");
+            not_free.insert(ptr, size);
+            let free_ptr = not_free.keys().nth(random::<usize>() % RAND_BOND);
+            if let Some(free_ptr) = free_ptr {
+                let free_ptr = *free_ptr;
+                let size = not_free.get(&free_ptr).unwrap();
+                // println!("======================================");
+                // println!("free {:?}", free_ptr);
+                simple_state.free(free_ptr).unwrap();
+                occ -= size;
+                simple_state.phys_list.san_check();
+                not_free.remove(&free_ptr);
+                // println!("--------------------------------------");
+                // println!("free list");
+                // print!("{}", simple_state.free_list.debug_print());
+                // println!("--------------------------------------");
+                // println!("phys list");
+                // println!("{}", simple_state.phys_list.debug_print_list());
+                // println!("======================================");
+            }
+            max_occ = usize::max(occ, max_occ);
+        }
+        for free_ptr in not_free.keys() {
+            // println!("======================================");
+            // println!("free {:?}", free_ptr);
+            simple_state.free(*free_ptr).unwrap();
+            // println!("--------------------------------------");
+            // print!("{}", simple_state.free_list.debug_print());
+            // println!("--------------------------------------");
+            // println!("{}", simple_state.phys_list.debug_print_list());
+            // println!("======================================");
+        }
+        not_free.clear();
+        // println!("======================================");
+        // print!("{}", simple_state.free_list.debug_print());
+        // println!("--------------------------------------");
+        // println!("{}", simple_state.phys_list.debug_print_list());
+        // println!("======================================");
+        // println!("({lbound:?}, {rbound:?})");
+        simple_state.free_list.san_check(lbound, rbound);
+        println!("error count: {err_cnt}/{TEST_CNT}");
+        println!("max utilized space: {max_occ}/{MEM_SIZE}");
+    }}
 }
