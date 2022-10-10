@@ -1,7 +1,5 @@
 use super::*;
 use std::alloc::*;
-use std::marker::PhantomPinned;
-use std::ptr::*;
 
 struct MemNode {
     // base address for memory segement
@@ -14,8 +12,6 @@ struct MemNode {
     // pointers for physical memory list
     m_prev: *mut MemNode,
     m_succ: *mut MemNode,
-    // this should not be moved in memory
-    pin: PhantomPinned,
 }
 
 impl MemNode {
@@ -23,8 +19,7 @@ impl MemNode {
         let node = unsafe{&mut*(alloc(Layout::new::<MemNode>()) as *mut _)};
         *node = MemNode {addr, size,
             l_prev: node, l_succ: node,
-            m_prev: node, m_succ: node, 
-            pin: PhantomPinned};
+            m_prev: node, m_succ: node};
         node
     }
 }
@@ -42,7 +37,7 @@ impl FreeList {
         assert!(size >= smallest);
         let log = f64::log((size / smallest) as f64, rate) as usize;
         let mut head = Vec::new();
-        for i in 0..log {
+        for _ in 0..log {
             head.push(MemNode::new(null_mut(), 0));
         }
         return Self { head, rate, smallest }
@@ -59,6 +54,7 @@ impl FreeList {
         unsafe{(*node).size &= Self::MASK};
         let i = self.index(unsafe{(*node).size});
         let head = self.head[i];
+        // TODO@Y-jiji(sort pointers into ascending address order)
         unsafe {
             // head <- node -> succ
             (*node).l_prev = head;
@@ -120,7 +116,7 @@ impl FreeList {
     /// a sanity check when memory segment are ought to be a whole
     #[cfg(test)]
     fn san_check(&self, lbound: *mut Void, rbound: *mut Void) {
-        let x = unsafe{(*self.head).last().unwrap()};
+        let x = (*self.head).last().unwrap();
         let x = unsafe{(**x).l_succ};
         unsafe{
             assert!((*x).addr == lbound);
@@ -346,7 +342,7 @@ mod test {
         let lbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000);
         let rbound = null_mut::<Void>().add((random::<usize>() << 1) % 1000 + MEM_SIZE);
         let mut phys_list = PhysList::new(lbound, rbound, 64);
-        for i in 0..20 {
+        for _ in 0..20 {
             let node = phys_list.addr_info.get(&lbound).unwrap();
             let (lhalf, rhalf) = phys_list.split(*node, ((**node).size >> 2) << 1);
             if !rhalf.is_null() {
@@ -356,7 +352,7 @@ mod test {
             println!("--------------------------------------");
             println!("{}", phys_list.debug_print_list());
         }
-        for i in 0..20 {
+        for _ in 0..20 {
             let node = *phys_list.addr_info.get(&lbound).unwrap();
             if (*node).m_prev != node 
             { phys_list.merge(node); }
@@ -395,13 +391,14 @@ mod test {
         let mut max_occ = 0;
         let mut occ = 0;
         for i in 0..TEST_CNT {
+            if i % (TEST_CNT / 10) == 0 { println!("{i}/{TEST_CNT}"); }
             let size = random::<usize>() % 1000 + 64;
             let ptr = match simple_state.alloc(size) {
                 Ok(p) => p,
                 Err(_) => {err_cnt += 1; continue;},
             };
             occ += size;
-            simple_state.phys_list.san_check();
+            // simple_state.phys_list.san_check();
             // println!("======================================");
             // println!("alloc {:?}", ptr);
             // println!("--------------------------------------");
@@ -420,7 +417,7 @@ mod test {
                 // println!("free {:?}", free_ptr);
                 simple_state.free(free_ptr).unwrap();
                 occ -= size;
-                simple_state.phys_list.san_check();
+                // simple_state.phys_list.san_check();
                 not_free.remove(&free_ptr);
                 // println!("--------------------------------------");
                 // println!("free list");
@@ -452,5 +449,6 @@ mod test {
         simple_state.free_list.san_check(lbound, rbound);
         println!("error count: {err_cnt}/{TEST_CNT}");
         println!("max utilized space: {max_occ}/{MEM_SIZE}");
-    }}
+        simple_state.phys_list.debug_print_free();
+    }} 
 }
