@@ -4,12 +4,17 @@ use std::marker::PhantomPinned;
 use std::ptr::*;
 
 struct MemNode {
+    // base address for memory segement
     addr: *mut Void,
+    // size of the memory segement
     size: usize,
+    // pointers for free list
     l_prev: *mut MemNode,
     l_succ: *mut MemNode,
+    // pointers for physical memory list
     m_prev: *mut MemNode,
     m_succ: *mut MemNode,
+    // this should not be moved in memory
     pin: PhantomPinned,
 }
 
