@@ -100,9 +100,12 @@ impl RawCuda {
             e => Err(e),
         }
     }
-    /// add a kernel function launch job to stream\n
+    /// add a kernel function launch job to stream
+    /// 
     /// pfunc: a device pointer to function
+    /// 
     /// layout: memory layout (gridx, gridy, gridz) (blockx, blocky, blockz) shardedMemBytes
+    /// 
     /// data: pointers to data in host, should be suffixed by nullptrs
     pub(crate)
     fn launch(

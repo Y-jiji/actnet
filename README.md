@@ -1,7 +1,31 @@
-# actnet
-An neural network toolkit in rust, implementation guided by actor-model. 
+# Actnet
+An neural network toolkit in pure rust. 
 
-# to do list
+# General Architecture
+
+```
+======================================================================================
+       layer | functionality
+--------------------------------------------------------------------------------------
+      device | unify computation runtime API, implement operators
+             | implement distributed computation  
+--------------------------------------------------------------------------------------
+     ndarray | utilize device layer, implement ndarray operations declaratively
+             | this data structure is supposed to be immutable
+--------------------------------------------------------------------------------------
+      tensor | implement backward hooks with mutable data, utilizing ndarray
+ - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      neuron | implement autograd functions without inner state
+--------------------------------------------------------------------------------------
+      neural | implement neuron with inner states
+     network | implement common neural network building blocks, e.g. SelfAttention
+ - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        data | implement data loading and preprocessing tools
+     utility | 
+======================================================================================
+```
+
+# TODO List
 
 - [ ] miscellaneous utilities
   - [ ] timer actor
@@ -11,7 +35,7 @@ An neural network toolkit in rust, implementation guided by actor-model.
 - [ ] device API layer
     - [ ] CUDA kernel functions
         - [ ] implement tensor dot
-        - [ ] implement transpose
+        - [ ] implement transpose/permute
     - [ ] an actor API for a single CUDA stream locally
         - [ ] implement internal state
             - [ ] an ahead-of-time GPU memory layout state (the fast ShadowMem)

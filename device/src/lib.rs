@@ -27,7 +27,7 @@ pub enum DevMsg<D: Device + ?Sized> {
     HookUp {src: Box<dyn FnOnce() + Send>},
 }
 
-pub mod cuda_physic;
+pub mod cuda_util;
 pub mod mem_util;
 
 mod toy_uni;
