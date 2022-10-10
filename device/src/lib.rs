@@ -10,32 +10,32 @@ pub trait Device {
     type DErr;
 
     /// allocate a new box on device, initialize data from host
-    fn new_box(src: Self::HBox) -> Result<Self::DBox, Self::DErr> 
+    fn new_box(&mut self, src: Self::HBox) -> Result<Self::DBox, Self::DErr> 
     { todo!("new_box"); } // <--------- avoid some annoying compilation error when implementing this trait for other structs
 
     /// delete and copy data back
-    fn del_box(src: Self::DBox) -> Result<Self::HBox, Self::DErr> 
+    fn del_box(&mut self, src: Self::DBox) -> Result<Self::HBox, Self::DErr> 
     { todo!("del_box"); }
 
     /// copy box data from source to destination (a special operation)
-    fn cpy_box(src: &Self::DBox, dst: &mut Self::DBox) -> Result<(), Self::DErr> 
+    fn cpy_box(&mut self, src: &Self::DBox, dst: &mut Self::DBox) -> Result<(), Self::DErr> 
     { todo!("cpy_box"); }
 
     /// add an operation launch to device
     /// ops: operation name string
     fn launch<I, F>(
-        ops: String,
+        &mut self, ops: String,
         src: [Option<&Self::DBox>; 6], dst: &mut Self::DBox,
         meta_i: [I; 6] , meta_f: [F; 6]
     ) -> Result<(), Self::DErr> 
     { todo!("launch"); }
 
     /// add a callback
-    fn add_hook(callback: Box<dyn FnOnce() + Send>) -> Result<(), Self::DErr>
+    fn add_hook(&mut self, callback: Box<dyn FnOnce() + Send>) -> Result<(), Self::DErr>
     { todo!("add_hook"); }
 
     /// inspect the content inside a box
-    fn inspect(src: &Self::DBox) -> String
+    fn inspect(&mut self, src: &Self::DBox) -> String
     { todo!("inspect"); }
 }
 
