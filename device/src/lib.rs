@@ -1,37 +1,46 @@
-use std::pin::*;
-
 pub type Void = std::ffi::c_void;
 
+/// modified stream computation model API
 pub trait Device {
-    type DevBox;
-    type DevErr;
-    fn send(msg: DevMsg<Self>) -> Result<(), Self::DevErr>;
-}
+    /// memory box on host
+    type HBox;
+    /// memory box on device
+    type DBox;
+    /// device error
+    type DErr;
 
-pub enum DevMsg<D: Device + ?Sized> {
-    /// register a new box (value returned to *dst), this is an immediate function on host
-    NewBox {size: usize, dst: *mut D::DevBox},
-    /// launch a job that read from source box and write to destination box
-    Launch {function: String, 
-        src: Vec<D::DevBox>, dst: D::DevBox, 
-        meta_u: Vec<usize>,  meta_f: Vec<f32>},
-    /// launch a job that delete box
-    DelBox {src: D::DevBox},
-    /// launch a job that copy data from source box to destination box
-    CpyBox {src: D::DevBox, dst: D::DevBox},
-    /// launch a job that put data to destination box
-    PutBox {src: *mut Void, dst: D::DevBox},
-    /// launch a job that get data from source box
-    GetBox {src: D::DevBox, dst: *mut Void},
-    /// launch a function after previous launched jobs finished
-    HookUp {src: Box<dyn FnOnce() + Send>},
+    /// allocate a new box on device, initialize data from host
+    fn new_box(src: Self::HBox) -> Result<Self::DBox, Self::DErr> 
+    { todo!("new_box"); } // <--------- avoid some annoying compilation error when implementing this trait for other structs
+
+    /// delete and copy data back
+    fn del_box(src: Self::DBox) -> Result<Self::HBox, Self::DErr> 
+    { todo!("del_box"); }
+
+    /// copy box data from source to destination (a special operation)
+    fn cpy_box(src: &Self::DBox, dst: &mut Self::DBox) -> Result<(), Self::DErr> 
+    { todo!("cpy_box"); }
+
+    /// add an operation launch to device
+    /// ops: operation name string
+    fn launch<I, F>(
+        ops: String,
+        src: [Option<&Self::DBox>; 6], dst: &mut Self::DBox,
+        meta_i: [I; 6] , meta_f: [F; 6]
+    ) -> Result<(), Self::DErr> 
+    { todo!("launch"); }
+
+    /// add a callback
+    fn add_hook(callback: Box<dyn FnOnce() + Send>) -> Result<(), Self::DErr>
+    { todo!("add_hook"); }
+
+    /// inspect the content inside a box
+    fn inspect(src: &Self::DBox) -> String
+    { todo!("inspect"); }
 }
 
 pub mod cuda_util;
 pub mod mem_util;
-
-mod toy_uni;
-pub use toy_uni::*;
 
 mod cuda_uni_device;
 pub use cuda_uni_device::*;

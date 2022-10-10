@@ -113,7 +113,7 @@ fn ptx_build (
 
 fn main() -> Result<(), Box<dyn Error>> {
 
-    let cu_file_dir = PathBuf::from(env::current_dir()?).join("src/cuda_physic/ops");
+    let cu_file_dir = PathBuf::from(env::current_dir()?).join("src/cuda_util/ops");
     let ptx_out_file = PathBuf::from(env::var("OUT_DIR")?).join("cuops.ptx");
     ptx_build(
         cu_file_dir, 
@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             &["cuda", "cuda_runtime", "cuda_runtime_api"],
             &["cuda", "cudart", "cudadevrt", "cudart_static"],
             &(env::var("CUDA_PATH_V11_7")? + "/include"),
-            &(env::var("CUDA_PATH_V11_7")? + "/lib/x64"),
+            &(env::var("CUDA_PATH_V11_7")? + "/lib"),
             cuda_out_dir,
         )?;
     }
