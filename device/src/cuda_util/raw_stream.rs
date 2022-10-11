@@ -7,23 +7,25 @@ use std::pin::Pin;
 use std::ptr::*;
 
 pub(crate)
-enum PhysDev {
-    Host,
-    Cuda,
+enum DPtr<PtrT> {
+    Host(PtrT),
+    Device(PtrT),
 }
 
 type Void = std::ffi::c_void;
 
 include!(concat!(env!("OUT_DIR"), "/nvtk/cuda.rs"));
 
-#[derive(Clone, Debug)]
+/// a minimal wrapper over CUDAStream
+#[derive(Debug)]
 pub(crate)
 struct RawCuda {
     pstream: *mut CUstream_st,
+    devnr: i32,
 }
 
 /// a small utility to call host function indirectly
-unsafe extern "C" 
+unsafe extern "C"
 fn callback_wrapper<T>(callback: *mut Void)
 where
     T: FnOnce() + Send,
@@ -38,63 +40,49 @@ where
 impl RawCuda {
     /// a new RawCuda stream
     pub(crate)
-    fn new(size: usize, image: &'static str, devnr: i32) -> Result<Self, RawCudaError> {
-        let mut rawcuda = RawCuda {pstream: nmut() as *mut _};
-        rawcuda.init_stream()?;
-        return Ok(rawcuda);
+    fn new() -> Result<Self, RawCudaError> {
+        Ok(RawCuda {
+            pstream: Self::init_pstream()?, 
+            devnr: Self::init_devnr()?,
+        })
     }
-    /// initialize stream
+    /// get device number (for the sake of sanity check)
     pub(crate)
-    fn init_stream(&mut self) -> Result<(), RawCudaError> {
-        let errnr = unsafe{cuStreamCreate(&mut self.pstream as *mut _, 
-            CUstream_flags_enum_CU_STREAM_NON_BLOCKING as u32)};
+    fn init_devnr() -> Result<i32, RawCudaError> {
+        let mut devnr: i32 = -1;
+        let errnr = unsafe{cudaGetDevice(&mut devnr as *mut i32)};
         match RawCudaError::from(errnr) {
-            RawCudaError::CUDA_SUCCESS => Ok(()),
-            e => {self.pstream = nmut();Err(e)},
-        }
-    }
-    /// initialize stream memory
-    pub(crate)
-    fn init_memory(&mut self, size: usize) -> Result<*mut Void, RawCudaError> {
-        let mbase = null_mut::<Void>();
-        let errnr = unsafe{cuMemAllocAsync(
-            &mut(mbase as u64) as *mut _,
-            size as u64, self.pstream
-        )};
-        match errnr {
-            RawCudaError::CUDA_SUCCESS => {Ok(mbase)},
+            RawCudaError::CUDA_SUCCESS => Ok(devnr),
             e => {Err(e)}
         }
     }
-    /// initialize cuda module, this should be moved to raw_module
+    /// initialize stream
     pub(crate)
-    fn init_module(&mut self, image: &'static str) -> Result<*mut Void, RawCudaError> {
-        let mut pmodule = null_mut::<CUmod_st>();
-        let errnr  = unsafe{cuModuleLoadData(
-            &mut pmodule as *mut _,
-            image as *const _ as *mut _,
-        )};
-        match errnr {
-            RawCudaError::CUDA_SUCCESS => Ok(pmodule as *mut _),
-            e => Err(e),
+    fn init_pstream() -> Result<CUstream, RawCudaError> {
+        let mut pstream = null_mut::<CUstream_st>();
+        let errnr = unsafe{cuStreamCreate(&mut pstream as *mut CUstream, 
+            CUstream_flags_enum_CU_STREAM_NON_BLOCKING as u32)};
+        match RawCudaError::from(errnr) {
+            RawCudaError::CUDA_SUCCESS => Ok(pstream),
+            e => {Err(e)},
         }
     }
     /// get copy kind from device type
     #[inline]
-    fn cpyknd(src: PhysDev, dst: PhysDev) -> i32 {
+    fn cpyknd<PtrT>(src: DPtr<PtrT>, dst: DPtr<PtrT>) -> (i32, PtrT, PtrT) {
         match (src, dst) {
-            (PhysDev::Host, PhysDev::Host) => cudaMemcpyKind_cudaMemcpyHostToHost,
-            (PhysDev::Host, PhysDev::Cuda) => cudaMemcpyKind_cudaMemcpyHostToHost,
-            (PhysDev::Cuda, PhysDev::Host) => cudaMemcpyKind_cudaMemcpyDeviceToHost,
-            (PhysDev::Cuda, PhysDev::Cuda) => cudaMemcpyKind_cudaMemcpyDeviceToDevice,
+            (DPtr::Host(s), DPtr::Host(d)) => (cudaMemcpyKind_cudaMemcpyHostToHost, s, d),
+            (DPtr::Host(s), DPtr::Device(d)) => (cudaMemcpyKind_cudaMemcpyHostToHost, s, d),
+            (DPtr::Device(s), DPtr::Host(d)) => (cudaMemcpyKind_cudaMemcpyDeviceToHost, s, d),
+            (DPtr::Device(s), DPtr::Device(d)) => (cudaMemcpyKind_cudaMemcpyDeviceToDevice, s, d)
         }
     }
     /// add a memory copy job to stream
     pub(crate)
-    fn memcpy(&mut self, src: (*mut Void, PhysDev), dst: (*mut Void, PhysDev), len: usize) -> Result<(), RawCudaError> {
-        let errnr = unsafe{cudaMemcpyAsync(
-            dst.0, src.0, len as _, 
-            Self::cpyknd(src.1, dst.1) as _, self.pstream)};
+    fn memcpy(&mut self, src: DPtr<*mut Void>, dst: DPtr<*mut Void>, len: usize) -> Result<(), RawCudaError> {
+        let (kind, src, dst) = Self::cpyknd(src, dst);
+        let count = len as u64;
+        let errnr = unsafe{cudaMemcpyAsync(dst, src, count, kind, self.pstream)};
         match RawCudaError::from(errnr) {
             RawCudaError::CUDA_SUCCESS => Ok(()),
             e => Err(e),
@@ -102,22 +90,25 @@ impl RawCuda {
     }
     /// add a kernel function launch job to stream
     /// 
-    /// pfunc: a device pointer to function
+    /// pfunc: a device pointer to device function
     /// 
     /// layout: memory layout (gridx, gridy, gridz) (blockx, blocky, blockz) shardedMemBytes
     /// 
-    /// data: pointers to data in host, should be suffixed by nullptrs
+    /// data: pointers to data in host, should be suffixed by nullptrs, 16 at most
     pub(crate)
     fn launch(
-        &mut self, pfunc: *mut Void, data: [*mut Void; 16], 
-        layout: ((usize, usize, usize), (usize, usize, usize), usize)
+        &mut self, pfunc: *mut Void, 
+        layout: ((u32, u32, u32), (u32, u32, u32), u32), 
+        data: Pin<Vec<*mut Void>>
     ) -> Result<(), RawCudaError> {
-        let pstream = self.pstream;
-        let errnr = unsafe{cuLaunchKernel(pfunc as *mut _, 
-            layout.0.0 as c_uint, layout.0.1 as c_uint, layout.0.2 as c_uint, 
-            layout.1.0 as c_uint, layout.1.1 as c_uint, layout.1.2 as c_uint, 
-            layout.2 as c_uint, pstream, 
-            data.as_ptr() as *mut *mut Void, nmut())};
+        let hstream = self.pstream;
+        let ((gridDimX, gridDimY, gridDimz), (blockDimX, blockDimY, blockDimZ), sharedMemBytes) = layout;
+        let kernelParams = data.as_ptr() as *mut *mut Void;
+        let errnr = unsafe{cuLaunchKernel(
+            pfunc as *mut _, 
+            gridDimX, gridDimY, gridDimz,
+            blockDimX, blockDimY, blockDimZ, sharedMemBytes, 
+            hstream, kernelParams, nmut())};
         match errnr {
             RawCudaError::CUDA_SUCCESS => Ok(()),
             e => Err(e),
@@ -141,6 +132,11 @@ impl RawCuda {
 
 impl Drop for RawCuda {
     fn drop(&mut self) {
-        todo!("Drop RawCuda");
+        let errnr = unsafe{cudaStreamDestroy(self.pstream)};
+        match RawCudaError::from(errnr) {
+            RawCudaError::CUDA_SUCCESS => {},
+            error => panic!("{:?} occurs when dropping {:?} on CUDA device({:?})", error, self.pstream, self.devnr),
+        }
+        drop(self.devnr);
     }
 }
