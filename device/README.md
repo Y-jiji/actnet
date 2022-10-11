@@ -61,3 +61,7 @@ TODO@Y-jiji(slow shadow, checkpoints)
 # Stream Intergration Problem
 
 TODO@Y-jiji(pack streams into one stream)
+
+# Memory management details
+
+TODO@Y-jiji(compact memory space, swap with host memory)

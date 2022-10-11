@@ -1,10 +1,14 @@
 pub type Void = std::ffi::c_void;
 
 /// modified stream computation model API
+/// 
+/// : in stream computation model, reading values associated to boxes is allowed only on stream termination
+/// 
+/// : this modified version returns value on memory box deletion, and add inspect for debugging
 pub trait Device {
     /// memory box on host
     type HBox;
-    /// memory box on device
+    /// memory box on device, should be ?Drop, ?Copy and ?Clone
     type DBox;
     /// device error
     type DErr;
@@ -22,11 +26,13 @@ pub trait Device {
     { todo!("cpy_box"); }
 
     /// add an operation launch to device
-    /// ops: operation name string
     fn launch<I, F>(
+        // ops: operation name string
         &mut self, ops: String,
+        // dst = ops(src[0], src[1], ..., src[5], meta_i, meta_f)
         src: [Option<&Self::DBox>; 6], dst: &mut Self::DBox,
-        meta_i: [I; 6] , meta_f: [F; 6]
+        // interger parameters, float parameters
+        _int: [I; 6] , _flt: [F; 6]
     ) -> Result<(), Self::DErr> 
     { todo!("launch"); }
 
