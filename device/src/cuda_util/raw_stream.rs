@@ -140,3 +140,14 @@ impl Drop for RawCuda {
         drop(self.devnr);
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn raw_cuda_init() {
+        let x = RawCuda::new();
+        println!("{x:?}");
+    }
+}

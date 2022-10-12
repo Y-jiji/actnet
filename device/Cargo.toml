@@ -11,4 +11,4 @@ parking_lot = "0.12.1"     # More compact and efficient implementations of the s
 rand = "0.8.5"             # Random number generators and other randomness functionality. 
 
 [build-dependencies]
-bindgen = "0.60.0"              # Automatically generates Rust FFI bindings to C and C++ libraries.
+bindgen = "*"              # Automatically generates Rust FFI bindings to C and C++ libraries.

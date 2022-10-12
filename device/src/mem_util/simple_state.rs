@@ -30,6 +30,15 @@ struct FreeList {
     smallest: usize,
 }
 
+impl Drop for FreeList {
+    fn drop(&mut self) {
+        // dealloc heads, the ownership of physically meaningful memory nodes are managed by physical list
+        for x in &self.head {
+            unsafe{dealloc(*x as *mut u8, Layout::new::<FreeList>())};
+        }
+    }
+}
+
 impl FreeList {
     const MASK: usize = usize::MAX << 1;
     fn new(size: usize, rate: f64, smallest: usize) -> Self {
@@ -130,6 +139,15 @@ struct PhysList {
     smallest: usize,
     lbound: *mut Void,
     rbound: *mut Void,
+}
+
+impl Drop for PhysList {
+    /// drop each every node recorded in address info
+    fn drop(&mut self) {
+        for x in self.addr_info.values() {
+            unsafe{dealloc(*x as *mut u8, Layout::new::<MemNode>())};
+        }
+    }
 }
 
 impl PhysList {
