@@ -45,6 +45,16 @@ impl RawStream {
             devnr: Self::init_devnr()?,
         })
     }
+    /// declare memory on device, which will be later managed by api user
+    pub(crate)
+    fn malloc(&mut self, size: usize) -> Result<*mut Void, RawCudaError> {
+        let mut dptr = 0u64;
+        let errnr = unsafe{cuMemAllocAsync(&mut dptr, size as u64, self.pstream)};
+        match RawCudaError::from(errnr) {
+            RawCudaError::CUDA_SUCCESS => Ok(dptr as *mut Void),
+            e => Err(e)
+        }
+    }
     /// get device number (for the sake of sanity check)
     pub(crate)
     fn init_devnr() -> Result<i32, RawCudaError> {
@@ -96,12 +106,13 @@ impl RawStream {
     /// data: pointers to data in host, should be suffixed by nullptrs, 16 at most
     pub(crate)
     fn launch(
-        &mut self, pfunc: *mut Void, 
+        &mut self, pfunc: *mut CUfunc_st, 
         layout: ((u32, u32, u32), (u32, u32, u32), u32), 
-        data: Pin<Vec<*mut Void>>
+        data: &[*mut Void]
     ) -> Result<(), RawCudaError> {
         let hstream = self.pstream;
         let ((gridDimX, gridDimY, gridDimz), (blockDimX, blockDimY, blockDimZ), sharedMemBytes) = layout;
+        println!("{data:?}");
         let kernelParams = data.as_ptr() as *mut *mut Void;
         let errnr = unsafe{cuLaunchKernel(
             pfunc as *mut _, 
@@ -131,10 +142,15 @@ impl RawStream {
 
 impl Drop for RawStream {
     fn drop(&mut self) {
+        let errnr = unsafe{cudaStreamSynchronize(self.pstream)};
+        match RawCudaError::from(errnr) {
+            RawCudaError::CUDA_SUCCESS => {},
+            error => panic!("{:?} occurs when dropping {:?}", error, self),
+        }
         let errnr = unsafe{cudaStreamDestroy(self.pstream)};
         match RawCudaError::from(errnr) {
             RawCudaError::CUDA_SUCCESS => {},
-            error => panic!("{:?} occurs when dropping {:?} on CUDA device({:?})", error, self.pstream, self.devnr),
+            error => panic!("{:?} occurs when dropping {:?}", error, self),
         }
         drop(self.devnr);
     }
@@ -146,7 +162,20 @@ mod test {
 
     #[test]
     fn raw_stream_init() {
-        let raw_stream = RawStream::new();
+        match RawCudaError::from(
+            unsafe{cuInit(0)}
+        ) {
+            RawCudaError::CUDA_SUCCESS => {},
+            e => {panic!("cuda init {e:?}")}
+        }
+        let mut context = null_mut::<CUctx_st>();
+        match RawCudaError::from(
+            unsafe{cuCtxCreate_v2(&mut context, 0, 0)}
+        ) {
+            RawCudaError::CUDA_SUCCESS => {},
+            e => {panic!("create context {e:?}")}
+        }
+        let raw_stream = RawStream::new().unwrap();
         println!("{raw_stream:?}");
         drop(raw_stream);
     }

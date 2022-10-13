@@ -9,9 +9,11 @@ pub(crate) struct RawModule {
 const DEFAULT_OPS: &'static str = include_str!(concat!(env!("OUT_DIR"), "/cuops.ptx"));
 
 impl RawModule {
+    pub(crate)
     fn new() -> Result<Self, RawCudaError> {
         Ok(Self {pmodule: Self::init_pmodule(&(DEFAULT_OPS.to_owned() + "\0"))?})
     }
+    pub(crate)
     fn init_pmodule(image: &str) -> Result<*mut CUmod_st, RawCudaError> {
         let mut pmodule = null_mut::<CUmod_st>();
         match RawCudaError::from(unsafe{cuModuleLoadData(
@@ -22,6 +24,7 @@ impl RawModule {
             err => Err(err)
         }
     }
+    pub(crate)
     fn get_func(&mut self, name: String) -> Result<*mut CUfunc_st, RawCudaError> {
         let mut func = null_mut::<CUfunc_st>();
         let pmodule = self.pmodule;
