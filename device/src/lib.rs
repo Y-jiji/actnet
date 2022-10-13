@@ -32,7 +32,7 @@ pub trait Device {
         // dst = ops(src[0], src[1], ..., src[5], meta_i, meta_f)
         src: [Option<&Self::DBox>; 6], dst: &mut Self::DBox,
         // interger parameters, float parameters
-        _int: [I; 6] , _flt: [F; 6]
+        _int: [I; 6] , _flt: [F; 2]
     ) -> Result<(), Self::DErr> 
     { todo!("launch"); }
 
@@ -45,6 +45,14 @@ pub trait Device {
     { todo!("inspect"); }
 }
 
+
+pub trait BridgeFrom<SRC: Device> where Self: Device {
+    fn cpy_box(&mut self, src: &mut SRC::DBox, dst: &mut Self::DBox) -> Result<(), Self::DErr>
+    { todo!("cpy_box"); }
+    fn mov_box(&mut self, src: SRC::DBox) -> Result<Self::DBox, Self::DErr>
+    { todo!("mov_box"); }
+}
+
 pub mod cuda_util;
 pub mod mem_util;
 
@@ -53,3 +61,4 @@ pub use cuda_uni_device::*;
 
 mod cuda_uni_stream;
 pub use cuda_uni_stream::*;
+

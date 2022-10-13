@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use std::os::raw::c_uint;
 use std::pin::Pin;
 use std::ptr::*;
+use super::*;
 
 pub(crate)
 enum DPtr<PtrT> {
@@ -14,12 +15,10 @@ enum DPtr<PtrT> {
 
 type Void = std::ffi::c_void;
 
-include!(concat!(env!("OUT_DIR"), "/nvtk/cuda.rs"));
-
 /// a minimal wrapper over CUDAStream
 #[derive(Debug)]
 pub(crate)
-struct RawCuda {
+struct RawStream {
     pstream: *mut CUstream_st,
     devnr: i32,
 }
@@ -37,11 +36,11 @@ where
     });
 }
 
-impl RawCuda {
+impl RawStream {
     /// a new RawCuda stream
     pub(crate)
     fn new() -> Result<Self, RawCudaError> {
-        Ok(RawCuda {
+        Ok(RawStream {
             pstream: Self::init_pstream()?, 
             devnr: Self::init_devnr()?,
         })
@@ -64,7 +63,7 @@ impl RawCuda {
             CUstream_flags_enum_CU_STREAM_NON_BLOCKING as u32)};
         match RawCudaError::from(errnr) {
             RawCudaError::CUDA_SUCCESS => Ok(pstream),
-            e => {Err(e)},
+            e => Err(e),
         }
     }
     /// get copy kind from device type
@@ -130,7 +129,7 @@ impl RawCuda {
     }
 }
 
-impl Drop for RawCuda {
+impl Drop for RawStream {
     fn drop(&mut self) {
         let errnr = unsafe{cudaStreamDestroy(self.pstream)};
         match RawCudaError::from(errnr) {
@@ -146,8 +145,9 @@ mod test {
     use super::*;
 
     #[test]
-    fn raw_cuda_init() {
-        let x = RawCuda::new();
-        println!("{x:?}");
+    fn raw_stream_init() {
+        let raw_stream = RawStream::new();
+        println!("{raw_stream:?}");
+        drop(raw_stream);
     }
 }

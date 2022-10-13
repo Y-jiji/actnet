@@ -113,20 +113,29 @@ fn ptx_build (
 
 fn main() -> Result<(), Box<dyn Error>> {
 
+    // where the '*.cu' operators live
     let cu_file_dir = PathBuf::from(env::current_dir()?).join("src/cuda_util/ops");
+
+    // output the operators in one monolithic file
     let ptx_out_file = PathBuf::from(env::var("OUT_DIR")?).join("cuops.ptx");
     ptx_build(
         cu_file_dir, 
         ptx_out_file,
     )?;
-
+    // cuda output directory where 'cuda.rs' lives
     let cuda_out_dir = PathBuf::from(env::var("OUT_DIR")? + "/nvtk");
+
+    // cuda library path and cuda include path must be correct
+    println!("cargo:rerun-if-env-changed=CUDA_LIBRARY_PATH");
+    println!("cargo:rerun-if-env-changed=CUDA_INCLUDE_PATH");
+
+    // create dir and build
     if std::fs::create_dir(&cuda_out_dir).is_ok() {
         cuda_build(
             &["cuda", "cuda_runtime", "cuda_runtime_api"],
             &["cuda", "cudart", "cudadevrt", "cudart_static"],
-            &(env::var("CUDA_PATH_V11_7")? + "/include"),
-            &(env::var("CUDA_PATH_V11_7")? + "/lib"),
+            &env::var("CUDA_INCLUDE_PATH")?,
+            &env::var("CUDA_LIBRARY_PATH")?,
             cuda_out_dir,
         )?;
     }
