@@ -1,3 +1,5 @@
+use device_cuda;
+
 #[cfg(test)]
 mod tests {
     #[test]
