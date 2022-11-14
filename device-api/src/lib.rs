@@ -18,18 +18,18 @@ where Self::DevBox: Debug {
     type DatBuf;
 
     /// launch a device function
-    fn launch(op: DevFunc<Self::DevBox>)
+    fn launch(&self, op: DevFunc<Self::DevBox>)
     { todo!("launch({op:?})") }
 
     /// allocate a new box on this device
-    fn newbox(size: usize) -> Self::DevBox
+    fn newbox(&self, size: usize) -> Self::DevBox
     { todo!("newbox({size:?})") }
 
     /// delete a box and dump bytes into a data buffer
-    fn delbox(devbox: Self::DevBox) -> Self::DatBuf
+    fn delbox(&self, devbox: Self::DevBox) -> Self::DatBuf
     { todo!("delbox({devbox:?})") }
 
     /// inspect devbox (dump bytes into a data buffer)
-    fn seebox(devbox: Self::DevBox) -> Self::DatBuf
+    fn seebox(&self, devbox: &Self::DevBox) -> Self::DatBuf
     { todo!("seebox({devbox:?})") }
 }
