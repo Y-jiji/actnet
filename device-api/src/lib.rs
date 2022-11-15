@@ -2,10 +2,10 @@ use std::fmt::*;
 
 #[derive(Debug)]
 pub enum DevFunc<DevBox: Debug> {
-    Add {read: (DevBox, DevBox), write: DevBox, meta: ()},
-    Sub {read: (DevBox, DevBox), write: DevBox, meta: ()},
-    Mul {read: (DevBox, DevBox), write: DevBox, meta: ()},
-    Div {read: (DevBox, DevBox), write: DevBox, meta: ()},
+    AddF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
+    SubF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
+    MulF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
+    DivF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
     Cpy {read: DevBox, write: DevBox, meta: ()},
 }
 
@@ -18,8 +18,8 @@ where Self::DevBox: Debug {
     type DatBuf;
 
     /// launch a device function
-    fn launch(&self, op: DevFunc<Self::DevBox>)
-    { todo!("launch({op:?})") }
+    fn launch(&self, func: DevFunc<Self::DevBox>)
+    { todo!("launch({func:?})") }
 
     /// allocate a new box on this device
     fn newbox(&self, size: usize) -> Self::DevBox
