@@ -1,6 +1,7 @@
 mod slot_vec;
 use slot_vec::*;
-use std::{ffi::c_void, marker::PhantomData};
+
+use std::ffi::c_void;
 
 type Void = c_void;
 
@@ -39,7 +40,8 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
     fn align(s: usize) -> usize {
         #[cfg(debug_assertions)]
         assert!(usize::MAX << ALIGN != 0, "1 << ALIGN >= usize::MAX");
-        (s + usize::MAX << ALIGN - 1) & (usize::MAX << ALIGN)
+        let mask = usize::MAX << ALIGN;
+        (s + mask - 1) & mask
     }
     /// find a suitabel level for a memory node
     fn level_for(&self, s: usize) -> usize {
@@ -78,10 +80,10 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
     /// split a node and free part of them
     fn split(&mut self, n: usize, s: usize) {
         debug_assert!(s == Self::align(s));
-        if self.state[n].s < 8 + s { return }
+        if self.state[n].s < (1 << ALIGN) + s { return }
         let ms = self.state[n].s - s;
         self.state[n].s = s;
-        let m = self.state.put(MemNode { 
+        let m = self.state.put(MemNode {
             fl: 0, fr: 0, pl: 0, pr: 0, s: ms, 
             p: unsafe{self.state[n].p.add(s)} });
         self.link_free(m);

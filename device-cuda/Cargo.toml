@@ -12,3 +12,9 @@ num_enum = "0.5.1"
 
 [build-dependencies]
 bindgen = "0.61.0"                # Automatically generates Rust FFI bindings to C and C++ libraries.
+
+[profile.dev]
+opt-level = 2               # Use slightly better optimizations.
+
+[profile.test]
+opt-level = 2               # Use slightly better optimizations.

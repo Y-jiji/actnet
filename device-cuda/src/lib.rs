@@ -1,6 +1,7 @@
 use device_api::*;
 
 mod mem;
+mod raw;
 
 struct CudaStream;
 
@@ -13,19 +14,8 @@ struct DatBuf {
     t: Type,
 }
 
-struct RawCudaError;
-
 impl Device for CudaStream {
     type DatBuf = DatBuf;
     type DevBox = DatBuf;
-    type DevErr = RawCudaError;
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
+    type DevErr = raw::cudaError_enum;
 }

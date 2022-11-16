@@ -2186,159 +2186,181 @@ fn bindgen_test_layout_CUipcMemHandle_st() {
 pub type CUipcMemHandle_v1 = CUipcMemHandle_st;
 #[doc = " CUDA IPC mem handle"]
 pub type CUipcMemHandle = CUipcMemHandle_v1;
-#[doc = "< Automatically enable peer access between remote devices as needed"]
-pub const CUipcMem_flags_enum_CU_IPC_MEM_LAZY_ENABLE_PEER_ACCESS: CUipcMem_flags_enum = 1;
+#[repr(i32)]
 #[doc = " CUDA Ipc Mem Flags"]
-pub type CUipcMem_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUipcMem_flags_enum {
+    #[doc = "< Automatically enable peer access between remote devices as needed"]
+    CU_IPC_MEM_LAZY_ENABLE_PEER_ACCESS = 1,
+}
 #[doc = " CUDA Ipc Mem Flags"]
 pub use self::CUipcMem_flags_enum as CUipcMem_flags;
-#[doc = "< Memory can be accessed by any stream on any device"]
-pub const CUmemAttach_flags_enum_CU_MEM_ATTACH_GLOBAL: CUmemAttach_flags_enum = 1;
-#[doc = "< Memory cannot be accessed by any stream on any device"]
-pub const CUmemAttach_flags_enum_CU_MEM_ATTACH_HOST: CUmemAttach_flags_enum = 2;
-#[doc = "< Memory can only be accessed by a single stream on the associated device"]
-pub const CUmemAttach_flags_enum_CU_MEM_ATTACH_SINGLE: CUmemAttach_flags_enum = 4;
+#[repr(i32)]
 #[doc = " CUDA Mem Attach Flags"]
-pub type CUmemAttach_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAttach_flags_enum {
+    #[doc = "< Memory can be accessed by any stream on any device"]
+    CU_MEM_ATTACH_GLOBAL = 1,
+    #[doc = "< Memory cannot be accessed by any stream on any device"]
+    CU_MEM_ATTACH_HOST = 2,
+    #[doc = "< Memory can only be accessed by a single stream on the associated device"]
+    CU_MEM_ATTACH_SINGLE = 4,
+}
 #[doc = " CUDA Mem Attach Flags"]
 pub use self::CUmemAttach_flags_enum as CUmemAttach_flags;
-#[doc = "< Automatic scheduling"]
-pub const CUctx_flags_enum_CU_CTX_SCHED_AUTO: CUctx_flags_enum = 0;
-#[doc = "< Set spin as default scheduling"]
-pub const CUctx_flags_enum_CU_CTX_SCHED_SPIN: CUctx_flags_enum = 1;
-#[doc = "< Set yield as default scheduling"]
-pub const CUctx_flags_enum_CU_CTX_SCHED_YIELD: CUctx_flags_enum = 2;
-#[doc = "< Set blocking synchronization as default scheduling"]
-pub const CUctx_flags_enum_CU_CTX_SCHED_BLOCKING_SYNC: CUctx_flags_enum = 4;
-#[doc = "< Set blocking synchronization as default scheduling"]
-#[doc = "  \\deprecated This flag was deprecated as of CUDA 4.0"]
-#[doc = "  and was replaced with ::CU_CTX_SCHED_BLOCKING_SYNC."]
-pub const CUctx_flags_enum_CU_CTX_BLOCKING_SYNC: CUctx_flags_enum = 4;
-pub const CUctx_flags_enum_CU_CTX_SCHED_MASK: CUctx_flags_enum = 7;
-#[doc = "< \\deprecated This flag was deprecated as of CUDA 11.0"]
-#[doc = "  and it no longer has any effect. All contexts"]
-#[doc = "  as of CUDA 3.2 behave as though the flag is enabled."]
-pub const CUctx_flags_enum_CU_CTX_MAP_HOST: CUctx_flags_enum = 8;
-#[doc = "< Keep local memory allocation after launch"]
-pub const CUctx_flags_enum_CU_CTX_LMEM_RESIZE_TO_MAX: CUctx_flags_enum = 16;
-pub const CUctx_flags_enum_CU_CTX_FLAGS_MASK: CUctx_flags_enum = 31;
+impl CUctx_flags_enum {
+    pub const CU_CTX_BLOCKING_SYNC: CUctx_flags_enum = CUctx_flags_enum::CU_CTX_SCHED_BLOCKING_SYNC;
+}
+#[repr(i32)]
 #[doc = " Context creation flags"]
-pub type CUctx_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUctx_flags_enum {
+    #[doc = "< Automatic scheduling"]
+    CU_CTX_SCHED_AUTO = 0,
+    #[doc = "< Set spin as default scheduling"]
+    CU_CTX_SCHED_SPIN = 1,
+    #[doc = "< Set yield as default scheduling"]
+    CU_CTX_SCHED_YIELD = 2,
+    #[doc = "< Set blocking synchronization as default scheduling"]
+    CU_CTX_SCHED_BLOCKING_SYNC = 4,
+    CU_CTX_SCHED_MASK = 7,
+    #[doc = "< \\deprecated This flag was deprecated as of CUDA 11.0"]
+    #[doc = "  and it no longer has any effect. All contexts"]
+    #[doc = "  as of CUDA 3.2 behave as though the flag is enabled."]
+    CU_CTX_MAP_HOST = 8,
+    #[doc = "< Keep local memory allocation after launch"]
+    CU_CTX_LMEM_RESIZE_TO_MAX = 16,
+    CU_CTX_FLAGS_MASK = 31,
+}
 #[doc = " Context creation flags"]
 pub use self::CUctx_flags_enum as CUctx_flags;
-#[doc = "< Default stream flag"]
-pub const CUstream_flags_enum_CU_STREAM_DEFAULT: CUstream_flags_enum = 0;
-#[doc = "< Stream does not synchronize with stream 0 (the NULL stream)"]
-pub const CUstream_flags_enum_CU_STREAM_NON_BLOCKING: CUstream_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Stream creation flags"]
-pub type CUstream_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstream_flags_enum {
+    #[doc = "< Default stream flag"]
+    CU_STREAM_DEFAULT = 0,
+    #[doc = "< Stream does not synchronize with stream 0 (the NULL stream)"]
+    CU_STREAM_NON_BLOCKING = 1,
+}
 #[doc = " Stream creation flags"]
 pub use self::CUstream_flags_enum as CUstream_flags;
-#[doc = "< Default event flag"]
-pub const CUevent_flags_enum_CU_EVENT_DEFAULT: CUevent_flags_enum = 0;
-#[doc = "< Event uses blocking synchronization"]
-pub const CUevent_flags_enum_CU_EVENT_BLOCKING_SYNC: CUevent_flags_enum = 1;
-#[doc = "< Event will not record timing data"]
-pub const CUevent_flags_enum_CU_EVENT_DISABLE_TIMING: CUevent_flags_enum = 2;
-#[doc = "< Event is suitable for interprocess use. CU_EVENT_DISABLE_TIMING must be set"]
-pub const CUevent_flags_enum_CU_EVENT_INTERPROCESS: CUevent_flags_enum = 4;
+#[repr(i32)]
 #[doc = " Event creation flags"]
-pub type CUevent_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUevent_flags_enum {
+    #[doc = "< Default event flag"]
+    CU_EVENT_DEFAULT = 0,
+    #[doc = "< Event uses blocking synchronization"]
+    CU_EVENT_BLOCKING_SYNC = 1,
+    #[doc = "< Event will not record timing data"]
+    CU_EVENT_DISABLE_TIMING = 2,
+    #[doc = "< Event is suitable for interprocess use. CU_EVENT_DISABLE_TIMING must be set"]
+    CU_EVENT_INTERPROCESS = 4,
+}
 #[doc = " Event creation flags"]
 pub use self::CUevent_flags_enum as CUevent_flags;
-#[doc = "< Default event record flag"]
-pub const CUevent_record_flags_enum_CU_EVENT_RECORD_DEFAULT: CUevent_record_flags_enum = 0;
-#[doc = "< When using stream capture, create an event record node"]
-#[doc = "  instead of the default behavior.  This flag is invalid"]
-#[doc = "  when used outside of capture."]
-pub const CUevent_record_flags_enum_CU_EVENT_RECORD_EXTERNAL: CUevent_record_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Event record flags"]
-pub type CUevent_record_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUevent_record_flags_enum {
+    #[doc = "< Default event record flag"]
+    CU_EVENT_RECORD_DEFAULT = 0,
+    #[doc = "< When using stream capture, create an event record node"]
+    #[doc = "  instead of the default behavior.  This flag is invalid"]
+    #[doc = "  when used outside of capture."]
+    CU_EVENT_RECORD_EXTERNAL = 1,
+}
 #[doc = " Event record flags"]
 pub use self::CUevent_record_flags_enum as CUevent_record_flags;
-#[doc = "< Default event wait flag"]
-pub const CUevent_wait_flags_enum_CU_EVENT_WAIT_DEFAULT: CUevent_wait_flags_enum = 0;
-#[doc = "< When using stream capture, create an event wait node"]
-#[doc = "  instead of the default behavior.  This flag is invalid"]
-#[doc = "  when used outside of capture."]
-pub const CUevent_wait_flags_enum_CU_EVENT_WAIT_EXTERNAL: CUevent_wait_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Event wait flags"]
-pub type CUevent_wait_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUevent_wait_flags_enum {
+    #[doc = "< Default event wait flag"]
+    CU_EVENT_WAIT_DEFAULT = 0,
+    #[doc = "< When using stream capture, create an event wait node"]
+    #[doc = "  instead of the default behavior.  This flag is invalid"]
+    #[doc = "  when used outside of capture."]
+    CU_EVENT_WAIT_EXTERNAL = 1,
+}
 #[doc = " Event wait flags"]
 pub use self::CUevent_wait_flags_enum as CUevent_wait_flags;
-#[doc = "< Wait until (int32_t)(*addr - value) >= 0 (or int64_t for 64 bit"]
-#[doc = "values). Note this is a cyclic comparison which ignores wraparound."]
-#[doc = "(Default behavior.)"]
-pub const CUstreamWaitValue_flags_enum_CU_STREAM_WAIT_VALUE_GEQ: CUstreamWaitValue_flags_enum = 0;
-#[doc = "< Wait until *addr == value."]
-pub const CUstreamWaitValue_flags_enum_CU_STREAM_WAIT_VALUE_EQ: CUstreamWaitValue_flags_enum = 1;
-#[doc = "< Wait until (*addr & value) != 0."]
-pub const CUstreamWaitValue_flags_enum_CU_STREAM_WAIT_VALUE_AND: CUstreamWaitValue_flags_enum = 2;
-#[doc = "< Wait until ~(*addr | value) != 0. Support for this operation can be"]
-#[doc = "queried with ::cuDeviceGetAttribute() and"]
-#[doc = "::CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR."]
-pub const CUstreamWaitValue_flags_enum_CU_STREAM_WAIT_VALUE_NOR: CUstreamWaitValue_flags_enum = 3;
-#[doc = "< Follow the wait operation with a flush of outstanding remote writes. This"]
-#[doc = "means that, if a remote write operation is guaranteed to have reached the"]
-#[doc = "device before the wait can be satisfied, that write is guaranteed to be"]
-#[doc = "visible to downstream device work. The device is permitted to reorder"]
-#[doc = "remote writes internally. For example, this flag would be required if"]
-#[doc = "two remote writes arrive in a defined order, the wait is satisfied by the"]
-#[doc = "second write, and downstream work needs to observe the first write."]
-#[doc = "Support for this operation is restricted to selected platforms and can be"]
-#[doc = "queried with ::CU_DEVICE_ATTRIBUTE_CAN_FLUSH_REMOTE_WRITES."]
-pub const CUstreamWaitValue_flags_enum_CU_STREAM_WAIT_VALUE_FLUSH: CUstreamWaitValue_flags_enum =
-    1073741824;
+#[repr(i32)]
 #[doc = " Flags for ::cuStreamWaitValue32 and ::cuStreamWaitValue64"]
-pub type CUstreamWaitValue_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamWaitValue_flags_enum {
+    #[doc = "< Wait until (int32_t)(*addr - value) >= 0 (or int64_t for 64 bit"]
+    #[doc = "values). Note this is a cyclic comparison which ignores wraparound."]
+    #[doc = "(Default behavior.)"]
+    CU_STREAM_WAIT_VALUE_GEQ = 0,
+    #[doc = "< Wait until *addr == value."]
+    CU_STREAM_WAIT_VALUE_EQ = 1,
+    #[doc = "< Wait until (*addr & value) != 0."]
+    CU_STREAM_WAIT_VALUE_AND = 2,
+    #[doc = "< Wait until ~(*addr | value) != 0. Support for this operation can be"]
+    #[doc = "queried with ::cuDeviceGetAttribute() and"]
+    #[doc = "::CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR."]
+    CU_STREAM_WAIT_VALUE_NOR = 3,
+    #[doc = "< Follow the wait operation with a flush of outstanding remote writes. This"]
+    #[doc = "means that, if a remote write operation is guaranteed to have reached the"]
+    #[doc = "device before the wait can be satisfied, that write is guaranteed to be"]
+    #[doc = "visible to downstream device work. The device is permitted to reorder"]
+    #[doc = "remote writes internally. For example, this flag would be required if"]
+    #[doc = "two remote writes arrive in a defined order, the wait is satisfied by the"]
+    #[doc = "second write, and downstream work needs to observe the first write."]
+    #[doc = "Support for this operation is restricted to selected platforms and can be"]
+    #[doc = "queried with ::CU_DEVICE_ATTRIBUTE_CAN_FLUSH_REMOTE_WRITES."]
+    CU_STREAM_WAIT_VALUE_FLUSH = 1073741824,
+}
 #[doc = " Flags for ::cuStreamWaitValue32 and ::cuStreamWaitValue64"]
 pub use self::CUstreamWaitValue_flags_enum as CUstreamWaitValue_flags;
-#[doc = "< Default behavior"]
-pub const CUstreamWriteValue_flags_enum_CU_STREAM_WRITE_VALUE_DEFAULT:
-    CUstreamWriteValue_flags_enum = 0;
-#[doc = "< Permits the write to be reordered with writes which were issued"]
-#[doc = "before it, as a performance optimization. Normally,"]
-#[doc = "::cuStreamWriteValue32 will provide a memory fence before the"]
-#[doc = "write, which has similar semantics to"]
-#[doc = "__threadfence_system() but is scoped to the stream"]
-#[doc = "rather than a CUDA thread."]
-#[doc = "This flag is not supported in the v2 API."]
-pub const CUstreamWriteValue_flags_enum_CU_STREAM_WRITE_VALUE_NO_MEMORY_BARRIER:
-    CUstreamWriteValue_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Flags for ::cuStreamWriteValue32"]
-pub type CUstreamWriteValue_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamWriteValue_flags_enum {
+    #[doc = "< Default behavior"]
+    CU_STREAM_WRITE_VALUE_DEFAULT = 0,
+    #[doc = "< Permits the write to be reordered with writes which were issued"]
+    #[doc = "before it, as a performance optimization. Normally,"]
+    #[doc = "::cuStreamWriteValue32 will provide a memory fence before the"]
+    #[doc = "write, which has similar semantics to"]
+    #[doc = "__threadfence_system() but is scoped to the stream"]
+    #[doc = "rather than a CUDA thread."]
+    #[doc = "This flag is not supported in the v2 API."]
+    CU_STREAM_WRITE_VALUE_NO_MEMORY_BARRIER = 1,
+}
 #[doc = " Flags for ::cuStreamWriteValue32"]
 pub use self::CUstreamWriteValue_flags_enum as CUstreamWriteValue_flags;
-#[doc = "< Represents a ::cuStreamWaitValue32 operation"]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_WAIT_VALUE_32: CUstreamBatchMemOpType_enum =
-    1;
-#[doc = "< Represents a ::cuStreamWriteValue32 operation"]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_WRITE_VALUE_32: CUstreamBatchMemOpType_enum =
-    2;
-#[doc = "< Represents a ::cuStreamWaitValue64 operation"]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_WAIT_VALUE_64: CUstreamBatchMemOpType_enum =
-    4;
-#[doc = "< Represents a ::cuStreamWriteValue64 operation"]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_WRITE_VALUE_64: CUstreamBatchMemOpType_enum =
-    5;
-#[doc = "< Insert a memory barrier of the specified type"]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_BARRIER: CUstreamBatchMemOpType_enum = 6;
-#[doc = "< This has the same effect as ::CU_STREAM_WAIT_VALUE_FLUSH, but as a"]
-#[doc = "standalone operation."]
-pub const CUstreamBatchMemOpType_enum_CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES:
-    CUstreamBatchMemOpType_enum = 3;
+#[repr(i32)]
 #[doc = " Operations for ::cuStreamBatchMemOp"]
-pub type CUstreamBatchMemOpType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamBatchMemOpType_enum {
+    #[doc = "< Represents a ::cuStreamWaitValue32 operation"]
+    CU_STREAM_MEM_OP_WAIT_VALUE_32 = 1,
+    #[doc = "< Represents a ::cuStreamWriteValue32 operation"]
+    CU_STREAM_MEM_OP_WRITE_VALUE_32 = 2,
+    #[doc = "< Represents a ::cuStreamWaitValue64 operation"]
+    CU_STREAM_MEM_OP_WAIT_VALUE_64 = 4,
+    #[doc = "< Represents a ::cuStreamWriteValue64 operation"]
+    CU_STREAM_MEM_OP_WRITE_VALUE_64 = 5,
+    #[doc = "< Insert a memory barrier of the specified type"]
+    CU_STREAM_MEM_OP_BARRIER = 6,
+    #[doc = "< This has the same effect as ::CU_STREAM_WAIT_VALUE_FLUSH, but as a"]
+    #[doc = "standalone operation."]
+    CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES = 3,
+}
 #[doc = " Operations for ::cuStreamBatchMemOp"]
 pub use self::CUstreamBatchMemOpType_enum as CUstreamBatchMemOpType;
-#[doc = "< System-wide memory barrier."]
-pub const CUstreamMemoryBarrier_flags_enum_CU_STREAM_MEMORY_BARRIER_TYPE_SYS:
-    CUstreamMemoryBarrier_flags_enum = 0;
-#[doc = "< Limit memory barrier scope to the GPU."]
-pub const CUstreamMemoryBarrier_flags_enum_CU_STREAM_MEMORY_BARRIER_TYPE_GPU:
-    CUstreamMemoryBarrier_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Flags for ::cuStreamMemoryBarrier"]
-pub type CUstreamMemoryBarrier_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamMemoryBarrier_flags_enum {
+    #[doc = "< System-wide memory barrier."]
+    CU_STREAM_MEMORY_BARRIER_TYPE_SYS = 0,
+    #[doc = "< Limit memory barrier scope to the GPU."]
+    CU_STREAM_MEMORY_BARRIER_TYPE_GPU = 1,
+}
 #[doc = " Flags for ::cuStreamMemoryBarrier"]
 pub use self::CUstreamMemoryBarrier_flags_enum as CUstreamMemoryBarrier_flags;
 #[doc = " Per-operation parameters for ::cuStreamBatchMemOp"]
@@ -2874,486 +2896,407 @@ fn bindgen_test_layout_CUDA_BATCH_MEM_OP_NODE_PARAMS_st() {
     );
 }
 pub type CUDA_BATCH_MEM_OP_NODE_PARAMS = CUDA_BATCH_MEM_OP_NODE_PARAMS_st;
-#[doc = "< Default behavior"]
-pub const CUoccupancy_flags_enum_CU_OCCUPANCY_DEFAULT: CUoccupancy_flags_enum = 0;
-#[doc = "< Assume global caching is enabled and cannot be automatically turned off"]
-pub const CUoccupancy_flags_enum_CU_OCCUPANCY_DISABLE_CACHING_OVERRIDE: CUoccupancy_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Occupancy calculator flag"]
-pub type CUoccupancy_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUoccupancy_flags_enum {
+    #[doc = "< Default behavior"]
+    CU_OCCUPANCY_DEFAULT = 0,
+    #[doc = "< Assume global caching is enabled and cannot be automatically turned off"]
+    CU_OCCUPANCY_DISABLE_CACHING_OVERRIDE = 1,
+}
 #[doc = " Occupancy calculator flag"]
 pub use self::CUoccupancy_flags_enum as CUoccupancy_flags;
-#[doc = "< Add new nodes to the dependency set"]
-pub const CUstreamUpdateCaptureDependencies_flags_enum_CU_STREAM_ADD_CAPTURE_DEPENDENCIES:
-    CUstreamUpdateCaptureDependencies_flags_enum = 0;
-#[doc = "< Replace the dependency set with the new nodes"]
-pub const CUstreamUpdateCaptureDependencies_flags_enum_CU_STREAM_SET_CAPTURE_DEPENDENCIES:
-    CUstreamUpdateCaptureDependencies_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Flags for ::cuStreamUpdateCaptureDependencies"]
-pub type CUstreamUpdateCaptureDependencies_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamUpdateCaptureDependencies_flags_enum {
+    #[doc = "< Add new nodes to the dependency set"]
+    CU_STREAM_ADD_CAPTURE_DEPENDENCIES = 0,
+    #[doc = "< Replace the dependency set with the new nodes"]
+    CU_STREAM_SET_CAPTURE_DEPENDENCIES = 1,
+}
 #[doc = " Flags for ::cuStreamUpdateCaptureDependencies"]
 pub use self::CUstreamUpdateCaptureDependencies_flags_enum as CUstreamUpdateCaptureDependencies_flags;
-#[doc = "< Unsigned 8-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNSIGNED_INT8: CUarray_format_enum = 1;
-#[doc = "< Unsigned 16-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNSIGNED_INT16: CUarray_format_enum = 2;
-#[doc = "< Unsigned 32-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNSIGNED_INT32: CUarray_format_enum = 3;
-#[doc = "< Signed 8-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SIGNED_INT8: CUarray_format_enum = 8;
-#[doc = "< Signed 16-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SIGNED_INT16: CUarray_format_enum = 9;
-#[doc = "< Signed 32-bit integers"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SIGNED_INT32: CUarray_format_enum = 10;
-#[doc = "< 16-bit floating point"]
-pub const CUarray_format_enum_CU_AD_FORMAT_HALF: CUarray_format_enum = 16;
-#[doc = "< 32-bit floating point"]
-pub const CUarray_format_enum_CU_AD_FORMAT_FLOAT: CUarray_format_enum = 32;
-#[doc = "< 8-bit YUV planar format, with 4:2:0 sampling"]
-pub const CUarray_format_enum_CU_AD_FORMAT_NV12: CUarray_format_enum = 176;
-#[doc = "< 1 channel unsigned 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT8X1: CUarray_format_enum = 192;
-#[doc = "< 2 channel unsigned 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT8X2: CUarray_format_enum = 193;
-#[doc = "< 4 channel unsigned 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT8X4: CUarray_format_enum = 194;
-#[doc = "< 1 channel unsigned 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT16X1: CUarray_format_enum = 195;
-#[doc = "< 2 channel unsigned 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT16X2: CUarray_format_enum = 196;
-#[doc = "< 4 channel unsigned 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_UNORM_INT16X4: CUarray_format_enum = 197;
-#[doc = "< 1 channel signed 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT8X1: CUarray_format_enum = 198;
-#[doc = "< 2 channel signed 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT8X2: CUarray_format_enum = 199;
-#[doc = "< 4 channel signed 8-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT8X4: CUarray_format_enum = 200;
-#[doc = "< 1 channel signed 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT16X1: CUarray_format_enum = 201;
-#[doc = "< 2 channel signed 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT16X2: CUarray_format_enum = 202;
-#[doc = "< 4 channel signed 16-bit normalized integer"]
-pub const CUarray_format_enum_CU_AD_FORMAT_SNORM_INT16X4: CUarray_format_enum = 203;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC1 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC1_UNORM: CUarray_format_enum = 145;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC1 compression) format with sRGB encoding"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC1_UNORM_SRGB: CUarray_format_enum = 146;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC2 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC2_UNORM: CUarray_format_enum = 147;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC2 compression) format with sRGB encoding"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC2_UNORM_SRGB: CUarray_format_enum = 148;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC3 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC3_UNORM: CUarray_format_enum = 149;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC3 compression) format with sRGB encoding"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC3_UNORM_SRGB: CUarray_format_enum = 150;
-#[doc = "< 1 channel unsigned normalized block-compressed (BC4 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC4_UNORM: CUarray_format_enum = 151;
-#[doc = "< 1 channel signed normalized block-compressed (BC4 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC4_SNORM: CUarray_format_enum = 152;
-#[doc = "< 2 channel unsigned normalized block-compressed (BC5 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC5_UNORM: CUarray_format_enum = 153;
-#[doc = "< 2 channel signed normalized block-compressed (BC5 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC5_SNORM: CUarray_format_enum = 154;
-#[doc = "< 3 channel unsigned half-float block-compressed (BC6H compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC6H_UF16: CUarray_format_enum = 155;
-#[doc = "< 3 channel signed half-float block-compressed (BC6H compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC6H_SF16: CUarray_format_enum = 156;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC7 compression) format"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC7_UNORM: CUarray_format_enum = 157;
-#[doc = "< 4 channel unsigned normalized block-compressed (BC7 compression) format with sRGB encoding"]
-pub const CUarray_format_enum_CU_AD_FORMAT_BC7_UNORM_SRGB: CUarray_format_enum = 158;
+#[repr(i32)]
 #[doc = " Array formats"]
-pub type CUarray_format_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUarray_format_enum {
+    #[doc = "< Unsigned 8-bit integers"]
+    CU_AD_FORMAT_UNSIGNED_INT8 = 1,
+    #[doc = "< Unsigned 16-bit integers"]
+    CU_AD_FORMAT_UNSIGNED_INT16 = 2,
+    #[doc = "< Unsigned 32-bit integers"]
+    CU_AD_FORMAT_UNSIGNED_INT32 = 3,
+    #[doc = "< Signed 8-bit integers"]
+    CU_AD_FORMAT_SIGNED_INT8 = 8,
+    #[doc = "< Signed 16-bit integers"]
+    CU_AD_FORMAT_SIGNED_INT16 = 9,
+    #[doc = "< Signed 32-bit integers"]
+    CU_AD_FORMAT_SIGNED_INT32 = 10,
+    #[doc = "< 16-bit floating point"]
+    CU_AD_FORMAT_HALF = 16,
+    #[doc = "< 32-bit floating point"]
+    CU_AD_FORMAT_FLOAT = 32,
+    #[doc = "< 8-bit YUV planar format, with 4:2:0 sampling"]
+    CU_AD_FORMAT_NV12 = 176,
+    #[doc = "< 1 channel unsigned 8-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT8X1 = 192,
+    #[doc = "< 2 channel unsigned 8-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT8X2 = 193,
+    #[doc = "< 4 channel unsigned 8-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT8X4 = 194,
+    #[doc = "< 1 channel unsigned 16-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT16X1 = 195,
+    #[doc = "< 2 channel unsigned 16-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT16X2 = 196,
+    #[doc = "< 4 channel unsigned 16-bit normalized integer"]
+    CU_AD_FORMAT_UNORM_INT16X4 = 197,
+    #[doc = "< 1 channel signed 8-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT8X1 = 198,
+    #[doc = "< 2 channel signed 8-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT8X2 = 199,
+    #[doc = "< 4 channel signed 8-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT8X4 = 200,
+    #[doc = "< 1 channel signed 16-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT16X1 = 201,
+    #[doc = "< 2 channel signed 16-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT16X2 = 202,
+    #[doc = "< 4 channel signed 16-bit normalized integer"]
+    CU_AD_FORMAT_SNORM_INT16X4 = 203,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC1 compression) format"]
+    CU_AD_FORMAT_BC1_UNORM = 145,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC1 compression) format with sRGB encoding"]
+    CU_AD_FORMAT_BC1_UNORM_SRGB = 146,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC2 compression) format"]
+    CU_AD_FORMAT_BC2_UNORM = 147,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC2 compression) format with sRGB encoding"]
+    CU_AD_FORMAT_BC2_UNORM_SRGB = 148,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC3 compression) format"]
+    CU_AD_FORMAT_BC3_UNORM = 149,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC3 compression) format with sRGB encoding"]
+    CU_AD_FORMAT_BC3_UNORM_SRGB = 150,
+    #[doc = "< 1 channel unsigned normalized block-compressed (BC4 compression) format"]
+    CU_AD_FORMAT_BC4_UNORM = 151,
+    #[doc = "< 1 channel signed normalized block-compressed (BC4 compression) format"]
+    CU_AD_FORMAT_BC4_SNORM = 152,
+    #[doc = "< 2 channel unsigned normalized block-compressed (BC5 compression) format"]
+    CU_AD_FORMAT_BC5_UNORM = 153,
+    #[doc = "< 2 channel signed normalized block-compressed (BC5 compression) format"]
+    CU_AD_FORMAT_BC5_SNORM = 154,
+    #[doc = "< 3 channel unsigned half-float block-compressed (BC6H compression) format"]
+    CU_AD_FORMAT_BC6H_UF16 = 155,
+    #[doc = "< 3 channel signed half-float block-compressed (BC6H compression) format"]
+    CU_AD_FORMAT_BC6H_SF16 = 156,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC7 compression) format"]
+    CU_AD_FORMAT_BC7_UNORM = 157,
+    #[doc = "< 4 channel unsigned normalized block-compressed (BC7 compression) format with sRGB encoding"]
+    CU_AD_FORMAT_BC7_UNORM_SRGB = 158,
+}
 #[doc = " Array formats"]
 pub use self::CUarray_format_enum as CUarray_format;
-#[doc = "< Wrapping address mode"]
-pub const CUaddress_mode_enum_CU_TR_ADDRESS_MODE_WRAP: CUaddress_mode_enum = 0;
-#[doc = "< Clamp to edge address mode"]
-pub const CUaddress_mode_enum_CU_TR_ADDRESS_MODE_CLAMP: CUaddress_mode_enum = 1;
-#[doc = "< Mirror address mode"]
-pub const CUaddress_mode_enum_CU_TR_ADDRESS_MODE_MIRROR: CUaddress_mode_enum = 2;
-#[doc = "< Border address mode"]
-pub const CUaddress_mode_enum_CU_TR_ADDRESS_MODE_BORDER: CUaddress_mode_enum = 3;
+#[repr(i32)]
 #[doc = " Texture reference addressing modes"]
-pub type CUaddress_mode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUaddress_mode_enum {
+    #[doc = "< Wrapping address mode"]
+    CU_TR_ADDRESS_MODE_WRAP = 0,
+    #[doc = "< Clamp to edge address mode"]
+    CU_TR_ADDRESS_MODE_CLAMP = 1,
+    #[doc = "< Mirror address mode"]
+    CU_TR_ADDRESS_MODE_MIRROR = 2,
+    #[doc = "< Border address mode"]
+    CU_TR_ADDRESS_MODE_BORDER = 3,
+}
 #[doc = " Texture reference addressing modes"]
 pub use self::CUaddress_mode_enum as CUaddress_mode;
-#[doc = "< Point filter mode"]
-pub const CUfilter_mode_enum_CU_TR_FILTER_MODE_POINT: CUfilter_mode_enum = 0;
-#[doc = "< Linear filter mode"]
-pub const CUfilter_mode_enum_CU_TR_FILTER_MODE_LINEAR: CUfilter_mode_enum = 1;
+#[repr(i32)]
 #[doc = " Texture reference filtering modes"]
-pub type CUfilter_mode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUfilter_mode_enum {
+    #[doc = "< Point filter mode"]
+    CU_TR_FILTER_MODE_POINT = 0,
+    #[doc = "< Linear filter mode"]
+    CU_TR_FILTER_MODE_LINEAR = 1,
+}
 #[doc = " Texture reference filtering modes"]
 pub use self::CUfilter_mode_enum as CUfilter_mode;
-#[doc = "< Maximum number of threads per block"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK:
-    CUdevice_attribute_enum = 1;
-#[doc = "< Maximum block dimension X"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X: CUdevice_attribute_enum = 2;
-#[doc = "< Maximum block dimension Y"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y: CUdevice_attribute_enum = 3;
-#[doc = "< Maximum block dimension Z"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z: CUdevice_attribute_enum = 4;
-#[doc = "< Maximum grid dimension X"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X: CUdevice_attribute_enum = 5;
-#[doc = "< Maximum grid dimension Y"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y: CUdevice_attribute_enum = 6;
-#[doc = "< Maximum grid dimension Z"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z: CUdevice_attribute_enum = 7;
-#[doc = "< Maximum shared memory available per block in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK:
-    CUdevice_attribute_enum = 8;
-#[doc = "< Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_SHARED_MEMORY_PER_BLOCK:
-    CUdevice_attribute_enum = 8;
-#[doc = "< Memory available on device for __constant__ variables in a CUDA C kernel in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY:
-    CUdevice_attribute_enum = 9;
-#[doc = "< Warp size in threads"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_WARP_SIZE: CUdevice_attribute_enum = 10;
-#[doc = "< Maximum pitch in bytes allowed by memory copies"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_PITCH: CUdevice_attribute_enum = 11;
-#[doc = "< Maximum number of 32-bit registers available per block"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK:
-    CUdevice_attribute_enum = 12;
-#[doc = "< Deprecated, use CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_REGISTERS_PER_BLOCK: CUdevice_attribute_enum =
-    12;
-#[doc = "< Typical clock frequency in kilohertz"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CLOCK_RATE: CUdevice_attribute_enum = 13;
-#[doc = "< Alignment requirement for textures"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT: CUdevice_attribute_enum =
-    14;
-#[doc = "< Device can possibly copy memory and execute a kernel concurrently. Deprecated. Use instead CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GPU_OVERLAP: CUdevice_attribute_enum = 15;
-#[doc = "< Number of multiprocessors on device"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT:
-    CUdevice_attribute_enum = 16;
-#[doc = "< Specifies whether there is a run time limit on kernels"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT: CUdevice_attribute_enum =
-    17;
-#[doc = "< Device is integrated with host memory"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_INTEGRATED: CUdevice_attribute_enum = 18;
-#[doc = "< Device can map host memory into CUDA address space"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_MAP_HOST_MEMORY: CUdevice_attribute_enum =
-    19;
-#[doc = "< Compute mode (See ::CUcomputemode for details)"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COMPUTE_MODE: CUdevice_attribute_enum = 20;
-#[doc = "< Maximum 1D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_WIDTH:
-    CUdevice_attribute_enum = 21;
-#[doc = "< Maximum 2D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_WIDTH:
-    CUdevice_attribute_enum = 22;
-#[doc = "< Maximum 2D texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_HEIGHT:
-    CUdevice_attribute_enum = 23;
-#[doc = "< Maximum 3D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_WIDTH:
-    CUdevice_attribute_enum = 24;
-#[doc = "< Maximum 3D texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_HEIGHT:
-    CUdevice_attribute_enum = 25;
-#[doc = "< Maximum 3D texture depth"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_DEPTH:
-    CUdevice_attribute_enum = 26;
-#[doc = "< Maximum 2D layered texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 27;
-#[doc = "< Maximum 2D layered texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_HEIGHT:
-    CUdevice_attribute_enum = 28;
-#[doc = "< Maximum layers in a 2D layered texture"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 29;
-#[doc = "< Deprecated, use CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_WIDTH"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_WIDTH:
-    CUdevice_attribute_enum = 27;
-#[doc = "< Deprecated, use CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_HEIGHT"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_HEIGHT:
-    CUdevice_attribute_enum = 28;
-#[doc = "< Deprecated, use CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_LAYERS"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_NUMSLICES:
-    CUdevice_attribute_enum = 29;
-#[doc = "< Alignment requirement for surfaces"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_SURFACE_ALIGNMENT: CUdevice_attribute_enum =
-    30;
-#[doc = "< Device can possibly execute multiple kernels concurrently"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CONCURRENT_KERNELS: CUdevice_attribute_enum =
-    31;
-#[doc = "< Device has ECC support enabled"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_ECC_ENABLED: CUdevice_attribute_enum = 32;
-#[doc = "< PCI bus ID of the device"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_PCI_BUS_ID: CUdevice_attribute_enum = 33;
-#[doc = "< PCI device ID of the device"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID: CUdevice_attribute_enum = 34;
-#[doc = "< Device is using TCC driver model"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_TCC_DRIVER: CUdevice_attribute_enum = 35;
-#[doc = "< Peak memory clock frequency in kilohertz"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE: CUdevice_attribute_enum =
-    36;
-#[doc = "< Global memory bus width in bits"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH:
-    CUdevice_attribute_enum = 37;
-#[doc = "< Size of L2 cache in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE: CUdevice_attribute_enum = 38;
-#[doc = "< Maximum resident threads per multiprocessor"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_MULTIPROCESSOR:
-    CUdevice_attribute_enum = 39;
-#[doc = "< Number of asynchronous engines"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT: CUdevice_attribute_enum =
-    40;
-#[doc = "< Device shares a unified address space with the host"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_UNIFIED_ADDRESSING: CUdevice_attribute_enum =
-    41;
-#[doc = "< Maximum 1D layered texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 42;
-#[doc = "< Maximum layers in a 1D layered texture"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 43;
-#[doc = "< Deprecated, do not use."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_TEX2D_GATHER: CUdevice_attribute_enum =
-    44;
-#[doc = "< Maximum 2D texture width if CUDA_ARRAY3D_TEXTURE_GATHER is set"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_GATHER_WIDTH:
-    CUdevice_attribute_enum = 45;
-#[doc = "< Maximum 2D texture height if CUDA_ARRAY3D_TEXTURE_GATHER is set"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_GATHER_HEIGHT:
-    CUdevice_attribute_enum = 46;
-#[doc = "< Alternate maximum 3D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_WIDTH_ALTERNATE:
-    CUdevice_attribute_enum = 47;
-#[doc = "< Alternate maximum 3D texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_HEIGHT_ALTERNATE:
-    CUdevice_attribute_enum = 48;
-#[doc = "< Alternate maximum 3D texture depth"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_DEPTH_ALTERNATE:
-    CUdevice_attribute_enum = 49;
-#[doc = "< PCI domain ID of the device"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID: CUdevice_attribute_enum = 50;
-#[doc = "< Pitch alignment requirement for textures"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_TEXTURE_PITCH_ALIGNMENT:
-    CUdevice_attribute_enum = 51;
-#[doc = "< Maximum cubemap texture width/height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_WIDTH:
-    CUdevice_attribute_enum = 52;
-#[doc = "< Maximum cubemap layered texture width/height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 53;
-#[doc = "< Maximum layers in a cubemap layered texture"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 54;
-#[doc = "< Maximum 1D surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_WIDTH:
-    CUdevice_attribute_enum = 55;
-#[doc = "< Maximum 2D surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_WIDTH:
-    CUdevice_attribute_enum = 56;
-#[doc = "< Maximum 2D surface height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_HEIGHT:
-    CUdevice_attribute_enum = 57;
-#[doc = "< Maximum 3D surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_WIDTH:
-    CUdevice_attribute_enum = 58;
-#[doc = "< Maximum 3D surface height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_HEIGHT:
-    CUdevice_attribute_enum = 59;
-#[doc = "< Maximum 3D surface depth"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_DEPTH:
-    CUdevice_attribute_enum = 60;
-#[doc = "< Maximum 1D layered surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 61;
-#[doc = "< Maximum layers in a 1D layered surface"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 62;
-#[doc = "< Maximum 2D layered surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 63;
-#[doc = "< Maximum 2D layered surface height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_HEIGHT:
-    CUdevice_attribute_enum = 64;
-#[doc = "< Maximum layers in a 2D layered surface"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 65;
-#[doc = "< Maximum cubemap surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_WIDTH:
-    CUdevice_attribute_enum = 66;
-#[doc = "< Maximum cubemap layered surface width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_LAYERED_WIDTH:
-    CUdevice_attribute_enum = 67;
-#[doc = "< Maximum layers in a cubemap layered surface"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_LAYERED_LAYERS:
-    CUdevice_attribute_enum = 68;
-#[doc = "< Deprecated, do not use. Use cudaDeviceGetTexture1DLinearMaxWidth() or cuDeviceGetTexture1DLinearMaxWidth() instead."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LINEAR_WIDTH:
-    CUdevice_attribute_enum = 69;
-#[doc = "< Maximum 2D linear texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_WIDTH:
-    CUdevice_attribute_enum = 70;
-#[doc = "< Maximum 2D linear texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_HEIGHT:
-    CUdevice_attribute_enum = 71;
-#[doc = "< Maximum 2D linear texture pitch in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_PITCH:
-    CUdevice_attribute_enum = 72;
-#[doc = "< Maximum mipmapped 2D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_MIPMAPPED_WIDTH:
-    CUdevice_attribute_enum = 73;
-#[doc = "< Maximum mipmapped 2D texture height"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_MIPMAPPED_HEIGHT:
-    CUdevice_attribute_enum = 74;
-#[doc = "< Major compute capability version number"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR:
-    CUdevice_attribute_enum = 75;
-#[doc = "< Minor compute capability version number"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR:
-    CUdevice_attribute_enum = 76;
-#[doc = "< Maximum mipmapped 1D texture width"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_MIPMAPPED_WIDTH:
-    CUdevice_attribute_enum = 77;
-#[doc = "< Device supports stream priorities"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_STREAM_PRIORITIES_SUPPORTED:
-    CUdevice_attribute_enum = 78;
-#[doc = "< Device supports caching globals in L1"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GLOBAL_L1_CACHE_SUPPORTED:
-    CUdevice_attribute_enum = 79;
-#[doc = "< Device supports caching locals in L1"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_LOCAL_L1_CACHE_SUPPORTED:
-    CUdevice_attribute_enum = 80;
-#[doc = "< Maximum shared memory available per multiprocessor in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR:
-    CUdevice_attribute_enum = 81;
-#[doc = "< Maximum number of 32-bit registers available per multiprocessor"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_MULTIPROCESSOR:
-    CUdevice_attribute_enum = 82;
-#[doc = "< Device can allocate managed memory on this system"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MANAGED_MEMORY: CUdevice_attribute_enum = 83;
-#[doc = "< Device is on a multi-GPU board"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MULTI_GPU_BOARD: CUdevice_attribute_enum = 84;
-#[doc = "< Unique id for a group of devices on the same multi-GPU board"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MULTI_GPU_BOARD_GROUP_ID:
-    CUdevice_attribute_enum = 85;
-#[doc = "< Link between the device and the host supports native atomic operations (this is a placeholder attribute, and is not supported on any current hardware)"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_HOST_NATIVE_ATOMIC_SUPPORTED:
-    CUdevice_attribute_enum = 86;
-#[doc = "< Ratio of single precision performance (in floating-point operations per second) to double precision performance"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_SINGLE_TO_DOUBLE_PRECISION_PERF_RATIO:
-    CUdevice_attribute_enum = 87;
-#[doc = "< Device supports coherently accessing pageable memory without calling cudaHostRegister on it"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_PAGEABLE_MEMORY_ACCESS:
-    CUdevice_attribute_enum = 88;
-#[doc = "< Device can coherently access managed memory concurrently with the CPU"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CONCURRENT_MANAGED_ACCESS:
-    CUdevice_attribute_enum = 89;
-#[doc = "< Device supports compute preemption."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COMPUTE_PREEMPTION_SUPPORTED:
-    CUdevice_attribute_enum = 90;
-#[doc = "< Device can access host registered memory at the same virtual address as the CPU"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_HOST_POINTER_FOR_REGISTERED_MEM:
-    CUdevice_attribute_enum = 91;
-#[doc = "< ::cuStreamBatchMemOp and related APIs are supported."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_MEM_OPS:
-    CUdevice_attribute_enum = 92;
-#[doc = "< 64-bit operations are supported in ::cuStreamBatchMemOp and related APIs."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_64_BIT_STREAM_MEM_OPS:
-    CUdevice_attribute_enum = 93;
-#[doc = "< ::CU_STREAM_WAIT_VALUE_NOR is supported."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR:
-    CUdevice_attribute_enum = 94;
-#[doc = "< Device supports launching cooperative kernels via ::cuLaunchCooperativeKernel"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COOPERATIVE_LAUNCH: CUdevice_attribute_enum =
-    95;
-#[doc = "< Deprecated, ::cuLaunchCooperativeKernelMultiDevice is deprecated."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_COOPERATIVE_MULTI_DEVICE_LAUNCH:
-    CUdevice_attribute_enum = 96;
-#[doc = "< Maximum optin shared memory per block"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN:
-    CUdevice_attribute_enum = 97;
-#[doc = "< The ::CU_STREAM_WAIT_VALUE_FLUSH flag and the ::CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES MemOp are supported on the device. See \\ref CUDA_MEMOP for additional details."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_FLUSH_REMOTE_WRITES:
-    CUdevice_attribute_enum = 98;
-#[doc = "< Device supports host memory registration via ::cudaHostRegister."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_HOST_REGISTER_SUPPORTED:
-    CUdevice_attribute_enum = 99;
-#[doc = "< Device accesses pageable memory via the host's page tables."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_PAGEABLE_MEMORY_ACCESS_USES_HOST_PAGE_TABLES : CUdevice_attribute_enum = 100 ;
-#[doc = "< The host can directly access managed memory on the device without migration."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_DIRECT_MANAGED_MEM_ACCESS_FROM_HOST:
-    CUdevice_attribute_enum = 101;
-#[doc = "< Deprecated, Use CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_VIRTUAL_ADDRESS_MANAGEMENT_SUPPORTED:
-    CUdevice_attribute_enum = 102;
-#[doc = "< Device supports virtual memory management APIs like ::cuMemAddressReserve, ::cuMemCreate, ::cuMemMap and related APIs"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED:
-    CUdevice_attribute_enum = 102;
-#[doc = "< Device supports exporting memory to a posix file descriptor with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_POSIX_FILE_DESCRIPTOR_SUPPORTED : CUdevice_attribute_enum = 103 ;
-#[doc = "< Device supports exporting memory to a Win32 NT handle with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_WIN32_HANDLE_SUPPORTED:
-    CUdevice_attribute_enum = 104;
-#[doc = "< Device supports exporting memory to a Win32 KMT handle with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_WIN32_KMT_HANDLE_SUPPORTED:
-    CUdevice_attribute_enum = 105;
-#[doc = "< Maximum number of blocks per multiprocessor"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_BLOCKS_PER_MULTIPROCESSOR:
-    CUdevice_attribute_enum = 106;
-#[doc = "< Device supports compression of memory"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GENERIC_COMPRESSION_SUPPORTED:
-    CUdevice_attribute_enum = 107;
-#[doc = "< Maximum L2 persisting lines capacity setting in bytes."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_PERSISTING_L2_CACHE_SIZE:
-    CUdevice_attribute_enum = 108;
-#[doc = "< Maximum value of CUaccessPolicyWindow::num_bytes."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX_ACCESS_POLICY_WINDOW_SIZE:
-    CUdevice_attribute_enum = 109;
-#[doc = "< Device supports specifying the GPUDirect RDMA flag with ::cuMemCreate"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_WITH_CUDA_VMM_SUPPORTED:
-    CUdevice_attribute_enum = 110;
-#[doc = "< Shared memory reserved by CUDA driver per block in bytes"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_RESERVED_SHARED_MEMORY_PER_BLOCK:
-    CUdevice_attribute_enum = 111;
-#[doc = "< Device supports sparse CUDA arrays and sparse CUDA mipmapped arrays"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_SPARSE_CUDA_ARRAY_SUPPORTED:
-    CUdevice_attribute_enum = 112;
-#[doc = "< Device supports using the ::cuMemHostRegister flag ::CU_MEMHOSTERGISTER_READ_ONLY to register memory that must be mapped as read-only to the GPU"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_READ_ONLY_HOST_REGISTER_SUPPORTED:
-    CUdevice_attribute_enum = 113;
-#[doc = "< External timeline semaphore interop is supported on the device"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_TIMELINE_SEMAPHORE_INTEROP_SUPPORTED:
-    CUdevice_attribute_enum = 114;
-#[doc = "< Device supports using the ::cuMemAllocAsync and ::cuMemPool family of APIs"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MEMORY_POOLS_SUPPORTED:
-    CUdevice_attribute_enum = 115;
-#[doc = "< Device supports GPUDirect RDMA APIs, like nvidia_p2p_get_pages (see https://docs.nvidia.com/cuda/gpudirect-rdma for more information)"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_SUPPORTED:
-    CUdevice_attribute_enum = 116;
-#[doc = "< The returned attribute shall be interpreted as a bitmask, where the individual bits are described by the ::CUflushGPUDirectRDMAWritesOptions enum"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_FLUSH_WRITES_OPTIONS:
-    CUdevice_attribute_enum = 117;
-#[doc = "< GPUDirect RDMA writes to the device do not need to be flushed for consumers within the scope indicated by the returned attribute. See ::CUGPUDirectRDMAWritesOrdering for the numerical values returned here."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_WRITES_ORDERING:
-    CUdevice_attribute_enum = 118;
-#[doc = "< Handle types supported with mempool based IPC"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MEMPOOL_SUPPORTED_HANDLE_TYPES:
-    CUdevice_attribute_enum = 119;
-#[doc = "< Device supports deferred mapping CUDA arrays and CUDA mipmapped arrays"]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_DEFERRED_MAPPING_CUDA_ARRAY_SUPPORTED:
-    CUdevice_attribute_enum = 121;
-#[doc = "< 64-bit operations are supported in ::cuStreamBatchMemOp_v2 and related v2 MemOp APIs."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_64_BIT_STREAM_MEM_OPS_V2:
-    CUdevice_attribute_enum = 122;
-#[doc = "< ::CU_STREAM_WAIT_VALUE_NOR is supported by v2 MemOp APIs."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR_V2:
-    CUdevice_attribute_enum = 123;
-#[doc = "< Device supports buffer sharing with dma_buf mechanism."]
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_DMA_BUF_SUPPORTED: CUdevice_attribute_enum =
-    124;
-pub const CUdevice_attribute_enum_CU_DEVICE_ATTRIBUTE_MAX: CUdevice_attribute_enum = 125;
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_SHARED_MEMORY_PER_BLOCK: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK;
+}
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_REGISTERS_PER_BLOCK: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK;
+}
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_WIDTH: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_WIDTH;
+}
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_HEIGHT: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_HEIGHT;
+}
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_ARRAY_NUMSLICES: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_LAYERS;
+}
+impl CUdevice_attribute_enum {
+    pub const CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED: CUdevice_attribute_enum =
+        CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_VIRTUAL_ADDRESS_MANAGEMENT_SUPPORTED;
+}
+#[repr(i32)]
 #[doc = " Device properties"]
-pub type CUdevice_attribute_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUdevice_attribute_enum {
+    #[doc = "< Maximum number of threads per block"]
+    CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 1,
+    #[doc = "< Maximum block dimension X"]
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_X = 2,
+    #[doc = "< Maximum block dimension Y"]
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Y = 3,
+    #[doc = "< Maximum block dimension Z"]
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCK_DIM_Z = 4,
+    #[doc = "< Maximum grid dimension X"]
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_X = 5,
+    #[doc = "< Maximum grid dimension Y"]
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Y = 6,
+    #[doc = "< Maximum grid dimension Z"]
+    CU_DEVICE_ATTRIBUTE_MAX_GRID_DIM_Z = 7,
+    #[doc = "< Maximum shared memory available per block in bytes"]
+    CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK = 8,
+    #[doc = "< Memory available on device for __constant__ variables in a CUDA C kernel in bytes"]
+    CU_DEVICE_ATTRIBUTE_TOTAL_CONSTANT_MEMORY = 9,
+    #[doc = "< Warp size in threads"]
+    CU_DEVICE_ATTRIBUTE_WARP_SIZE = 10,
+    #[doc = "< Maximum pitch in bytes allowed by memory copies"]
+    CU_DEVICE_ATTRIBUTE_MAX_PITCH = 11,
+    #[doc = "< Maximum number of 32-bit registers available per block"]
+    CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_BLOCK = 12,
+    #[doc = "< Typical clock frequency in kilohertz"]
+    CU_DEVICE_ATTRIBUTE_CLOCK_RATE = 13,
+    #[doc = "< Alignment requirement for textures"]
+    CU_DEVICE_ATTRIBUTE_TEXTURE_ALIGNMENT = 14,
+    #[doc = "< Device can possibly copy memory and execute a kernel concurrently. Deprecated. Use instead CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT."]
+    CU_DEVICE_ATTRIBUTE_GPU_OVERLAP = 15,
+    #[doc = "< Number of multiprocessors on device"]
+    CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT = 16,
+    #[doc = "< Specifies whether there is a run time limit on kernels"]
+    CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT = 17,
+    #[doc = "< Device is integrated with host memory"]
+    CU_DEVICE_ATTRIBUTE_INTEGRATED = 18,
+    #[doc = "< Device can map host memory into CUDA address space"]
+    CU_DEVICE_ATTRIBUTE_CAN_MAP_HOST_MEMORY = 19,
+    #[doc = "< Compute mode (See ::CUcomputemode for details)"]
+    CU_DEVICE_ATTRIBUTE_COMPUTE_MODE = 20,
+    #[doc = "< Maximum 1D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_WIDTH = 21,
+    #[doc = "< Maximum 2D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_WIDTH = 22,
+    #[doc = "< Maximum 2D texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_HEIGHT = 23,
+    #[doc = "< Maximum 3D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_WIDTH = 24,
+    #[doc = "< Maximum 3D texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_HEIGHT = 25,
+    #[doc = "< Maximum 3D texture depth"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_DEPTH = 26,
+    #[doc = "< Maximum 2D layered texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_WIDTH = 27,
+    #[doc = "< Maximum 2D layered texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_HEIGHT = 28,
+    #[doc = "< Maximum layers in a 2D layered texture"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LAYERED_LAYERS = 29,
+    #[doc = "< Alignment requirement for surfaces"]
+    CU_DEVICE_ATTRIBUTE_SURFACE_ALIGNMENT = 30,
+    #[doc = "< Device can possibly execute multiple kernels concurrently"]
+    CU_DEVICE_ATTRIBUTE_CONCURRENT_KERNELS = 31,
+    #[doc = "< Device has ECC support enabled"]
+    CU_DEVICE_ATTRIBUTE_ECC_ENABLED = 32,
+    #[doc = "< PCI bus ID of the device"]
+    CU_DEVICE_ATTRIBUTE_PCI_BUS_ID = 33,
+    #[doc = "< PCI device ID of the device"]
+    CU_DEVICE_ATTRIBUTE_PCI_DEVICE_ID = 34,
+    #[doc = "< Device is using TCC driver model"]
+    CU_DEVICE_ATTRIBUTE_TCC_DRIVER = 35,
+    #[doc = "< Peak memory clock frequency in kilohertz"]
+    CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE = 36,
+    #[doc = "< Global memory bus width in bits"]
+    CU_DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH = 37,
+    #[doc = "< Size of L2 cache in bytes"]
+    CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE = 38,
+    #[doc = "< Maximum resident threads per multiprocessor"]
+    CU_DEVICE_ATTRIBUTE_MAX_THREADS_PER_MULTIPROCESSOR = 39,
+    #[doc = "< Number of asynchronous engines"]
+    CU_DEVICE_ATTRIBUTE_ASYNC_ENGINE_COUNT = 40,
+    #[doc = "< Device shares a unified address space with the host"]
+    CU_DEVICE_ATTRIBUTE_UNIFIED_ADDRESSING = 41,
+    #[doc = "< Maximum 1D layered texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_WIDTH = 42,
+    #[doc = "< Maximum layers in a 1D layered texture"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LAYERED_LAYERS = 43,
+    #[doc = "< Deprecated, do not use."]
+    CU_DEVICE_ATTRIBUTE_CAN_TEX2D_GATHER = 44,
+    #[doc = "< Maximum 2D texture width if CUDA_ARRAY3D_TEXTURE_GATHER is set"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_GATHER_WIDTH = 45,
+    #[doc = "< Maximum 2D texture height if CUDA_ARRAY3D_TEXTURE_GATHER is set"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_GATHER_HEIGHT = 46,
+    #[doc = "< Alternate maximum 3D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_WIDTH_ALTERNATE = 47,
+    #[doc = "< Alternate maximum 3D texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_HEIGHT_ALTERNATE = 48,
+    #[doc = "< Alternate maximum 3D texture depth"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE3D_DEPTH_ALTERNATE = 49,
+    #[doc = "< PCI domain ID of the device"]
+    CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID = 50,
+    #[doc = "< Pitch alignment requirement for textures"]
+    CU_DEVICE_ATTRIBUTE_TEXTURE_PITCH_ALIGNMENT = 51,
+    #[doc = "< Maximum cubemap texture width/height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_WIDTH = 52,
+    #[doc = "< Maximum cubemap layered texture width/height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_LAYERED_WIDTH = 53,
+    #[doc = "< Maximum layers in a cubemap layered texture"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURECUBEMAP_LAYERED_LAYERS = 54,
+    #[doc = "< Maximum 1D surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_WIDTH = 55,
+    #[doc = "< Maximum 2D surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_WIDTH = 56,
+    #[doc = "< Maximum 2D surface height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_HEIGHT = 57,
+    #[doc = "< Maximum 3D surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_WIDTH = 58,
+    #[doc = "< Maximum 3D surface height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_HEIGHT = 59,
+    #[doc = "< Maximum 3D surface depth"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE3D_DEPTH = 60,
+    #[doc = "< Maximum 1D layered surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_LAYERED_WIDTH = 61,
+    #[doc = "< Maximum layers in a 1D layered surface"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE1D_LAYERED_LAYERS = 62,
+    #[doc = "< Maximum 2D layered surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_WIDTH = 63,
+    #[doc = "< Maximum 2D layered surface height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_HEIGHT = 64,
+    #[doc = "< Maximum layers in a 2D layered surface"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACE2D_LAYERED_LAYERS = 65,
+    #[doc = "< Maximum cubemap surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_WIDTH = 66,
+    #[doc = "< Maximum cubemap layered surface width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_LAYERED_WIDTH = 67,
+    #[doc = "< Maximum layers in a cubemap layered surface"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_SURFACECUBEMAP_LAYERED_LAYERS = 68,
+    #[doc = "< Deprecated, do not use. Use cudaDeviceGetTexture1DLinearMaxWidth() or cuDeviceGetTexture1DLinearMaxWidth() instead."]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_LINEAR_WIDTH = 69,
+    #[doc = "< Maximum 2D linear texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_WIDTH = 70,
+    #[doc = "< Maximum 2D linear texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_HEIGHT = 71,
+    #[doc = "< Maximum 2D linear texture pitch in bytes"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_LINEAR_PITCH = 72,
+    #[doc = "< Maximum mipmapped 2D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_MIPMAPPED_WIDTH = 73,
+    #[doc = "< Maximum mipmapped 2D texture height"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE2D_MIPMAPPED_HEIGHT = 74,
+    #[doc = "< Major compute capability version number"]
+    CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR = 75,
+    #[doc = "< Minor compute capability version number"]
+    CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR = 76,
+    #[doc = "< Maximum mipmapped 1D texture width"]
+    CU_DEVICE_ATTRIBUTE_MAXIMUM_TEXTURE1D_MIPMAPPED_WIDTH = 77,
+    #[doc = "< Device supports stream priorities"]
+    CU_DEVICE_ATTRIBUTE_STREAM_PRIORITIES_SUPPORTED = 78,
+    #[doc = "< Device supports caching globals in L1"]
+    CU_DEVICE_ATTRIBUTE_GLOBAL_L1_CACHE_SUPPORTED = 79,
+    #[doc = "< Device supports caching locals in L1"]
+    CU_DEVICE_ATTRIBUTE_LOCAL_L1_CACHE_SUPPORTED = 80,
+    #[doc = "< Maximum shared memory available per multiprocessor in bytes"]
+    CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR = 81,
+    #[doc = "< Maximum number of 32-bit registers available per multiprocessor"]
+    CU_DEVICE_ATTRIBUTE_MAX_REGISTERS_PER_MULTIPROCESSOR = 82,
+    #[doc = "< Device can allocate managed memory on this system"]
+    CU_DEVICE_ATTRIBUTE_MANAGED_MEMORY = 83,
+    #[doc = "< Device is on a multi-GPU board"]
+    CU_DEVICE_ATTRIBUTE_MULTI_GPU_BOARD = 84,
+    #[doc = "< Unique id for a group of devices on the same multi-GPU board"]
+    CU_DEVICE_ATTRIBUTE_MULTI_GPU_BOARD_GROUP_ID = 85,
+    #[doc = "< Link between the device and the host supports native atomic operations (this is a placeholder attribute, and is not supported on any current hardware)"]
+    CU_DEVICE_ATTRIBUTE_HOST_NATIVE_ATOMIC_SUPPORTED = 86,
+    #[doc = "< Ratio of single precision performance (in floating-point operations per second) to double precision performance"]
+    CU_DEVICE_ATTRIBUTE_SINGLE_TO_DOUBLE_PRECISION_PERF_RATIO = 87,
+    #[doc = "< Device supports coherently accessing pageable memory without calling cudaHostRegister on it"]
+    CU_DEVICE_ATTRIBUTE_PAGEABLE_MEMORY_ACCESS = 88,
+    #[doc = "< Device can coherently access managed memory concurrently with the CPU"]
+    CU_DEVICE_ATTRIBUTE_CONCURRENT_MANAGED_ACCESS = 89,
+    #[doc = "< Device supports compute preemption."]
+    CU_DEVICE_ATTRIBUTE_COMPUTE_PREEMPTION_SUPPORTED = 90,
+    #[doc = "< Device can access host registered memory at the same virtual address as the CPU"]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_HOST_POINTER_FOR_REGISTERED_MEM = 91,
+    #[doc = "< ::cuStreamBatchMemOp and related APIs are supported."]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_MEM_OPS = 92,
+    #[doc = "< 64-bit operations are supported in ::cuStreamBatchMemOp and related APIs."]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_64_BIT_STREAM_MEM_OPS = 93,
+    #[doc = "< ::CU_STREAM_WAIT_VALUE_NOR is supported."]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR = 94,
+    #[doc = "< Device supports launching cooperative kernels via ::cuLaunchCooperativeKernel"]
+    CU_DEVICE_ATTRIBUTE_COOPERATIVE_LAUNCH = 95,
+    #[doc = "< Deprecated, ::cuLaunchCooperativeKernelMultiDevice is deprecated."]
+    CU_DEVICE_ATTRIBUTE_COOPERATIVE_MULTI_DEVICE_LAUNCH = 96,
+    #[doc = "< Maximum optin shared memory per block"]
+    CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_BLOCK_OPTIN = 97,
+    #[doc = "< The ::CU_STREAM_WAIT_VALUE_FLUSH flag and the ::CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES MemOp are supported on the device. See \\ref CUDA_MEMOP for additional details."]
+    CU_DEVICE_ATTRIBUTE_CAN_FLUSH_REMOTE_WRITES = 98,
+    #[doc = "< Device supports host memory registration via ::cudaHostRegister."]
+    CU_DEVICE_ATTRIBUTE_HOST_REGISTER_SUPPORTED = 99,
+    #[doc = "< Device accesses pageable memory via the host's page tables."]
+    CU_DEVICE_ATTRIBUTE_PAGEABLE_MEMORY_ACCESS_USES_HOST_PAGE_TABLES = 100,
+    #[doc = "< The host can directly access managed memory on the device without migration."]
+    CU_DEVICE_ATTRIBUTE_DIRECT_MANAGED_MEM_ACCESS_FROM_HOST = 101,
+    #[doc = "< Deprecated, Use CU_DEVICE_ATTRIBUTE_VIRTUAL_MEMORY_MANAGEMENT_SUPPORTED"]
+    CU_DEVICE_ATTRIBUTE_VIRTUAL_ADDRESS_MANAGEMENT_SUPPORTED = 102,
+    #[doc = "< Device supports exporting memory to a posix file descriptor with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
+    CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_POSIX_FILE_DESCRIPTOR_SUPPORTED = 103,
+    #[doc = "< Device supports exporting memory to a Win32 NT handle with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
+    CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_WIN32_HANDLE_SUPPORTED = 104,
+    #[doc = "< Device supports exporting memory to a Win32 KMT handle with ::cuMemExportToShareableHandle, if requested via ::cuMemCreate"]
+    CU_DEVICE_ATTRIBUTE_HANDLE_TYPE_WIN32_KMT_HANDLE_SUPPORTED = 105,
+    #[doc = "< Maximum number of blocks per multiprocessor"]
+    CU_DEVICE_ATTRIBUTE_MAX_BLOCKS_PER_MULTIPROCESSOR = 106,
+    #[doc = "< Device supports compression of memory"]
+    CU_DEVICE_ATTRIBUTE_GENERIC_COMPRESSION_SUPPORTED = 107,
+    #[doc = "< Maximum L2 persisting lines capacity setting in bytes."]
+    CU_DEVICE_ATTRIBUTE_MAX_PERSISTING_L2_CACHE_SIZE = 108,
+    #[doc = "< Maximum value of CUaccessPolicyWindow::num_bytes."]
+    CU_DEVICE_ATTRIBUTE_MAX_ACCESS_POLICY_WINDOW_SIZE = 109,
+    #[doc = "< Device supports specifying the GPUDirect RDMA flag with ::cuMemCreate"]
+    CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_WITH_CUDA_VMM_SUPPORTED = 110,
+    #[doc = "< Shared memory reserved by CUDA driver per block in bytes"]
+    CU_DEVICE_ATTRIBUTE_RESERVED_SHARED_MEMORY_PER_BLOCK = 111,
+    #[doc = "< Device supports sparse CUDA arrays and sparse CUDA mipmapped arrays"]
+    CU_DEVICE_ATTRIBUTE_SPARSE_CUDA_ARRAY_SUPPORTED = 112,
+    #[doc = "< Device supports using the ::cuMemHostRegister flag ::CU_MEMHOSTERGISTER_READ_ONLY to register memory that must be mapped as read-only to the GPU"]
+    CU_DEVICE_ATTRIBUTE_READ_ONLY_HOST_REGISTER_SUPPORTED = 113,
+    #[doc = "< External timeline semaphore interop is supported on the device"]
+    CU_DEVICE_ATTRIBUTE_TIMELINE_SEMAPHORE_INTEROP_SUPPORTED = 114,
+    #[doc = "< Device supports using the ::cuMemAllocAsync and ::cuMemPool family of APIs"]
+    CU_DEVICE_ATTRIBUTE_MEMORY_POOLS_SUPPORTED = 115,
+    #[doc = "< Device supports GPUDirect RDMA APIs, like nvidia_p2p_get_pages (see https://docs.nvidia.com/cuda/gpudirect-rdma for more information)"]
+    CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_SUPPORTED = 116,
+    #[doc = "< The returned attribute shall be interpreted as a bitmask, where the individual bits are described by the ::CUflushGPUDirectRDMAWritesOptions enum"]
+    CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_FLUSH_WRITES_OPTIONS = 117,
+    #[doc = "< GPUDirect RDMA writes to the device do not need to be flushed for consumers within the scope indicated by the returned attribute. See ::CUGPUDirectRDMAWritesOrdering for the numerical values returned here."]
+    CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_WRITES_ORDERING = 118,
+    #[doc = "< Handle types supported with mempool based IPC"]
+    CU_DEVICE_ATTRIBUTE_MEMPOOL_SUPPORTED_HANDLE_TYPES = 119,
+    #[doc = "< Device supports deferred mapping CUDA arrays and CUDA mipmapped arrays"]
+    CU_DEVICE_ATTRIBUTE_DEFERRED_MAPPING_CUDA_ARRAY_SUPPORTED = 121,
+    #[doc = "< 64-bit operations are supported in ::cuStreamBatchMemOp_v2 and related v2 MemOp APIs."]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_64_BIT_STREAM_MEM_OPS_V2 = 122,
+    #[doc = "< ::CU_STREAM_WAIT_VALUE_NOR is supported by v2 MemOp APIs."]
+    CU_DEVICE_ATTRIBUTE_CAN_USE_STREAM_WAIT_VALUE_NOR_V2 = 123,
+    #[doc = "< Device supports buffer sharing with dma_buf mechanism."]
+    CU_DEVICE_ATTRIBUTE_DMA_BUF_SUPPORTED = 124,
+    CU_DEVICE_ATTRIBUTE_MAX = 125,
+}
 #[doc = " Device properties"]
 pub use self::CUdevice_attribute_enum as CUdevice_attribute;
 #[doc = " Legacy device properties"]
@@ -3500,481 +3443,504 @@ fn bindgen_test_layout_CUdevprop_st() {
 pub type CUdevprop_v1 = CUdevprop_st;
 #[doc = " Legacy device properties"]
 pub type CUdevprop = CUdevprop_v1;
-#[doc = "< The ::CUcontext on which a pointer was allocated or registered"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_CONTEXT: CUpointer_attribute_enum = 1;
-#[doc = "< The ::CUmemorytype describing the physical location of a pointer"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MEMORY_TYPE: CUpointer_attribute_enum = 2;
-#[doc = "< The address at which a pointer's memory may be accessed on the device"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_DEVICE_POINTER: CUpointer_attribute_enum =
-    3;
-#[doc = "< The address at which a pointer's memory may be accessed on the host"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_HOST_POINTER: CUpointer_attribute_enum = 4;
-#[doc = "< A pair of tokens for use with the nv-p2p.h Linux kernel interface"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_P2P_TOKENS: CUpointer_attribute_enum = 5;
-#[doc = "< Synchronize every synchronous memory operation initiated on this region"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_SYNC_MEMOPS: CUpointer_attribute_enum = 6;
-#[doc = "< A process-wide unique ID for an allocated memory region"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_BUFFER_ID: CUpointer_attribute_enum = 7;
-#[doc = "< Indicates if the pointer points to managed memory"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_IS_MANAGED: CUpointer_attribute_enum = 8;
-#[doc = "< A device ordinal of a device on which a pointer was allocated or registered"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_DEVICE_ORDINAL: CUpointer_attribute_enum =
-    9;
-#[doc = "< 1 if this pointer maps to an allocation that is suitable for ::cudaIpcGetMemHandle, 0 otherwise"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_IS_LEGACY_CUDA_IPC_CAPABLE:
-    CUpointer_attribute_enum = 10;
-#[doc = "< Starting address for this requested pointer"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_RANGE_START_ADDR: CUpointer_attribute_enum =
-    11;
-#[doc = "< Size of the address range for this requested pointer"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_RANGE_SIZE: CUpointer_attribute_enum = 12;
-#[doc = "< 1 if this pointer is in a valid address range that is mapped to a backing allocation, 0 otherwise"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MAPPED: CUpointer_attribute_enum = 13;
-#[doc = "< Bitmask of allowed ::CUmemAllocationHandleType for this allocation"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_ALLOWED_HANDLE_TYPES:
-    CUpointer_attribute_enum = 14;
-#[doc = "< 1 if the memory this pointer is referencing can be used with the GPUDirect RDMA API"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_IS_GPU_DIRECT_RDMA_CAPABLE:
-    CUpointer_attribute_enum = 15;
-#[doc = "< Returns the access flags the device associated with the current context has on the corresponding memory referenced by the pointer given"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_ACCESS_FLAGS: CUpointer_attribute_enum = 16;
-#[doc = "< Returns the mempool handle for the allocation if it was allocated from a mempool. Otherwise returns NULL."]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MEMPOOL_HANDLE: CUpointer_attribute_enum =
-    17;
-#[doc = "< Size of the actual underlying mapping that the pointer belongs to"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MAPPING_SIZE: CUpointer_attribute_enum = 18;
-#[doc = "< The start address of the mapping that the pointer belongs to"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MAPPING_BASE_ADDR:
-    CUpointer_attribute_enum = 19;
-#[doc = "< A process-wide unique id corresponding to the physical allocation the pointer belongs to"]
-pub const CUpointer_attribute_enum_CU_POINTER_ATTRIBUTE_MEMORY_BLOCK_ID: CUpointer_attribute_enum =
-    20;
+#[repr(i32)]
 #[doc = " Pointer information"]
-pub type CUpointer_attribute_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUpointer_attribute_enum {
+    #[doc = "< The ::CUcontext on which a pointer was allocated or registered"]
+    CU_POINTER_ATTRIBUTE_CONTEXT = 1,
+    #[doc = "< The ::CUmemorytype describing the physical location of a pointer"]
+    CU_POINTER_ATTRIBUTE_MEMORY_TYPE = 2,
+    #[doc = "< The address at which a pointer's memory may be accessed on the device"]
+    CU_POINTER_ATTRIBUTE_DEVICE_POINTER = 3,
+    #[doc = "< The address at which a pointer's memory may be accessed on the host"]
+    CU_POINTER_ATTRIBUTE_HOST_POINTER = 4,
+    #[doc = "< A pair of tokens for use with the nv-p2p.h Linux kernel interface"]
+    CU_POINTER_ATTRIBUTE_P2P_TOKENS = 5,
+    #[doc = "< Synchronize every synchronous memory operation initiated on this region"]
+    CU_POINTER_ATTRIBUTE_SYNC_MEMOPS = 6,
+    #[doc = "< A process-wide unique ID for an allocated memory region"]
+    CU_POINTER_ATTRIBUTE_BUFFER_ID = 7,
+    #[doc = "< Indicates if the pointer points to managed memory"]
+    CU_POINTER_ATTRIBUTE_IS_MANAGED = 8,
+    #[doc = "< A device ordinal of a device on which a pointer was allocated or registered"]
+    CU_POINTER_ATTRIBUTE_DEVICE_ORDINAL = 9,
+    #[doc = "< 1 if this pointer maps to an allocation that is suitable for ::cudaIpcGetMemHandle, 0 otherwise"]
+    CU_POINTER_ATTRIBUTE_IS_LEGACY_CUDA_IPC_CAPABLE = 10,
+    #[doc = "< Starting address for this requested pointer"]
+    CU_POINTER_ATTRIBUTE_RANGE_START_ADDR = 11,
+    #[doc = "< Size of the address range for this requested pointer"]
+    CU_POINTER_ATTRIBUTE_RANGE_SIZE = 12,
+    #[doc = "< 1 if this pointer is in a valid address range that is mapped to a backing allocation, 0 otherwise"]
+    CU_POINTER_ATTRIBUTE_MAPPED = 13,
+    #[doc = "< Bitmask of allowed ::CUmemAllocationHandleType for this allocation"]
+    CU_POINTER_ATTRIBUTE_ALLOWED_HANDLE_TYPES = 14,
+    #[doc = "< 1 if the memory this pointer is referencing can be used with the GPUDirect RDMA API"]
+    CU_POINTER_ATTRIBUTE_IS_GPU_DIRECT_RDMA_CAPABLE = 15,
+    #[doc = "< Returns the access flags the device associated with the current context has on the corresponding memory referenced by the pointer given"]
+    CU_POINTER_ATTRIBUTE_ACCESS_FLAGS = 16,
+    #[doc = "< Returns the mempool handle for the allocation if it was allocated from a mempool. Otherwise returns NULL."]
+    CU_POINTER_ATTRIBUTE_MEMPOOL_HANDLE = 17,
+    #[doc = "< Size of the actual underlying mapping that the pointer belongs to"]
+    CU_POINTER_ATTRIBUTE_MAPPING_SIZE = 18,
+    #[doc = "< The start address of the mapping that the pointer belongs to"]
+    CU_POINTER_ATTRIBUTE_MAPPING_BASE_ADDR = 19,
+    #[doc = "< A process-wide unique id corresponding to the physical allocation the pointer belongs to"]
+    CU_POINTER_ATTRIBUTE_MEMORY_BLOCK_ID = 20,
+}
 #[doc = " Pointer information"]
 pub use self::CUpointer_attribute_enum as CUpointer_attribute;
-#[doc = " The maximum number of threads per block, beyond which a launch of the"]
-#[doc = " function would fail. This number depends on both the function and the"]
-#[doc = " device on which the function is currently loaded."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK:
-    CUfunction_attribute_enum = 0;
-#[doc = " The size in bytes of statically-allocated shared memory required by"]
-#[doc = " this function. This does not include dynamically-allocated shared"]
-#[doc = " memory requested by the user at runtime."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES: CUfunction_attribute_enum =
-    1;
-#[doc = " The size in bytes of user-allocated constant memory required by this"]
-#[doc = " function."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_CONST_SIZE_BYTES: CUfunction_attribute_enum =
-    2;
-#[doc = " The size in bytes of local memory used by each thread of this function."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_LOCAL_SIZE_BYTES: CUfunction_attribute_enum =
-    3;
-#[doc = " The number of registers used by each thread of this function."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_NUM_REGS: CUfunction_attribute_enum = 4;
-#[doc = " The PTX virtual architecture version for which the function was"]
-#[doc = " compiled. This value is the major PTX version * 10 + the minor PTX"]
-#[doc = " version, so a PTX version 1.3 function would return the value 13."]
-#[doc = " Note that this may return the undefined value of 0 for cubins"]
-#[doc = " compiled prior to CUDA 3.0."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_PTX_VERSION: CUfunction_attribute_enum = 5;
-#[doc = " The binary architecture version for which the function was compiled."]
-#[doc = " This value is the major binary version * 10 + the minor binary version,"]
-#[doc = " so a binary version 1.3 function would return the value 13. Note that"]
-#[doc = " this will return a value of 10 for legacy cubins that do not have a"]
-#[doc = " properly-encoded binary architecture version."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_BINARY_VERSION: CUfunction_attribute_enum = 6;
-#[doc = " The attribute to indicate whether the function has been compiled with"]
-#[doc = " user specified option \"-Xptxas --dlcm=ca\" set ."]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_CACHE_MODE_CA: CUfunction_attribute_enum = 7;
-#[doc = " The maximum size in bytes of dynamically-allocated shared memory that can be used by"]
-#[doc = " this function. If the user-specified dynamic shared memory size is larger than this"]
-#[doc = " value, the launch will fail."]
-#[doc = " See ::cuFuncSetAttribute"]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES:
-    CUfunction_attribute_enum = 8;
-#[doc = " On devices where the L1 cache and shared memory use the same hardware resources,"]
-#[doc = " this sets the shared memory carveout preference, in percent of the total shared memory."]
-#[doc = " Refer to ::CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR."]
-#[doc = " This is only a hint, and the driver can choose a different ratio if required to execute the function."]
-#[doc = " See ::cuFuncSetAttribute"]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_PREFERRED_SHARED_MEMORY_CARVEOUT:
-    CUfunction_attribute_enum = 9;
-#[doc = " On devices where the L1 cache and shared memory use the same hardware resources,"]
-#[doc = " this sets the shared memory carveout preference, in percent of the total shared memory."]
-#[doc = " Refer to ::CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR."]
-#[doc = " This is only a hint, and the driver can choose a different ratio if required to execute the function."]
-#[doc = " See ::cuFuncSetAttribute"]
-pub const CUfunction_attribute_enum_CU_FUNC_ATTRIBUTE_MAX: CUfunction_attribute_enum = 10;
+#[repr(i32)]
 #[doc = " Function properties"]
-pub type CUfunction_attribute_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUfunction_attribute_enum {
+    #[doc = " The maximum number of threads per block, beyond which a launch of the"]
+    #[doc = " function would fail. This number depends on both the function and the"]
+    #[doc = " device on which the function is currently loaded."]
+    CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK = 0,
+    #[doc = " The size in bytes of statically-allocated shared memory required by"]
+    #[doc = " this function. This does not include dynamically-allocated shared"]
+    #[doc = " memory requested by the user at runtime."]
+    CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES = 1,
+    #[doc = " The size in bytes of user-allocated constant memory required by this"]
+    #[doc = " function."]
+    CU_FUNC_ATTRIBUTE_CONST_SIZE_BYTES = 2,
+    #[doc = " The size in bytes of local memory used by each thread of this function."]
+    CU_FUNC_ATTRIBUTE_LOCAL_SIZE_BYTES = 3,
+    #[doc = " The number of registers used by each thread of this function."]
+    CU_FUNC_ATTRIBUTE_NUM_REGS = 4,
+    #[doc = " The PTX virtual architecture version for which the function was"]
+    #[doc = " compiled. This value is the major PTX version * 10 + the minor PTX"]
+    #[doc = " version, so a PTX version 1.3 function would return the value 13."]
+    #[doc = " Note that this may return the undefined value of 0 for cubins"]
+    #[doc = " compiled prior to CUDA 3.0."]
+    CU_FUNC_ATTRIBUTE_PTX_VERSION = 5,
+    #[doc = " The binary architecture version for which the function was compiled."]
+    #[doc = " This value is the major binary version * 10 + the minor binary version,"]
+    #[doc = " so a binary version 1.3 function would return the value 13. Note that"]
+    #[doc = " this will return a value of 10 for legacy cubins that do not have a"]
+    #[doc = " properly-encoded binary architecture version."]
+    CU_FUNC_ATTRIBUTE_BINARY_VERSION = 6,
+    #[doc = " The attribute to indicate whether the function has been compiled with"]
+    #[doc = " user specified option \"-Xptxas --dlcm=ca\" set ."]
+    CU_FUNC_ATTRIBUTE_CACHE_MODE_CA = 7,
+    #[doc = " The maximum size in bytes of dynamically-allocated shared memory that can be used by"]
+    #[doc = " this function. If the user-specified dynamic shared memory size is larger than this"]
+    #[doc = " value, the launch will fail."]
+    #[doc = " See ::cuFuncSetAttribute"]
+    CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES = 8,
+    #[doc = " On devices where the L1 cache and shared memory use the same hardware resources,"]
+    #[doc = " this sets the shared memory carveout preference, in percent of the total shared memory."]
+    #[doc = " Refer to ::CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR."]
+    #[doc = " This is only a hint, and the driver can choose a different ratio if required to execute the function."]
+    #[doc = " See ::cuFuncSetAttribute"]
+    CU_FUNC_ATTRIBUTE_PREFERRED_SHARED_MEMORY_CARVEOUT = 9,
+    #[doc = " On devices where the L1 cache and shared memory use the same hardware resources,"]
+    #[doc = " this sets the shared memory carveout preference, in percent of the total shared memory."]
+    #[doc = " Refer to ::CU_DEVICE_ATTRIBUTE_MAX_SHARED_MEMORY_PER_MULTIPROCESSOR."]
+    #[doc = " This is only a hint, and the driver can choose a different ratio if required to execute the function."]
+    #[doc = " See ::cuFuncSetAttribute"]
+    CU_FUNC_ATTRIBUTE_MAX = 10,
+}
 #[doc = " Function properties"]
 pub use self::CUfunction_attribute_enum as CUfunction_attribute;
-#[doc = "< no preference for shared memory or L1 (default)"]
-pub const CUfunc_cache_enum_CU_FUNC_CACHE_PREFER_NONE: CUfunc_cache_enum = 0;
-#[doc = "< prefer larger shared memory and smaller L1 cache"]
-pub const CUfunc_cache_enum_CU_FUNC_CACHE_PREFER_SHARED: CUfunc_cache_enum = 1;
-#[doc = "< prefer larger L1 cache and smaller shared memory"]
-pub const CUfunc_cache_enum_CU_FUNC_CACHE_PREFER_L1: CUfunc_cache_enum = 2;
-#[doc = "< prefer equal sized L1 cache and shared memory"]
-pub const CUfunc_cache_enum_CU_FUNC_CACHE_PREFER_EQUAL: CUfunc_cache_enum = 3;
+#[repr(i32)]
 #[doc = " Function cache configurations"]
-pub type CUfunc_cache_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUfunc_cache_enum {
+    #[doc = "< no preference for shared memory or L1 (default)"]
+    CU_FUNC_CACHE_PREFER_NONE = 0,
+    #[doc = "< prefer larger shared memory and smaller L1 cache"]
+    CU_FUNC_CACHE_PREFER_SHARED = 1,
+    #[doc = "< prefer larger L1 cache and smaller shared memory"]
+    CU_FUNC_CACHE_PREFER_L1 = 2,
+    #[doc = "< prefer equal sized L1 cache and shared memory"]
+    CU_FUNC_CACHE_PREFER_EQUAL = 3,
+}
 #[doc = " Function cache configurations"]
 pub use self::CUfunc_cache_enum as CUfunc_cache;
-#[doc = "< set default shared memory bank size"]
-pub const CUsharedconfig_enum_CU_SHARED_MEM_CONFIG_DEFAULT_BANK_SIZE: CUsharedconfig_enum = 0;
-#[doc = "< set shared memory bank width to four bytes"]
-pub const CUsharedconfig_enum_CU_SHARED_MEM_CONFIG_FOUR_BYTE_BANK_SIZE: CUsharedconfig_enum = 1;
-#[doc = "< set shared memory bank width to eight bytes"]
-pub const CUsharedconfig_enum_CU_SHARED_MEM_CONFIG_EIGHT_BYTE_BANK_SIZE: CUsharedconfig_enum = 2;
+#[repr(i32)]
 #[doc = " Shared memory configurations"]
-pub type CUsharedconfig_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUsharedconfig_enum {
+    #[doc = "< set default shared memory bank size"]
+    CU_SHARED_MEM_CONFIG_DEFAULT_BANK_SIZE = 0,
+    #[doc = "< set shared memory bank width to four bytes"]
+    CU_SHARED_MEM_CONFIG_FOUR_BYTE_BANK_SIZE = 1,
+    #[doc = "< set shared memory bank width to eight bytes"]
+    CU_SHARED_MEM_CONFIG_EIGHT_BYTE_BANK_SIZE = 2,
+}
 #[doc = " Shared memory configurations"]
 pub use self::CUsharedconfig_enum as CUsharedconfig;
-#[doc = "< No preference for shared memory or L1 (default)"]
-pub const CUshared_carveout_enum_CU_SHAREDMEM_CARVEOUT_DEFAULT: CUshared_carveout_enum = -1;
-#[doc = "< Prefer maximum available shared memory, minimum L1 cache"]
-pub const CUshared_carveout_enum_CU_SHAREDMEM_CARVEOUT_MAX_SHARED: CUshared_carveout_enum = 100;
-#[doc = "< Prefer maximum available L1 cache, minimum shared memory"]
-pub const CUshared_carveout_enum_CU_SHAREDMEM_CARVEOUT_MAX_L1: CUshared_carveout_enum = 0;
+#[repr(i32)]
 #[doc = " Shared memory carveout configurations. These may be passed to ::cuFuncSetAttribute"]
-pub type CUshared_carveout_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUshared_carveout_enum {
+    #[doc = "< No preference for shared memory or L1 (default)"]
+    CU_SHAREDMEM_CARVEOUT_DEFAULT = -1,
+    #[doc = "< Prefer maximum available shared memory, minimum L1 cache"]
+    CU_SHAREDMEM_CARVEOUT_MAX_SHARED = 100,
+    #[doc = "< Prefer maximum available L1 cache, minimum shared memory"]
+    CU_SHAREDMEM_CARVEOUT_MAX_L1 = 0,
+}
 #[doc = " Shared memory carveout configurations. These may be passed to ::cuFuncSetAttribute"]
 pub use self::CUshared_carveout_enum as CUshared_carveout;
-#[doc = "< Host memory"]
-pub const CUmemorytype_enum_CU_MEMORYTYPE_HOST: CUmemorytype_enum = 1;
-#[doc = "< Device memory"]
-pub const CUmemorytype_enum_CU_MEMORYTYPE_DEVICE: CUmemorytype_enum = 2;
-#[doc = "< Array memory"]
-pub const CUmemorytype_enum_CU_MEMORYTYPE_ARRAY: CUmemorytype_enum = 3;
-#[doc = "< Unified device or host memory"]
-pub const CUmemorytype_enum_CU_MEMORYTYPE_UNIFIED: CUmemorytype_enum = 4;
+#[repr(i32)]
 #[doc = " Memory types"]
-pub type CUmemorytype_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemorytype_enum {
+    #[doc = "< Host memory"]
+    CU_MEMORYTYPE_HOST = 1,
+    #[doc = "< Device memory"]
+    CU_MEMORYTYPE_DEVICE = 2,
+    #[doc = "< Array memory"]
+    CU_MEMORYTYPE_ARRAY = 3,
+    #[doc = "< Unified device or host memory"]
+    CU_MEMORYTYPE_UNIFIED = 4,
+}
 #[doc = " Memory types"]
 pub use self::CUmemorytype_enum as CUmemorytype;
-#[doc = "< Default compute mode (Multiple contexts allowed per device)"]
-pub const CUcomputemode_enum_CU_COMPUTEMODE_DEFAULT: CUcomputemode_enum = 0;
-#[doc = "< Compute-prohibited mode (No contexts can be created on this device at this time)"]
-pub const CUcomputemode_enum_CU_COMPUTEMODE_PROHIBITED: CUcomputemode_enum = 2;
-#[doc = "< Compute-exclusive-process mode (Only one context used by a single process can be present on this device at a time)"]
-pub const CUcomputemode_enum_CU_COMPUTEMODE_EXCLUSIVE_PROCESS: CUcomputemode_enum = 3;
+#[repr(i32)]
 #[doc = " Compute Modes"]
-pub type CUcomputemode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUcomputemode_enum {
+    #[doc = "< Default compute mode (Multiple contexts allowed per device)"]
+    CU_COMPUTEMODE_DEFAULT = 0,
+    #[doc = "< Compute-prohibited mode (No contexts can be created on this device at this time)"]
+    CU_COMPUTEMODE_PROHIBITED = 2,
+    #[doc = "< Compute-exclusive-process mode (Only one context used by a single process can be present on this device at a time)"]
+    CU_COMPUTEMODE_EXCLUSIVE_PROCESS = 3,
+}
 #[doc = " Compute Modes"]
 pub use self::CUcomputemode_enum as CUcomputemode;
-#[doc = "< Data will mostly be read and only occassionally be written to"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_SET_READ_MOSTLY: CUmem_advise_enum = 1;
-#[doc = "< Undo the effect of ::CU_MEM_ADVISE_SET_READ_MOSTLY"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_UNSET_READ_MOSTLY: CUmem_advise_enum = 2;
-#[doc = "< Set the preferred location for the data as the specified device"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_SET_PREFERRED_LOCATION: CUmem_advise_enum = 3;
-#[doc = "< Clear the preferred location for the data"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_UNSET_PREFERRED_LOCATION: CUmem_advise_enum = 4;
-#[doc = "< Data will be accessed by the specified device, so prevent page faults as much as possible"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_SET_ACCESSED_BY: CUmem_advise_enum = 5;
-#[doc = "< Let the Unified Memory subsystem decide on the page faulting policy for the specified device"]
-pub const CUmem_advise_enum_CU_MEM_ADVISE_UNSET_ACCESSED_BY: CUmem_advise_enum = 6;
+#[repr(i32)]
 #[doc = " Memory advise values"]
-pub type CUmem_advise_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmem_advise_enum {
+    #[doc = "< Data will mostly be read and only occassionally be written to"]
+    CU_MEM_ADVISE_SET_READ_MOSTLY = 1,
+    #[doc = "< Undo the effect of ::CU_MEM_ADVISE_SET_READ_MOSTLY"]
+    CU_MEM_ADVISE_UNSET_READ_MOSTLY = 2,
+    #[doc = "< Set the preferred location for the data as the specified device"]
+    CU_MEM_ADVISE_SET_PREFERRED_LOCATION = 3,
+    #[doc = "< Clear the preferred location for the data"]
+    CU_MEM_ADVISE_UNSET_PREFERRED_LOCATION = 4,
+    #[doc = "< Data will be accessed by the specified device, so prevent page faults as much as possible"]
+    CU_MEM_ADVISE_SET_ACCESSED_BY = 5,
+    #[doc = "< Let the Unified Memory subsystem decide on the page faulting policy for the specified device"]
+    CU_MEM_ADVISE_UNSET_ACCESSED_BY = 6,
+}
 #[doc = " Memory advise values"]
 pub use self::CUmem_advise_enum as CUmem_advise;
-#[doc = "< Whether the range will mostly be read and only occassionally be written to"]
-pub const CUmem_range_attribute_enum_CU_MEM_RANGE_ATTRIBUTE_READ_MOSTLY:
-    CUmem_range_attribute_enum = 1;
-#[doc = "< The preferred location of the range"]
-pub const CUmem_range_attribute_enum_CU_MEM_RANGE_ATTRIBUTE_PREFERRED_LOCATION:
-    CUmem_range_attribute_enum = 2;
-#[doc = "< Memory range has ::CU_MEM_ADVISE_SET_ACCESSED_BY set for specified device"]
-pub const CUmem_range_attribute_enum_CU_MEM_RANGE_ATTRIBUTE_ACCESSED_BY:
-    CUmem_range_attribute_enum = 3;
-#[doc = "< The last location to which the range was prefetched"]
-pub const CUmem_range_attribute_enum_CU_MEM_RANGE_ATTRIBUTE_LAST_PREFETCH_LOCATION:
-    CUmem_range_attribute_enum = 4;
-pub type CUmem_range_attribute_enum = ::std::os::raw::c_int;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmem_range_attribute_enum {
+    #[doc = "< Whether the range will mostly be read and only occassionally be written to"]
+    CU_MEM_RANGE_ATTRIBUTE_READ_MOSTLY = 1,
+    #[doc = "< The preferred location of the range"]
+    CU_MEM_RANGE_ATTRIBUTE_PREFERRED_LOCATION = 2,
+    #[doc = "< Memory range has ::CU_MEM_ADVISE_SET_ACCESSED_BY set for specified device"]
+    CU_MEM_RANGE_ATTRIBUTE_ACCESSED_BY = 3,
+    #[doc = "< The last location to which the range was prefetched"]
+    CU_MEM_RANGE_ATTRIBUTE_LAST_PREFETCH_LOCATION = 4,
+}
 pub use self::CUmem_range_attribute_enum as CUmem_range_attribute;
-#[doc = " Max number of registers that a thread may use.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_MAX_REGISTERS: CUjit_option_enum = 0;
-#[doc = " IN: Specifies minimum number of threads per block to target compilation"]
-#[doc = " for\\n"]
-#[doc = " OUT: Returns the number of threads the compiler actually targeted."]
-#[doc = " This restricts the resource utilization fo the compiler (e.g. max"]
-#[doc = " registers) such that a block with the given number of threads should be"]
-#[doc = " able to launch based on register limitations. Note, this option does not"]
-#[doc = " currently take into account any other resource limitations, such as"]
-#[doc = " shared memory utilization.\\n"]
-#[doc = " Cannot be combined with ::CU_JIT_TARGET.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_THREADS_PER_BLOCK: CUjit_option_enum = 1;
-#[doc = " Overwrites the option value with the total wall clock time, in"]
-#[doc = " milliseconds, spent in the compiler and linker\\n"]
-#[doc = " Option type: float\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_WALL_TIME: CUjit_option_enum = 2;
-#[doc = " Pointer to a buffer in which to print any log messages"]
-#[doc = " that are informational in nature (the buffer size is specified via"]
-#[doc = " option ::CU_JIT_INFO_LOG_BUFFER_SIZE_BYTES)\\n"]
-#[doc = " Option type: char *\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_INFO_LOG_BUFFER: CUjit_option_enum = 3;
-#[doc = " IN: Log buffer size in bytes.  Log messages will be capped at this size"]
-#[doc = " (including null terminator)\\n"]
-#[doc = " OUT: Amount of log buffer filled with messages\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_INFO_LOG_BUFFER_SIZE_BYTES: CUjit_option_enum = 4;
-#[doc = " Pointer to a buffer in which to print any log messages that"]
-#[doc = " reflect errors (the buffer size is specified via option"]
-#[doc = " ::CU_JIT_ERROR_LOG_BUFFER_SIZE_BYTES)\\n"]
-#[doc = " Option type: char *\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_ERROR_LOG_BUFFER: CUjit_option_enum = 5;
-#[doc = " IN: Log buffer size in bytes.  Log messages will be capped at this size"]
-#[doc = " (including null terminator)\\n"]
-#[doc = " OUT: Amount of log buffer filled with messages\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_ERROR_LOG_BUFFER_SIZE_BYTES: CUjit_option_enum = 6;
-#[doc = " Level of optimizations to apply to generated code (0 - 4), with 4"]
-#[doc = " being the default and highest level of optimizations.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_OPTIMIZATION_LEVEL: CUjit_option_enum = 7;
-#[doc = " No option value required. Determines the target based on the current"]
-#[doc = " attached context (default)\\n"]
-#[doc = " Option type: No option value needed\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_TARGET_FROM_CUCONTEXT: CUjit_option_enum = 8;
-#[doc = " Target is chosen based on supplied ::CUjit_target.  Cannot be"]
-#[doc = " combined with ::CU_JIT_THREADS_PER_BLOCK.\\n"]
-#[doc = " Option type: unsigned int for enumerated type ::CUjit_target\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_TARGET: CUjit_option_enum = 9;
-#[doc = " Specifies choice of fallback strategy if matching cubin is not found."]
-#[doc = " Choice is based on supplied ::CUjit_fallback.  This option cannot be"]
-#[doc = " used with cuLink* APIs as the linker requires exact matches.\\n"]
-#[doc = " Option type: unsigned int for enumerated type ::CUjit_fallback\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_FALLBACK_STRATEGY: CUjit_option_enum = 10;
-#[doc = " Specifies whether to create debug information in output (-g)"]
-#[doc = " (0: false, default)\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_GENERATE_DEBUG_INFO: CUjit_option_enum = 11;
-#[doc = " Generate verbose log messages (0: false, default)\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_LOG_VERBOSE: CUjit_option_enum = 12;
-#[doc = " Generate line number information (-lineinfo) (0: false, default)\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_GENERATE_LINE_INFO: CUjit_option_enum = 13;
-#[doc = " Specifies whether to enable caching explicitly (-dlcm) \\n"]
-#[doc = " Choice is based on supplied ::CUjit_cacheMode_enum.\\n"]
-#[doc = " Option type: unsigned int for enumerated type ::CUjit_cacheMode_enum\\n"]
-#[doc = " Applies to: compiler only"]
-pub const CUjit_option_enum_CU_JIT_CACHE_MODE: CUjit_option_enum = 14;
-#[doc = " \\deprecated"]
-#[doc = " This jit option is deprecated and should not be used."]
-pub const CUjit_option_enum_CU_JIT_NEW_SM3X_OPT: CUjit_option_enum = 15;
-#[doc = " This jit option is used for internal purpose only."]
-pub const CUjit_option_enum_CU_JIT_FAST_COMPILE: CUjit_option_enum = 16;
-#[doc = " Array of device symbol names that will be relocated to the corresponing"]
-#[doc = " host addresses stored in ::CU_JIT_GLOBAL_SYMBOL_ADDRESSES.\\n"]
-#[doc = " Must contain ::CU_JIT_GLOBAL_SYMBOL_COUNT entries.\\n"]
-#[doc = " When loding a device module, driver will relocate all encountered"]
-#[doc = " unresolved symbols to the host addresses.\\n"]
-#[doc = " It is only allowed to register symbols that correspond to unresolved"]
-#[doc = " global variables.\\n"]
-#[doc = " It is illegal to register the same device symbol at multiple addresses.\\n"]
-#[doc = " Option type: const char **\\n"]
-#[doc = " Applies to: dynamic linker only"]
-pub const CUjit_option_enum_CU_JIT_GLOBAL_SYMBOL_NAMES: CUjit_option_enum = 17;
-#[doc = " Array of host addresses that will be used to relocate corresponding"]
-#[doc = " device symbols stored in ::CU_JIT_GLOBAL_SYMBOL_NAMES.\\n"]
-#[doc = " Must contain ::CU_JIT_GLOBAL_SYMBOL_COUNT entries.\\n"]
-#[doc = " Option type: void **\\n"]
-#[doc = " Applies to: dynamic linker only"]
-pub const CUjit_option_enum_CU_JIT_GLOBAL_SYMBOL_ADDRESSES: CUjit_option_enum = 18;
-#[doc = " Number of entries in ::CU_JIT_GLOBAL_SYMBOL_NAMES and"]
-#[doc = " ::CU_JIT_GLOBAL_SYMBOL_ADDRESSES arrays.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: dynamic linker only"]
-pub const CUjit_option_enum_CU_JIT_GLOBAL_SYMBOL_COUNT: CUjit_option_enum = 19;
-#[doc = " Enable link-time optimization (-dlto) for device code (Disabled by default).\\n"]
-#[doc = " This option is not supported on 32-bit platforms.\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: compiler and linker"]
-pub const CUjit_option_enum_CU_JIT_LTO: CUjit_option_enum = 20;
-#[doc = " Control single-precision denormals (-ftz) support (0: false, default)."]
-#[doc = " 1 : flushes denormal values to zero"]
-#[doc = " 0 : preserves denormal values"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_FTZ: CUjit_option_enum = 21;
-#[doc = " Control single-precision floating-point division and reciprocals"]
-#[doc = " (-prec-div) support (1: true, default)."]
-#[doc = " 1 : Enables the IEEE round-to-nearest mode"]
-#[doc = " 0 : Enables the fast approximation mode"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_PREC_DIV: CUjit_option_enum = 22;
-#[doc = " Control single-precision floating-point square root"]
-#[doc = " (-prec-sqrt) support (1: true, default)."]
-#[doc = " 1 : Enables the IEEE round-to-nearest mode"]
-#[doc = " 0 : Enables the fast approximation mode"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_PREC_SQRT: CUjit_option_enum = 23;
-#[doc = " Enable/Disable the contraction of floating-point multiplies"]
-#[doc = " and adds/subtracts into floating-point multiply-add (-fma)"]
-#[doc = " operations (1: Enable, default; 0: Disable)."]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_FMA: CUjit_option_enum = 24;
-#[doc = " Array of kernel names that should be preserved at link time while others"]
-#[doc = " can be removed.\\n"]
-#[doc = " Must contain ::CU_JIT_REFERENCED_KERNEL_COUNT entries.\\n"]
-#[doc = " Note that kernel names can be mangled by the compiler in which case the"]
-#[doc = " mangled name needs to be specified.\\n"]
-#[doc = " Wildcard \"*\" can be used to represent zero or more characters instead of"]
-#[doc = " specifying the full or mangled name.\\n"]
-#[doc = " It is important to note that the wildcard \"*\" is also added implicitly."]
-#[doc = " For example, specifying \"foo\" will match \"foobaz\", \"barfoo\", \"barfoobaz\" and"]
-#[doc = " thus preserve all kernels with those names. This can be avoided by providing"]
-#[doc = " a more specific name like \"barfoobaz\".\\n"]
-#[doc = " Option type: const char **\\n"]
-#[doc = " Applies to: dynamic linker only"]
-pub const CUjit_option_enum_CU_JIT_REFERENCED_KERNEL_NAMES: CUjit_option_enum = 25;
-#[doc = " Number of entries in ::CU_JIT_REFERENCED_KERNEL_NAMES array.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: dynamic linker only"]
-pub const CUjit_option_enum_CU_JIT_REFERENCED_KERNEL_COUNT: CUjit_option_enum = 26;
-#[doc = " Array of variable names (__device__ and/or __constant__) that should be"]
-#[doc = " preserved at link time while others can be removed.\\n"]
-#[doc = " Must contain ::CU_JIT_REFERENCED_VARIABLE_COUNT entries.\\n"]
-#[doc = " Note that variable names can be mangled by the compiler in which case the"]
-#[doc = " mangled name needs to be specified.\\n"]
-#[doc = " Wildcard \"*\" can be used to represent zero or more characters instead of"]
-#[doc = " specifying the full or mangled name.\\n"]
-#[doc = " It is important to note that the wildcard \"*\" is also added implicitly."]
-#[doc = " For example, specifying \"foo\" will match \"foobaz\", \"barfoo\", \"barfoobaz\" and"]
-#[doc = " thus preserve all variables with those names. This can be avoided by providing"]
-#[doc = " a more specific name like \"barfoobaz\".\\n"]
-#[doc = " Option type: const char **\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_REFERENCED_VARIABLE_NAMES: CUjit_option_enum = 27;
-#[doc = " Number of entries in ::CU_JIT_REFERENCED_VARIABLE_NAMES array.\\n"]
-#[doc = " Option type: unsigned int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_REFERENCED_VARIABLE_COUNT: CUjit_option_enum = 28;
-#[doc = " This option serves as a hint to enable the JIT compiler/linker"]
-#[doc = " to remove constant (__constant__) and device (__device__) variables"]
-#[doc = " unreferenced in device code (Disabled by default).\\n"]
-#[doc = " Note that host references to constant and device variables using APIs like"]
-#[doc = " ::cuModuleGetGlobal() with this option specified may result in undefined behavior unless"]
-#[doc = " the variables are explicitly specified using ::CU_JIT_REFERENCED_VARIABLE_NAMES.\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_OPTIMIZE_UNUSED_DEVICE_VARIABLES: CUjit_option_enum = 29;
-#[doc = " This option serves as a hint to enable the JIT compiler/linker"]
-#[doc = " to remove constant (__constant__) and device (__device__) variables"]
-#[doc = " unreferenced in device code (Disabled by default).\\n"]
-#[doc = " Note that host references to constant and device variables using APIs like"]
-#[doc = " ::cuModuleGetGlobal() with this option specified may result in undefined behavior unless"]
-#[doc = " the variables are explicitly specified using ::CU_JIT_REFERENCED_VARIABLE_NAMES.\\n"]
-#[doc = " Option type: int\\n"]
-#[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
-pub const CUjit_option_enum_CU_JIT_NUM_OPTIONS: CUjit_option_enum = 30;
+#[repr(i32)]
 #[doc = " Online compiler and linker options"]
-pub type CUjit_option_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUjit_option_enum {
+    #[doc = " Max number of registers that a thread may use.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_MAX_REGISTERS = 0,
+    #[doc = " IN: Specifies minimum number of threads per block to target compilation"]
+    #[doc = " for\\n"]
+    #[doc = " OUT: Returns the number of threads the compiler actually targeted."]
+    #[doc = " This restricts the resource utilization fo the compiler (e.g. max"]
+    #[doc = " registers) such that a block with the given number of threads should be"]
+    #[doc = " able to launch based on register limitations. Note, this option does not"]
+    #[doc = " currently take into account any other resource limitations, such as"]
+    #[doc = " shared memory utilization.\\n"]
+    #[doc = " Cannot be combined with ::CU_JIT_TARGET.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_THREADS_PER_BLOCK = 1,
+    #[doc = " Overwrites the option value with the total wall clock time, in"]
+    #[doc = " milliseconds, spent in the compiler and linker\\n"]
+    #[doc = " Option type: float\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_WALL_TIME = 2,
+    #[doc = " Pointer to a buffer in which to print any log messages"]
+    #[doc = " that are informational in nature (the buffer size is specified via"]
+    #[doc = " option ::CU_JIT_INFO_LOG_BUFFER_SIZE_BYTES)\\n"]
+    #[doc = " Option type: char *\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_INFO_LOG_BUFFER = 3,
+    #[doc = " IN: Log buffer size in bytes.  Log messages will be capped at this size"]
+    #[doc = " (including null terminator)\\n"]
+    #[doc = " OUT: Amount of log buffer filled with messages\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_INFO_LOG_BUFFER_SIZE_BYTES = 4,
+    #[doc = " Pointer to a buffer in which to print any log messages that"]
+    #[doc = " reflect errors (the buffer size is specified via option"]
+    #[doc = " ::CU_JIT_ERROR_LOG_BUFFER_SIZE_BYTES)\\n"]
+    #[doc = " Option type: char *\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_ERROR_LOG_BUFFER = 5,
+    #[doc = " IN: Log buffer size in bytes.  Log messages will be capped at this size"]
+    #[doc = " (including null terminator)\\n"]
+    #[doc = " OUT: Amount of log buffer filled with messages\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_ERROR_LOG_BUFFER_SIZE_BYTES = 6,
+    #[doc = " Level of optimizations to apply to generated code (0 - 4), with 4"]
+    #[doc = " being the default and highest level of optimizations.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_OPTIMIZATION_LEVEL = 7,
+    #[doc = " No option value required. Determines the target based on the current"]
+    #[doc = " attached context (default)\\n"]
+    #[doc = " Option type: No option value needed\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_TARGET_FROM_CUCONTEXT = 8,
+    #[doc = " Target is chosen based on supplied ::CUjit_target.  Cannot be"]
+    #[doc = " combined with ::CU_JIT_THREADS_PER_BLOCK.\\n"]
+    #[doc = " Option type: unsigned int for enumerated type ::CUjit_target\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_TARGET = 9,
+    #[doc = " Specifies choice of fallback strategy if matching cubin is not found."]
+    #[doc = " Choice is based on supplied ::CUjit_fallback.  This option cannot be"]
+    #[doc = " used with cuLink* APIs as the linker requires exact matches.\\n"]
+    #[doc = " Option type: unsigned int for enumerated type ::CUjit_fallback\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_FALLBACK_STRATEGY = 10,
+    #[doc = " Specifies whether to create debug information in output (-g)"]
+    #[doc = " (0: false, default)\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_GENERATE_DEBUG_INFO = 11,
+    #[doc = " Generate verbose log messages (0: false, default)\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_LOG_VERBOSE = 12,
+    #[doc = " Generate line number information (-lineinfo) (0: false, default)\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_GENERATE_LINE_INFO = 13,
+    #[doc = " Specifies whether to enable caching explicitly (-dlcm) \\n"]
+    #[doc = " Choice is based on supplied ::CUjit_cacheMode_enum.\\n"]
+    #[doc = " Option type: unsigned int for enumerated type ::CUjit_cacheMode_enum\\n"]
+    #[doc = " Applies to: compiler only"]
+    CU_JIT_CACHE_MODE = 14,
+    #[doc = " \\deprecated"]
+    #[doc = " This jit option is deprecated and should not be used."]
+    CU_JIT_NEW_SM3X_OPT = 15,
+    #[doc = " This jit option is used for internal purpose only."]
+    CU_JIT_FAST_COMPILE = 16,
+    #[doc = " Array of device symbol names that will be relocated to the corresponing"]
+    #[doc = " host addresses stored in ::CU_JIT_GLOBAL_SYMBOL_ADDRESSES.\\n"]
+    #[doc = " Must contain ::CU_JIT_GLOBAL_SYMBOL_COUNT entries.\\n"]
+    #[doc = " When loding a device module, driver will relocate all encountered"]
+    #[doc = " unresolved symbols to the host addresses.\\n"]
+    #[doc = " It is only allowed to register symbols that correspond to unresolved"]
+    #[doc = " global variables.\\n"]
+    #[doc = " It is illegal to register the same device symbol at multiple addresses.\\n"]
+    #[doc = " Option type: const char **\\n"]
+    #[doc = " Applies to: dynamic linker only"]
+    CU_JIT_GLOBAL_SYMBOL_NAMES = 17,
+    #[doc = " Array of host addresses that will be used to relocate corresponding"]
+    #[doc = " device symbols stored in ::CU_JIT_GLOBAL_SYMBOL_NAMES.\\n"]
+    #[doc = " Must contain ::CU_JIT_GLOBAL_SYMBOL_COUNT entries.\\n"]
+    #[doc = " Option type: void **\\n"]
+    #[doc = " Applies to: dynamic linker only"]
+    CU_JIT_GLOBAL_SYMBOL_ADDRESSES = 18,
+    #[doc = " Number of entries in ::CU_JIT_GLOBAL_SYMBOL_NAMES and"]
+    #[doc = " ::CU_JIT_GLOBAL_SYMBOL_ADDRESSES arrays.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: dynamic linker only"]
+    CU_JIT_GLOBAL_SYMBOL_COUNT = 19,
+    #[doc = " Enable link-time optimization (-dlto) for device code (Disabled by default).\\n"]
+    #[doc = " This option is not supported on 32-bit platforms.\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: compiler and linker"]
+    CU_JIT_LTO = 20,
+    #[doc = " Control single-precision denormals (-ftz) support (0: false, default)."]
+    #[doc = " 1 : flushes denormal values to zero"]
+    #[doc = " 0 : preserves denormal values"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_FTZ = 21,
+    #[doc = " Control single-precision floating-point division and reciprocals"]
+    #[doc = " (-prec-div) support (1: true, default)."]
+    #[doc = " 1 : Enables the IEEE round-to-nearest mode"]
+    #[doc = " 0 : Enables the fast approximation mode"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_PREC_DIV = 22,
+    #[doc = " Control single-precision floating-point square root"]
+    #[doc = " (-prec-sqrt) support (1: true, default)."]
+    #[doc = " 1 : Enables the IEEE round-to-nearest mode"]
+    #[doc = " 0 : Enables the fast approximation mode"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_PREC_SQRT = 23,
+    #[doc = " Enable/Disable the contraction of floating-point multiplies"]
+    #[doc = " and adds/subtracts into floating-point multiply-add (-fma)"]
+    #[doc = " operations (1: Enable, default; 0: Disable)."]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_FMA = 24,
+    #[doc = " Array of kernel names that should be preserved at link time while others"]
+    #[doc = " can be removed.\\n"]
+    #[doc = " Must contain ::CU_JIT_REFERENCED_KERNEL_COUNT entries.\\n"]
+    #[doc = " Note that kernel names can be mangled by the compiler in which case the"]
+    #[doc = " mangled name needs to be specified.\\n"]
+    #[doc = " Wildcard \"*\" can be used to represent zero or more characters instead of"]
+    #[doc = " specifying the full or mangled name.\\n"]
+    #[doc = " It is important to note that the wildcard \"*\" is also added implicitly."]
+    #[doc = " For example, specifying \"foo\" will match \"foobaz\", \"barfoo\", \"barfoobaz\" and"]
+    #[doc = " thus preserve all kernels with those names. This can be avoided by providing"]
+    #[doc = " a more specific name like \"barfoobaz\".\\n"]
+    #[doc = " Option type: const char **\\n"]
+    #[doc = " Applies to: dynamic linker only"]
+    CU_JIT_REFERENCED_KERNEL_NAMES = 25,
+    #[doc = " Number of entries in ::CU_JIT_REFERENCED_KERNEL_NAMES array.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: dynamic linker only"]
+    CU_JIT_REFERENCED_KERNEL_COUNT = 26,
+    #[doc = " Array of variable names (__device__ and/or __constant__) that should be"]
+    #[doc = " preserved at link time while others can be removed.\\n"]
+    #[doc = " Must contain ::CU_JIT_REFERENCED_VARIABLE_COUNT entries.\\n"]
+    #[doc = " Note that variable names can be mangled by the compiler in which case the"]
+    #[doc = " mangled name needs to be specified.\\n"]
+    #[doc = " Wildcard \"*\" can be used to represent zero or more characters instead of"]
+    #[doc = " specifying the full or mangled name.\\n"]
+    #[doc = " It is important to note that the wildcard \"*\" is also added implicitly."]
+    #[doc = " For example, specifying \"foo\" will match \"foobaz\", \"barfoo\", \"barfoobaz\" and"]
+    #[doc = " thus preserve all variables with those names. This can be avoided by providing"]
+    #[doc = " a more specific name like \"barfoobaz\".\\n"]
+    #[doc = " Option type: const char **\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_REFERENCED_VARIABLE_NAMES = 27,
+    #[doc = " Number of entries in ::CU_JIT_REFERENCED_VARIABLE_NAMES array.\\n"]
+    #[doc = " Option type: unsigned int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_REFERENCED_VARIABLE_COUNT = 28,
+    #[doc = " This option serves as a hint to enable the JIT compiler/linker"]
+    #[doc = " to remove constant (__constant__) and device (__device__) variables"]
+    #[doc = " unreferenced in device code (Disabled by default).\\n"]
+    #[doc = " Note that host references to constant and device variables using APIs like"]
+    #[doc = " ::cuModuleGetGlobal() with this option specified may result in undefined behavior unless"]
+    #[doc = " the variables are explicitly specified using ::CU_JIT_REFERENCED_VARIABLE_NAMES.\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_OPTIMIZE_UNUSED_DEVICE_VARIABLES = 29,
+    #[doc = " This option serves as a hint to enable the JIT compiler/linker"]
+    #[doc = " to remove constant (__constant__) and device (__device__) variables"]
+    #[doc = " unreferenced in device code (Disabled by default).\\n"]
+    #[doc = " Note that host references to constant and device variables using APIs like"]
+    #[doc = " ::cuModuleGetGlobal() with this option specified may result in undefined behavior unless"]
+    #[doc = " the variables are explicitly specified using ::CU_JIT_REFERENCED_VARIABLE_NAMES.\\n"]
+    #[doc = " Option type: int\\n"]
+    #[doc = " Applies to: link-time optimization specified with CU_JIT_LTO"]
+    CU_JIT_NUM_OPTIONS = 30,
+}
 #[doc = " Online compiler and linker options"]
 pub use self::CUjit_option_enum as CUjit_option;
-#[doc = "< Compute device class 2.0"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_20: CUjit_target_enum = 20;
-#[doc = "< Compute device class 2.1"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_21: CUjit_target_enum = 21;
-#[doc = "< Compute device class 3.0"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_30: CUjit_target_enum = 30;
-#[doc = "< Compute device class 3.2"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_32: CUjit_target_enum = 32;
-#[doc = "< Compute device class 3.5"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_35: CUjit_target_enum = 35;
-#[doc = "< Compute device class 3.7"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_37: CUjit_target_enum = 37;
-#[doc = "< Compute device class 5.0"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_50: CUjit_target_enum = 50;
-#[doc = "< Compute device class 5.2"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_52: CUjit_target_enum = 52;
-#[doc = "< Compute device class 5.3"]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_53: CUjit_target_enum = 53;
-#[doc = "< Compute device class 6.0."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_60: CUjit_target_enum = 60;
-#[doc = "< Compute device class 6.1."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_61: CUjit_target_enum = 61;
-#[doc = "< Compute device class 6.2."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_62: CUjit_target_enum = 62;
-#[doc = "< Compute device class 7.0."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_70: CUjit_target_enum = 70;
-#[doc = "< Compute device class 7.2."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_72: CUjit_target_enum = 72;
-#[doc = "< Compute device class 7.5."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_75: CUjit_target_enum = 75;
-#[doc = "< Compute device class 8.0."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_80: CUjit_target_enum = 80;
-#[doc = "< Compute device class 8.6."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_86: CUjit_target_enum = 86;
-#[doc = "< Compute device class 8.7."]
-pub const CUjit_target_enum_CU_TARGET_COMPUTE_87: CUjit_target_enum = 87;
+#[repr(i32)]
 #[doc = " Online compilation targets"]
-pub type CUjit_target_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUjit_target_enum {
+    #[doc = "< Compute device class 2.0"]
+    CU_TARGET_COMPUTE_20 = 20,
+    #[doc = "< Compute device class 2.1"]
+    CU_TARGET_COMPUTE_21 = 21,
+    #[doc = "< Compute device class 3.0"]
+    CU_TARGET_COMPUTE_30 = 30,
+    #[doc = "< Compute device class 3.2"]
+    CU_TARGET_COMPUTE_32 = 32,
+    #[doc = "< Compute device class 3.5"]
+    CU_TARGET_COMPUTE_35 = 35,
+    #[doc = "< Compute device class 3.7"]
+    CU_TARGET_COMPUTE_37 = 37,
+    #[doc = "< Compute device class 5.0"]
+    CU_TARGET_COMPUTE_50 = 50,
+    #[doc = "< Compute device class 5.2"]
+    CU_TARGET_COMPUTE_52 = 52,
+    #[doc = "< Compute device class 5.3"]
+    CU_TARGET_COMPUTE_53 = 53,
+    #[doc = "< Compute device class 6.0."]
+    CU_TARGET_COMPUTE_60 = 60,
+    #[doc = "< Compute device class 6.1."]
+    CU_TARGET_COMPUTE_61 = 61,
+    #[doc = "< Compute device class 6.2."]
+    CU_TARGET_COMPUTE_62 = 62,
+    #[doc = "< Compute device class 7.0."]
+    CU_TARGET_COMPUTE_70 = 70,
+    #[doc = "< Compute device class 7.2."]
+    CU_TARGET_COMPUTE_72 = 72,
+    #[doc = "< Compute device class 7.5."]
+    CU_TARGET_COMPUTE_75 = 75,
+    #[doc = "< Compute device class 8.0."]
+    CU_TARGET_COMPUTE_80 = 80,
+    #[doc = "< Compute device class 8.6."]
+    CU_TARGET_COMPUTE_86 = 86,
+    #[doc = "< Compute device class 8.7."]
+    CU_TARGET_COMPUTE_87 = 87,
+}
 #[doc = " Online compilation targets"]
 pub use self::CUjit_target_enum as CUjit_target;
-#[doc = "< Prefer to compile ptx if exact binary match not found"]
-pub const CUjit_fallback_enum_CU_PREFER_PTX: CUjit_fallback_enum = 0;
-#[doc = "< Prefer to fall back to compatible binary code if exact match not found"]
-pub const CUjit_fallback_enum_CU_PREFER_BINARY: CUjit_fallback_enum = 1;
+#[repr(i32)]
 #[doc = " Cubin matching fallback strategies"]
-pub type CUjit_fallback_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUjit_fallback_enum {
+    #[doc = "< Prefer to compile ptx if exact binary match not found"]
+    CU_PREFER_PTX = 0,
+    #[doc = "< Prefer to fall back to compatible binary code if exact match not found"]
+    CU_PREFER_BINARY = 1,
+}
 #[doc = " Cubin matching fallback strategies"]
 pub use self::CUjit_fallback_enum as CUjit_fallback;
-#[doc = "< Compile with no -dlcm flag specified"]
-pub const CUjit_cacheMode_enum_CU_JIT_CACHE_OPTION_NONE: CUjit_cacheMode_enum = 0;
-#[doc = "< Compile with L1 cache disabled"]
-pub const CUjit_cacheMode_enum_CU_JIT_CACHE_OPTION_CG: CUjit_cacheMode_enum = 1;
-#[doc = "< Compile with L1 cache enabled"]
-pub const CUjit_cacheMode_enum_CU_JIT_CACHE_OPTION_CA: CUjit_cacheMode_enum = 2;
+#[repr(i32)]
 #[doc = " Caching modes for dlcm"]
-pub type CUjit_cacheMode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUjit_cacheMode_enum {
+    #[doc = "< Compile with no -dlcm flag specified"]
+    CU_JIT_CACHE_OPTION_NONE = 0,
+    #[doc = "< Compile with L1 cache disabled"]
+    CU_JIT_CACHE_OPTION_CG = 1,
+    #[doc = "< Compile with L1 cache enabled"]
+    CU_JIT_CACHE_OPTION_CA = 2,
+}
 #[doc = " Caching modes for dlcm"]
 pub use self::CUjit_cacheMode_enum as CUjit_cacheMode;
-#[doc = " Compiled device-class-specific device code\\n"]
-#[doc = " Applicable options: none"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_CUBIN: CUjitInputType_enum = 0;
-#[doc = " PTX source code\\n"]
-#[doc = " Applicable options: PTX compiler options"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_PTX: CUjitInputType_enum = 1;
-#[doc = " Bundle of multiple cubins and/or PTX of some device code\\n"]
-#[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_FATBINARY: CUjitInputType_enum = 2;
-#[doc = " Host object with embedded device code\\n"]
-#[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_OBJECT: CUjitInputType_enum = 3;
-#[doc = " Archive of host objects with embedded device code\\n"]
-#[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_LIBRARY: CUjitInputType_enum = 4;
-#[doc = " High-level intermediate code for link-time optimization\\n"]
-#[doc = " Applicable options: NVVM compiler options, PTX compiler options"]
-pub const CUjitInputType_enum_CU_JIT_INPUT_NVVM: CUjitInputType_enum = 5;
-#[doc = " High-level intermediate code for link-time optimization\\n"]
-#[doc = " Applicable options: NVVM compiler options, PTX compiler options"]
-pub const CUjitInputType_enum_CU_JIT_NUM_INPUT_TYPES: CUjitInputType_enum = 6;
+#[repr(i32)]
 #[doc = " Device code formats"]
-pub type CUjitInputType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUjitInputType_enum {
+    #[doc = " Compiled device-class-specific device code\\n"]
+    #[doc = " Applicable options: none"]
+    CU_JIT_INPUT_CUBIN = 0,
+    #[doc = " PTX source code\\n"]
+    #[doc = " Applicable options: PTX compiler options"]
+    CU_JIT_INPUT_PTX = 1,
+    #[doc = " Bundle of multiple cubins and/or PTX of some device code\\n"]
+    #[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
+    CU_JIT_INPUT_FATBINARY = 2,
+    #[doc = " Host object with embedded device code\\n"]
+    #[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
+    CU_JIT_INPUT_OBJECT = 3,
+    #[doc = " Archive of host objects with embedded device code\\n"]
+    #[doc = " Applicable options: PTX compiler options, ::CU_JIT_FALLBACK_STRATEGY"]
+    CU_JIT_INPUT_LIBRARY = 4,
+    #[doc = " High-level intermediate code for link-time optimization\\n"]
+    #[doc = " Applicable options: NVVM compiler options, PTX compiler options"]
+    CU_JIT_INPUT_NVVM = 5,
+    #[doc = " High-level intermediate code for link-time optimization\\n"]
+    #[doc = " Applicable options: NVVM compiler options, PTX compiler options"]
+    CU_JIT_NUM_INPUT_TYPES = 6,
+}
 #[doc = " Device code formats"]
 pub use self::CUjitInputType_enum as CUjitInputType;
 #[repr(C)]
@@ -3983,89 +3949,99 @@ pub struct CUlinkState_st {
     _unused: [u8; 0],
 }
 pub type CUlinkState = *mut CUlinkState_st;
-pub const CUgraphicsRegisterFlags_enum_CU_GRAPHICS_REGISTER_FLAGS_NONE:
-    CUgraphicsRegisterFlags_enum = 0;
-pub const CUgraphicsRegisterFlags_enum_CU_GRAPHICS_REGISTER_FLAGS_READ_ONLY:
-    CUgraphicsRegisterFlags_enum = 1;
-pub const CUgraphicsRegisterFlags_enum_CU_GRAPHICS_REGISTER_FLAGS_WRITE_DISCARD:
-    CUgraphicsRegisterFlags_enum = 2;
-pub const CUgraphicsRegisterFlags_enum_CU_GRAPHICS_REGISTER_FLAGS_SURFACE_LDST:
-    CUgraphicsRegisterFlags_enum = 4;
-pub const CUgraphicsRegisterFlags_enum_CU_GRAPHICS_REGISTER_FLAGS_TEXTURE_GATHER:
-    CUgraphicsRegisterFlags_enum = 8;
+#[repr(i32)]
 #[doc = " Flags to register a graphics resource"]
-pub type CUgraphicsRegisterFlags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphicsRegisterFlags_enum {
+    CU_GRAPHICS_REGISTER_FLAGS_NONE = 0,
+    CU_GRAPHICS_REGISTER_FLAGS_READ_ONLY = 1,
+    CU_GRAPHICS_REGISTER_FLAGS_WRITE_DISCARD = 2,
+    CU_GRAPHICS_REGISTER_FLAGS_SURFACE_LDST = 4,
+    CU_GRAPHICS_REGISTER_FLAGS_TEXTURE_GATHER = 8,
+}
 #[doc = " Flags to register a graphics resource"]
 pub use self::CUgraphicsRegisterFlags_enum as CUgraphicsRegisterFlags;
-pub const CUgraphicsMapResourceFlags_enum_CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE:
-    CUgraphicsMapResourceFlags_enum = 0;
-pub const CUgraphicsMapResourceFlags_enum_CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY:
-    CUgraphicsMapResourceFlags_enum = 1;
-pub const CUgraphicsMapResourceFlags_enum_CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD:
-    CUgraphicsMapResourceFlags_enum = 2;
+#[repr(i32)]
 #[doc = " Flags for mapping and unmapping interop resources"]
-pub type CUgraphicsMapResourceFlags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphicsMapResourceFlags_enum {
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_NONE = 0,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_READ_ONLY = 1,
+    CU_GRAPHICS_MAP_RESOURCE_FLAGS_WRITE_DISCARD = 2,
+}
 #[doc = " Flags for mapping and unmapping interop resources"]
 pub use self::CUgraphicsMapResourceFlags_enum as CUgraphicsMapResourceFlags;
-#[doc = "< Positive X face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_POSITIVE_X: CUarray_cubemap_face_enum = 0;
-#[doc = "< Negative X face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_NEGATIVE_X: CUarray_cubemap_face_enum = 1;
-#[doc = "< Positive Y face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_POSITIVE_Y: CUarray_cubemap_face_enum = 2;
-#[doc = "< Negative Y face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_NEGATIVE_Y: CUarray_cubemap_face_enum = 3;
-#[doc = "< Positive Z face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_POSITIVE_Z: CUarray_cubemap_face_enum = 4;
-#[doc = "< Negative Z face of cubemap"]
-pub const CUarray_cubemap_face_enum_CU_CUBEMAP_FACE_NEGATIVE_Z: CUarray_cubemap_face_enum = 5;
+#[repr(i32)]
 #[doc = " Array indices for cube faces"]
-pub type CUarray_cubemap_face_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUarray_cubemap_face_enum {
+    #[doc = "< Positive X face of cubemap"]
+    CU_CUBEMAP_FACE_POSITIVE_X = 0,
+    #[doc = "< Negative X face of cubemap"]
+    CU_CUBEMAP_FACE_NEGATIVE_X = 1,
+    #[doc = "< Positive Y face of cubemap"]
+    CU_CUBEMAP_FACE_POSITIVE_Y = 2,
+    #[doc = "< Negative Y face of cubemap"]
+    CU_CUBEMAP_FACE_NEGATIVE_Y = 3,
+    #[doc = "< Positive Z face of cubemap"]
+    CU_CUBEMAP_FACE_POSITIVE_Z = 4,
+    #[doc = "< Negative Z face of cubemap"]
+    CU_CUBEMAP_FACE_NEGATIVE_Z = 5,
+}
 #[doc = " Array indices for cube faces"]
 pub use self::CUarray_cubemap_face_enum as CUarray_cubemap_face;
-#[doc = "< GPU thread stack size"]
-pub const CUlimit_enum_CU_LIMIT_STACK_SIZE: CUlimit_enum = 0;
-#[doc = "< GPU printf FIFO size"]
-pub const CUlimit_enum_CU_LIMIT_PRINTF_FIFO_SIZE: CUlimit_enum = 1;
-#[doc = "< GPU malloc heap size"]
-pub const CUlimit_enum_CU_LIMIT_MALLOC_HEAP_SIZE: CUlimit_enum = 2;
-#[doc = "< GPU device runtime launch synchronize depth"]
-pub const CUlimit_enum_CU_LIMIT_DEV_RUNTIME_SYNC_DEPTH: CUlimit_enum = 3;
-#[doc = "< GPU device runtime pending launch count"]
-pub const CUlimit_enum_CU_LIMIT_DEV_RUNTIME_PENDING_LAUNCH_COUNT: CUlimit_enum = 4;
-#[doc = "< A value between 0 and 128 that indicates the maximum fetch granularity of L2 (in Bytes). This is a hint"]
-pub const CUlimit_enum_CU_LIMIT_MAX_L2_FETCH_GRANULARITY: CUlimit_enum = 5;
-#[doc = "< A size in bytes for L2 persisting lines cache size"]
-pub const CUlimit_enum_CU_LIMIT_PERSISTING_L2_CACHE_SIZE: CUlimit_enum = 6;
-pub const CUlimit_enum_CU_LIMIT_MAX: CUlimit_enum = 7;
+#[repr(i32)]
 #[doc = " Limits"]
-pub type CUlimit_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUlimit_enum {
+    #[doc = "< GPU thread stack size"]
+    CU_LIMIT_STACK_SIZE = 0,
+    #[doc = "< GPU printf FIFO size"]
+    CU_LIMIT_PRINTF_FIFO_SIZE = 1,
+    #[doc = "< GPU malloc heap size"]
+    CU_LIMIT_MALLOC_HEAP_SIZE = 2,
+    #[doc = "< GPU device runtime launch synchronize depth"]
+    CU_LIMIT_DEV_RUNTIME_SYNC_DEPTH = 3,
+    #[doc = "< GPU device runtime pending launch count"]
+    CU_LIMIT_DEV_RUNTIME_PENDING_LAUNCH_COUNT = 4,
+    #[doc = "< A value between 0 and 128 that indicates the maximum fetch granularity of L2 (in Bytes). This is a hint"]
+    CU_LIMIT_MAX_L2_FETCH_GRANULARITY = 5,
+    #[doc = "< A size in bytes for L2 persisting lines cache size"]
+    CU_LIMIT_PERSISTING_L2_CACHE_SIZE = 6,
+    CU_LIMIT_MAX = 7,
+}
 #[doc = " Limits"]
 pub use self::CUlimit_enum as CUlimit;
-#[doc = "< Array resoure"]
-pub const CUresourcetype_enum_CU_RESOURCE_TYPE_ARRAY: CUresourcetype_enum = 0;
-#[doc = "< Mipmapped array resource"]
-pub const CUresourcetype_enum_CU_RESOURCE_TYPE_MIPMAPPED_ARRAY: CUresourcetype_enum = 1;
-#[doc = "< Linear resource"]
-pub const CUresourcetype_enum_CU_RESOURCE_TYPE_LINEAR: CUresourcetype_enum = 2;
-#[doc = "< Pitch 2D resource"]
-pub const CUresourcetype_enum_CU_RESOURCE_TYPE_PITCH2D: CUresourcetype_enum = 3;
+#[repr(i32)]
 #[doc = " Resource types"]
-pub type CUresourcetype_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUresourcetype_enum {
+    #[doc = "< Array resoure"]
+    CU_RESOURCE_TYPE_ARRAY = 0,
+    #[doc = "< Mipmapped array resource"]
+    CU_RESOURCE_TYPE_MIPMAPPED_ARRAY = 1,
+    #[doc = "< Linear resource"]
+    CU_RESOURCE_TYPE_LINEAR = 2,
+    #[doc = "< Pitch 2D resource"]
+    CU_RESOURCE_TYPE_PITCH2D = 3,
+}
 #[doc = " Resource types"]
 pub use self::CUresourcetype_enum as CUresourcetype;
 #[doc = " CUDA host function"]
 #[doc = " \\param userData Argument value passed to the function"]
 pub type CUhostFn =
     ::std::option::Option<unsafe extern "C" fn(userData: *mut ::std::os::raw::c_void)>;
-#[doc = "< Normal cache persistence."]
-pub const CUaccessProperty_enum_CU_ACCESS_PROPERTY_NORMAL: CUaccessProperty_enum = 0;
-#[doc = "< Streaming access is less likely to persit from cache."]
-pub const CUaccessProperty_enum_CU_ACCESS_PROPERTY_STREAMING: CUaccessProperty_enum = 1;
-#[doc = "< Persisting access is more likely to persist in cache."]
-pub const CUaccessProperty_enum_CU_ACCESS_PROPERTY_PERSISTING: CUaccessProperty_enum = 2;
+#[repr(i32)]
 #[doc = " Specifies performance hint with ::CUaccessPolicyWindow for hitProp and missProp members."]
-pub type CUaccessProperty_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUaccessProperty_enum {
+    #[doc = "< Normal cache persistence."]
+    CU_ACCESS_PROPERTY_NORMAL = 0,
+    #[doc = "< Streaming access is less likely to persit from cache."]
+    CU_ACCESS_PROPERTY_STREAMING = 1,
+    #[doc = "< Persisting access is more likely to persist in cache."]
+    CU_ACCESS_PROPERTY_PERSISTING = 2,
+}
 #[doc = " Specifies performance hint with ::CUaccessPolicyWindow for hitProp and missProp members."]
 pub use self::CUaccessProperty_enum as CUaccessProperty;
 #[doc = " Specifies an access policy for a window, a contiguous extent of memory"]
@@ -4471,52 +4447,59 @@ fn bindgen_test_layout_CUDA_HOST_NODE_PARAMS_st() {
 pub type CUDA_HOST_NODE_PARAMS_v1 = CUDA_HOST_NODE_PARAMS_st;
 #[doc = " Host node parameters"]
 pub type CUDA_HOST_NODE_PARAMS = CUDA_HOST_NODE_PARAMS_v1;
-#[doc = "< GPU kernel node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_KERNEL: CUgraphNodeType_enum = 0;
-#[doc = "< Memcpy node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_MEMCPY: CUgraphNodeType_enum = 1;
-#[doc = "< Memset node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_MEMSET: CUgraphNodeType_enum = 2;
-#[doc = "< Host (executable) node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_HOST: CUgraphNodeType_enum = 3;
-#[doc = "< Node which executes an embedded graph"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_GRAPH: CUgraphNodeType_enum = 4;
-#[doc = "< Empty (no-op) node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_EMPTY: CUgraphNodeType_enum = 5;
-#[doc = "< External event wait node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_WAIT_EVENT: CUgraphNodeType_enum = 6;
-#[doc = "< External event record node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_EVENT_RECORD: CUgraphNodeType_enum = 7;
-#[doc = "< External semaphore signal node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_EXT_SEMAS_SIGNAL: CUgraphNodeType_enum = 8;
-#[doc = "< External semaphore wait node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_EXT_SEMAS_WAIT: CUgraphNodeType_enum = 9;
-#[doc = "< Memory Allocation Node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_MEM_ALLOC: CUgraphNodeType_enum = 10;
-#[doc = "< Memory Free Node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_MEM_FREE: CUgraphNodeType_enum = 11;
-#[doc = "< Batch MemOp Node"]
-pub const CUgraphNodeType_enum_CU_GRAPH_NODE_TYPE_BATCH_MEM_OP: CUgraphNodeType_enum = 12;
+#[repr(i32)]
 #[doc = " Graph node types"]
-pub type CUgraphNodeType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphNodeType_enum {
+    #[doc = "< GPU kernel node"]
+    CU_GRAPH_NODE_TYPE_KERNEL = 0,
+    #[doc = "< Memcpy node"]
+    CU_GRAPH_NODE_TYPE_MEMCPY = 1,
+    #[doc = "< Memset node"]
+    CU_GRAPH_NODE_TYPE_MEMSET = 2,
+    #[doc = "< Host (executable) node"]
+    CU_GRAPH_NODE_TYPE_HOST = 3,
+    #[doc = "< Node which executes an embedded graph"]
+    CU_GRAPH_NODE_TYPE_GRAPH = 4,
+    #[doc = "< Empty (no-op) node"]
+    CU_GRAPH_NODE_TYPE_EMPTY = 5,
+    #[doc = "< External event wait node"]
+    CU_GRAPH_NODE_TYPE_WAIT_EVENT = 6,
+    #[doc = "< External event record node"]
+    CU_GRAPH_NODE_TYPE_EVENT_RECORD = 7,
+    #[doc = "< External semaphore signal node"]
+    CU_GRAPH_NODE_TYPE_EXT_SEMAS_SIGNAL = 8,
+    #[doc = "< External semaphore wait node"]
+    CU_GRAPH_NODE_TYPE_EXT_SEMAS_WAIT = 9,
+    #[doc = "< Memory Allocation Node"]
+    CU_GRAPH_NODE_TYPE_MEM_ALLOC = 10,
+    #[doc = "< Memory Free Node"]
+    CU_GRAPH_NODE_TYPE_MEM_FREE = 11,
+    #[doc = "< Batch MemOp Node"]
+    CU_GRAPH_NODE_TYPE_BATCH_MEM_OP = 12,
+}
 #[doc = " Graph node types"]
 pub use self::CUgraphNodeType_enum as CUgraphNodeType;
-pub const CUsynchronizationPolicy_enum_CU_SYNC_POLICY_AUTO: CUsynchronizationPolicy_enum = 1;
-pub const CUsynchronizationPolicy_enum_CU_SYNC_POLICY_SPIN: CUsynchronizationPolicy_enum = 2;
-pub const CUsynchronizationPolicy_enum_CU_SYNC_POLICY_YIELD: CUsynchronizationPolicy_enum = 3;
-pub const CUsynchronizationPolicy_enum_CU_SYNC_POLICY_BLOCKING_SYNC: CUsynchronizationPolicy_enum =
-    4;
-pub type CUsynchronizationPolicy_enum = ::std::os::raw::c_int;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUsynchronizationPolicy_enum {
+    CU_SYNC_POLICY_AUTO = 1,
+    CU_SYNC_POLICY_SPIN = 2,
+    CU_SYNC_POLICY_YIELD = 3,
+    CU_SYNC_POLICY_BLOCKING_SYNC = 4,
+}
 pub use self::CUsynchronizationPolicy_enum as CUsynchronizationPolicy;
-#[doc = "< Identifier for ::CUkernelNodeAttrValue::accessPolicyWindow."]
-pub const CUkernelNodeAttrID_enum_CU_KERNEL_NODE_ATTRIBUTE_ACCESS_POLICY_WINDOW:
-    CUkernelNodeAttrID_enum = 1;
-#[doc = "< Allows a kernel node to be cooperative (see ::cuLaunchCooperativeKernel)."]
-pub const CUkernelNodeAttrID_enum_CU_KERNEL_NODE_ATTRIBUTE_COOPERATIVE: CUkernelNodeAttrID_enum = 2;
-#[doc = "< Sets the priority of the kernel."]
-pub const CUkernelNodeAttrID_enum_CU_KERNEL_NODE_ATTRIBUTE_PRIORITY: CUkernelNodeAttrID_enum = 8;
+#[repr(i32)]
 #[doc = " Graph kernel node Attributes"]
-pub type CUkernelNodeAttrID_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUkernelNodeAttrID_enum {
+    #[doc = "< Identifier for ::CUkernelNodeAttrValue::accessPolicyWindow."]
+    CU_KERNEL_NODE_ATTRIBUTE_ACCESS_POLICY_WINDOW = 1,
+    #[doc = "< Allows a kernel node to be cooperative (see ::cuLaunchCooperativeKernel)."]
+    CU_KERNEL_NODE_ATTRIBUTE_COOPERATIVE = 2,
+    #[doc = "< Sets the priority of the kernel."]
+    CU_KERNEL_NODE_ATTRIBUTE_PRIORITY = 8,
+}
 #[doc = " Graph kernel node Attributes"]
 pub use self::CUkernelNodeAttrID_enum as CUkernelNodeAttrID;
 #[doc = " Graph kernel node attributes union, used with ::cuKernelNodeSetAttribute/::cuKernelNodeGetAttribute"]
@@ -4580,35 +4563,41 @@ fn bindgen_test_layout_CUkernelNodeAttrValue_union() {
 pub type CUkernelNodeAttrValue_v1 = CUkernelNodeAttrValue_union;
 #[doc = " Graph kernel node attributes union, used with ::cuKernelNodeSetAttribute/::cuKernelNodeGetAttribute"]
 pub type CUkernelNodeAttrValue = CUkernelNodeAttrValue_v1;
-#[doc = "< Stream is not capturing"]
-pub const CUstreamCaptureStatus_enum_CU_STREAM_CAPTURE_STATUS_NONE: CUstreamCaptureStatus_enum = 0;
-#[doc = "< Stream is actively capturing"]
-pub const CUstreamCaptureStatus_enum_CU_STREAM_CAPTURE_STATUS_ACTIVE: CUstreamCaptureStatus_enum =
-    1;
-#[doc = "< Stream is part of a capture sequence that"]
-#[doc = "has been invalidated, but not terminated"]
-pub const CUstreamCaptureStatus_enum_CU_STREAM_CAPTURE_STATUS_INVALIDATED:
-    CUstreamCaptureStatus_enum = 2;
+#[repr(i32)]
 #[doc = " Possible stream capture statuses returned by ::cuStreamIsCapturing"]
-pub type CUstreamCaptureStatus_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamCaptureStatus_enum {
+    #[doc = "< Stream is not capturing"]
+    CU_STREAM_CAPTURE_STATUS_NONE = 0,
+    #[doc = "< Stream is actively capturing"]
+    CU_STREAM_CAPTURE_STATUS_ACTIVE = 1,
+    #[doc = "< Stream is part of a capture sequence that"]
+    #[doc = "has been invalidated, but not terminated"]
+    CU_STREAM_CAPTURE_STATUS_INVALIDATED = 2,
+}
 #[doc = " Possible stream capture statuses returned by ::cuStreamIsCapturing"]
 pub use self::CUstreamCaptureStatus_enum as CUstreamCaptureStatus;
-pub const CUstreamCaptureMode_enum_CU_STREAM_CAPTURE_MODE_GLOBAL: CUstreamCaptureMode_enum = 0;
-pub const CUstreamCaptureMode_enum_CU_STREAM_CAPTURE_MODE_THREAD_LOCAL: CUstreamCaptureMode_enum =
-    1;
-pub const CUstreamCaptureMode_enum_CU_STREAM_CAPTURE_MODE_RELAXED: CUstreamCaptureMode_enum = 2;
+#[repr(i32)]
 #[doc = " Possible modes for stream capture thread interactions. For more details see"]
 #[doc = " ::cuStreamBeginCapture and ::cuThreadExchangeStreamCaptureMode"]
-pub type CUstreamCaptureMode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamCaptureMode_enum {
+    CU_STREAM_CAPTURE_MODE_GLOBAL = 0,
+    CU_STREAM_CAPTURE_MODE_THREAD_LOCAL = 1,
+    CU_STREAM_CAPTURE_MODE_RELAXED = 2,
+}
 #[doc = " Possible modes for stream capture thread interactions. For more details see"]
 #[doc = " ::cuStreamBeginCapture and ::cuThreadExchangeStreamCaptureMode"]
 pub use self::CUstreamCaptureMode_enum as CUstreamCaptureMode;
-#[doc = "< Identifier for ::CUstreamAttrValue::accessPolicyWindow."]
-pub const CUstreamAttrID_enum_CU_STREAM_ATTRIBUTE_ACCESS_POLICY_WINDOW: CUstreamAttrID_enum = 1;
-#[doc = "< ::CUsynchronizationPolicy for work queued up in this stream"]
-pub const CUstreamAttrID_enum_CU_STREAM_ATTRIBUTE_SYNCHRONIZATION_POLICY: CUstreamAttrID_enum = 3;
+#[repr(i32)]
 #[doc = " Stream Attributes"]
-pub type CUstreamAttrID_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUstreamAttrID_enum {
+    #[doc = "< Identifier for ::CUstreamAttrValue::accessPolicyWindow."]
+    CU_STREAM_ATTRIBUTE_ACCESS_POLICY_WINDOW = 1,
+    #[doc = "< ::CUsynchronizationPolicy for work queued up in this stream"]
+    CU_STREAM_ATTRIBUTE_SYNCHRONIZATION_POLICY = 3,
+}
 #[doc = " Stream Attributes"]
 pub use self::CUstreamAttrID_enum as CUstreamAttrID;
 #[doc = " Stream attributes union, used with ::cuStreamSetAttribute/::cuStreamGetAttribute"]
@@ -4660,24 +4649,27 @@ fn bindgen_test_layout_CUstreamAttrValue_union() {
 pub type CUstreamAttrValue_v1 = CUstreamAttrValue_union;
 #[doc = " Stream attributes union, used with ::cuStreamSetAttribute/::cuStreamGetAttribute"]
 pub type CUstreamAttrValue = CUstreamAttrValue_v1;
-#[doc = "< Default search mode for driver symbols."]
-pub const CUdriverProcAddress_flags_enum_CU_GET_PROC_ADDRESS_DEFAULT:
-    CUdriverProcAddress_flags_enum = 0;
-#[doc = "< Search for legacy versions of driver symbols."]
-pub const CUdriverProcAddress_flags_enum_CU_GET_PROC_ADDRESS_LEGACY_STREAM:
-    CUdriverProcAddress_flags_enum = 1;
-#[doc = "< Search for per-thread versions of driver symbols."]
-pub const CUdriverProcAddress_flags_enum_CU_GET_PROC_ADDRESS_PER_THREAD_DEFAULT_STREAM:
-    CUdriverProcAddress_flags_enum = 2;
+#[repr(i32)]
 #[doc = " Flags to specify search options. For more details see ::cuGetProcAddress"]
-pub type CUdriverProcAddress_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUdriverProcAddress_flags_enum {
+    #[doc = "< Default search mode for driver symbols."]
+    CU_GET_PROC_ADDRESS_DEFAULT = 0,
+    #[doc = "< Search for legacy versions of driver symbols."]
+    CU_GET_PROC_ADDRESS_LEGACY_STREAM = 1,
+    #[doc = "< Search for per-thread versions of driver symbols."]
+    CU_GET_PROC_ADDRESS_PER_THREAD_DEFAULT_STREAM = 2,
+}
 #[doc = " Flags to specify search options. For more details see ::cuGetProcAddress"]
 pub use self::CUdriverProcAddress_flags_enum as CUdriverProcAddress_flags;
-#[doc = "< Create a context with limited SMs."]
-pub const CUexecAffinityType_enum_CU_EXEC_AFFINITY_TYPE_SM_COUNT: CUexecAffinityType_enum = 0;
-pub const CUexecAffinityType_enum_CU_EXEC_AFFINITY_TYPE_MAX: CUexecAffinityType_enum = 1;
+#[repr(i32)]
 #[doc = " Execution Affinity Types"]
-pub type CUexecAffinityType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUexecAffinityType_enum {
+    #[doc = "< Create a context with limited SMs."]
+    CU_EXEC_AFFINITY_TYPE_SM_COUNT = 0,
+    CU_EXEC_AFFINITY_TYPE_MAX = 1,
+}
 #[doc = " Execution Affinity Types"]
 pub use self::CUexecAffinityType_enum as CUexecAffinityType;
 #[doc = " Value for ::CU_EXEC_AFFINITY_TYPE_SM_COUNT"]
@@ -4801,343 +4793,346 @@ fn bindgen_test_layout_CUexecAffinityParam_st() {
 pub type CUexecAffinityParam_v1 = CUexecAffinityParam_st;
 #[doc = " Execution Affinity Parameters"]
 pub type CUexecAffinityParam = CUexecAffinityParam_v1;
-#[doc = " The API call returned with no errors. In the case of query calls, this"]
-#[doc = " also means that the operation being queried is complete (see"]
-#[doc = " ::cuEventQuery() and ::cuStreamQuery())."]
-pub const cudaError_enum_CUDA_SUCCESS: cudaError_enum = 0;
-#[doc = " This indicates that one or more of the parameters passed to the API call"]
-#[doc = " is not within an acceptable range of values."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_VALUE: cudaError_enum = 1;
-#[doc = " The API call failed because it was unable to allocate enough memory to"]
-#[doc = " perform the requested operation."]
-pub const cudaError_enum_CUDA_ERROR_OUT_OF_MEMORY: cudaError_enum = 2;
-#[doc = " This indicates that the CUDA driver has not been initialized with"]
-#[doc = " ::cuInit() or that initialization has failed."]
-pub const cudaError_enum_CUDA_ERROR_NOT_INITIALIZED: cudaError_enum = 3;
-#[doc = " This indicates that the CUDA driver is in the process of shutting down."]
-pub const cudaError_enum_CUDA_ERROR_DEINITIALIZED: cudaError_enum = 4;
-#[doc = " This indicates profiler is not initialized for this run. This can"]
-#[doc = " happen when the application is running with external profiling tools"]
-#[doc = " like visual profiler."]
-pub const cudaError_enum_CUDA_ERROR_PROFILER_DISABLED: cudaError_enum = 5;
-#[doc = " \\deprecated"]
-#[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
-#[doc = " to attempt to enable/disable the profiling via ::cuProfilerStart or"]
-#[doc = " ::cuProfilerStop without initialization."]
-pub const cudaError_enum_CUDA_ERROR_PROFILER_NOT_INITIALIZED: cudaError_enum = 6;
-#[doc = " \\deprecated"]
-#[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
-#[doc = " to call cuProfilerStart() when profiling is already enabled."]
-pub const cudaError_enum_CUDA_ERROR_PROFILER_ALREADY_STARTED: cudaError_enum = 7;
-#[doc = " \\deprecated"]
-#[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
-#[doc = " to call cuProfilerStop() when profiling is already disabled."]
-pub const cudaError_enum_CUDA_ERROR_PROFILER_ALREADY_STOPPED: cudaError_enum = 8;
-#[doc = " This indicates that the CUDA driver that the application has loaded is a"]
-#[doc = " stub library. Applications that run with the stub rather than a real"]
-#[doc = " driver loaded will result in CUDA API returning this error."]
-pub const cudaError_enum_CUDA_ERROR_STUB_LIBRARY: cudaError_enum = 34;
-#[doc = " This indicates that requested CUDA device is unavailable at the current"]
-#[doc = " time. Devices are often unavailable due to use of"]
-#[doc = " ::CU_COMPUTEMODE_EXCLUSIVE_PROCESS or ::CU_COMPUTEMODE_PROHIBITED."]
-pub const cudaError_enum_CUDA_ERROR_DEVICE_UNAVAILABLE: cudaError_enum = 46;
-#[doc = " This indicates that no CUDA-capable devices were detected by the installed"]
-#[doc = " CUDA driver."]
-pub const cudaError_enum_CUDA_ERROR_NO_DEVICE: cudaError_enum = 100;
-#[doc = " This indicates that the device ordinal supplied by the user does not"]
-#[doc = " correspond to a valid CUDA device or that the action requested is"]
-#[doc = " invalid for the specified device."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_DEVICE: cudaError_enum = 101;
-#[doc = " This error indicates that the Grid license is not applied."]
-pub const cudaError_enum_CUDA_ERROR_DEVICE_NOT_LICENSED: cudaError_enum = 102;
-#[doc = " This indicates that the device kernel image is invalid. This can also"]
-#[doc = " indicate an invalid CUDA module."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_IMAGE: cudaError_enum = 200;
-#[doc = " This most frequently indicates that there is no context bound to the"]
-#[doc = " current thread. This can also be returned if the context passed to an"]
-#[doc = " API call is not a valid handle (such as a context that has had"]
-#[doc = " ::cuCtxDestroy() invoked on it). This can also be returned if a user"]
-#[doc = " mixes different API versions (i.e. 3010 context with 3020 API calls)."]
-#[doc = " See ::cuCtxGetApiVersion() for more details."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_CONTEXT: cudaError_enum = 201;
-#[doc = " This indicated that the context being supplied as a parameter to the"]
-#[doc = " API call was already the active context."]
-#[doc = " \\deprecated"]
-#[doc = " This error return is deprecated as of CUDA 3.2. It is no longer an"]
-#[doc = " error to attempt to push the active context via ::cuCtxPushCurrent()."]
-pub const cudaError_enum_CUDA_ERROR_CONTEXT_ALREADY_CURRENT: cudaError_enum = 202;
-#[doc = " This indicates that a map or register operation has failed."]
-pub const cudaError_enum_CUDA_ERROR_MAP_FAILED: cudaError_enum = 205;
-#[doc = " This indicates that an unmap or unregister operation has failed."]
-pub const cudaError_enum_CUDA_ERROR_UNMAP_FAILED: cudaError_enum = 206;
-#[doc = " This indicates that the specified array is currently mapped and thus"]
-#[doc = " cannot be destroyed."]
-pub const cudaError_enum_CUDA_ERROR_ARRAY_IS_MAPPED: cudaError_enum = 207;
-#[doc = " This indicates that the resource is already mapped."]
-pub const cudaError_enum_CUDA_ERROR_ALREADY_MAPPED: cudaError_enum = 208;
-#[doc = " This indicates that there is no kernel image available that is suitable"]
-#[doc = " for the device. This can occur when a user specifies code generation"]
-#[doc = " options for a particular CUDA source file that do not include the"]
-#[doc = " corresponding device configuration."]
-pub const cudaError_enum_CUDA_ERROR_NO_BINARY_FOR_GPU: cudaError_enum = 209;
-#[doc = " This indicates that a resource has already been acquired."]
-pub const cudaError_enum_CUDA_ERROR_ALREADY_ACQUIRED: cudaError_enum = 210;
-#[doc = " This indicates that a resource is not mapped."]
-pub const cudaError_enum_CUDA_ERROR_NOT_MAPPED: cudaError_enum = 211;
-#[doc = " This indicates that a mapped resource is not available for access as an"]
-#[doc = " array."]
-pub const cudaError_enum_CUDA_ERROR_NOT_MAPPED_AS_ARRAY: cudaError_enum = 212;
-#[doc = " This indicates that a mapped resource is not available for access as a"]
-#[doc = " pointer."]
-pub const cudaError_enum_CUDA_ERROR_NOT_MAPPED_AS_POINTER: cudaError_enum = 213;
-#[doc = " This indicates that an uncorrectable ECC error was detected during"]
-#[doc = " execution."]
-pub const cudaError_enum_CUDA_ERROR_ECC_UNCORRECTABLE: cudaError_enum = 214;
-#[doc = " This indicates that the ::CUlimit passed to the API call is not"]
-#[doc = " supported by the active device."]
-pub const cudaError_enum_CUDA_ERROR_UNSUPPORTED_LIMIT: cudaError_enum = 215;
-#[doc = " This indicates that the ::CUcontext passed to the API call can"]
-#[doc = " only be bound to a single CPU thread at a time but is already"]
-#[doc = " bound to a CPU thread."]
-pub const cudaError_enum_CUDA_ERROR_CONTEXT_ALREADY_IN_USE: cudaError_enum = 216;
-#[doc = " This indicates that peer access is not supported across the given"]
-#[doc = " devices."]
-pub const cudaError_enum_CUDA_ERROR_PEER_ACCESS_UNSUPPORTED: cudaError_enum = 217;
-#[doc = " This indicates that a PTX JIT compilation failed."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_PTX: cudaError_enum = 218;
-#[doc = " This indicates an error with OpenGL or DirectX context."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_GRAPHICS_CONTEXT: cudaError_enum = 219;
-#[doc = " This indicates that an uncorrectable NVLink error was detected during the"]
-#[doc = " execution."]
-pub const cudaError_enum_CUDA_ERROR_NVLINK_UNCORRECTABLE: cudaError_enum = 220;
-#[doc = " This indicates that the PTX JIT compiler library was not found."]
-pub const cudaError_enum_CUDA_ERROR_JIT_COMPILER_NOT_FOUND: cudaError_enum = 221;
-#[doc = " This indicates that the provided PTX was compiled with an unsupported toolchain."]
-pub const cudaError_enum_CUDA_ERROR_UNSUPPORTED_PTX_VERSION: cudaError_enum = 222;
-#[doc = " This indicates that the PTX JIT compilation was disabled."]
-pub const cudaError_enum_CUDA_ERROR_JIT_COMPILATION_DISABLED: cudaError_enum = 223;
-#[doc = " This indicates that the ::CUexecAffinityType passed to the API call is not"]
-#[doc = " supported by the active device."]
-pub const cudaError_enum_CUDA_ERROR_UNSUPPORTED_EXEC_AFFINITY: cudaError_enum = 224;
-#[doc = " This indicates that the device kernel source is invalid. This includes"]
-#[doc = " compilation/linker errors encountered in device code or user error."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_SOURCE: cudaError_enum = 300;
-#[doc = " This indicates that the file specified was not found."]
-pub const cudaError_enum_CUDA_ERROR_FILE_NOT_FOUND: cudaError_enum = 301;
-#[doc = " This indicates that a link to a shared object failed to resolve."]
-pub const cudaError_enum_CUDA_ERROR_SHARED_OBJECT_SYMBOL_NOT_FOUND: cudaError_enum = 302;
-#[doc = " This indicates that initialization of a shared object failed."]
-pub const cudaError_enum_CUDA_ERROR_SHARED_OBJECT_INIT_FAILED: cudaError_enum = 303;
-#[doc = " This indicates that an OS call failed."]
-pub const cudaError_enum_CUDA_ERROR_OPERATING_SYSTEM: cudaError_enum = 304;
-#[doc = " This indicates that a resource handle passed to the API call was not"]
-#[doc = " valid. Resource handles are opaque types like ::CUstream and ::CUevent."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_HANDLE: cudaError_enum = 400;
-#[doc = " This indicates that a resource required by the API call is not in a"]
-#[doc = " valid state to perform the requested operation."]
-pub const cudaError_enum_CUDA_ERROR_ILLEGAL_STATE: cudaError_enum = 401;
-#[doc = " This indicates that a named symbol was not found. Examples of symbols"]
-#[doc = " are global/constant variable names, driver function names, texture names,"]
-#[doc = " and surface names."]
-pub const cudaError_enum_CUDA_ERROR_NOT_FOUND: cudaError_enum = 500;
-#[doc = " This indicates that asynchronous operations issued previously have not"]
-#[doc = " completed yet. This result is not actually an error, but must be indicated"]
-#[doc = " differently than ::CUDA_SUCCESS (which indicates completion). Calls that"]
-#[doc = " may return this value include ::cuEventQuery() and ::cuStreamQuery()."]
-pub const cudaError_enum_CUDA_ERROR_NOT_READY: cudaError_enum = 600;
-#[doc = " While executing a kernel, the device encountered a"]
-#[doc = " load or store instruction on an invalid memory address."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_ILLEGAL_ADDRESS: cudaError_enum = 700;
-#[doc = " This indicates that a launch did not occur because it did not have"]
-#[doc = " appropriate resources. This error usually indicates that the user has"]
-#[doc = " attempted to pass too many arguments to the device kernel, or the"]
-#[doc = " kernel launch specifies too many threads for the kernel's register"]
-#[doc = " count. Passing arguments of the wrong size (i.e. a 64-bit pointer"]
-#[doc = " when a 32-bit int is expected) is equivalent to passing too many"]
-#[doc = " arguments and can also result in this error."]
-pub const cudaError_enum_CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES: cudaError_enum = 701;
-#[doc = " This indicates that the device kernel took too long to execute. This can"]
-#[doc = " only occur if timeouts are enabled - see the device attribute"]
-#[doc = " ::CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT for more information."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_LAUNCH_TIMEOUT: cudaError_enum = 702;
-#[doc = " This error indicates a kernel launch that uses an incompatible texturing"]
-#[doc = " mode."]
-pub const cudaError_enum_CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING: cudaError_enum = 703;
-#[doc = " This error indicates that a call to ::cuCtxEnablePeerAccess() is"]
-#[doc = " trying to re-enable peer access to a context which has already"]
-#[doc = " had peer access to it enabled."]
-pub const cudaError_enum_CUDA_ERROR_PEER_ACCESS_ALREADY_ENABLED: cudaError_enum = 704;
-#[doc = " This error indicates that ::cuCtxDisablePeerAccess() is"]
-#[doc = " trying to disable peer access which has not been enabled yet"]
-#[doc = " via ::cuCtxEnablePeerAccess()."]
-pub const cudaError_enum_CUDA_ERROR_PEER_ACCESS_NOT_ENABLED: cudaError_enum = 705;
-#[doc = " This error indicates that the primary context for the specified device"]
-#[doc = " has already been initialized."]
-pub const cudaError_enum_CUDA_ERROR_PRIMARY_CONTEXT_ACTIVE: cudaError_enum = 708;
-#[doc = " This error indicates that the context current to the calling thread"]
-#[doc = " has been destroyed using ::cuCtxDestroy, or is a primary context which"]
-#[doc = " has not yet been initialized."]
-pub const cudaError_enum_CUDA_ERROR_CONTEXT_IS_DESTROYED: cudaError_enum = 709;
-#[doc = " A device-side assert triggered during kernel execution. The context"]
-#[doc = " cannot be used anymore, and must be destroyed. All existing device"]
-#[doc = " memory allocations from this context are invalid and must be"]
-#[doc = " reconstructed if the program is to continue using CUDA."]
-pub const cudaError_enum_CUDA_ERROR_ASSERT: cudaError_enum = 710;
-#[doc = " This error indicates that the hardware resources required to enable"]
-#[doc = " peer access have been exhausted for one or more of the devices"]
-#[doc = " passed to ::cuCtxEnablePeerAccess()."]
-pub const cudaError_enum_CUDA_ERROR_TOO_MANY_PEERS: cudaError_enum = 711;
-#[doc = " This error indicates that the memory range passed to ::cuMemHostRegister()"]
-#[doc = " has already been registered."]
-pub const cudaError_enum_CUDA_ERROR_HOST_MEMORY_ALREADY_REGISTERED: cudaError_enum = 712;
-#[doc = " This error indicates that the pointer passed to ::cuMemHostUnregister()"]
-#[doc = " does not correspond to any currently registered memory region."]
-pub const cudaError_enum_CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED: cudaError_enum = 713;
-#[doc = " While executing a kernel, the device encountered a stack error."]
-#[doc = " This can be due to stack corruption or exceeding the stack size limit."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_HARDWARE_STACK_ERROR: cudaError_enum = 714;
-#[doc = " While executing a kernel, the device encountered an illegal instruction."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_ILLEGAL_INSTRUCTION: cudaError_enum = 715;
-#[doc = " While executing a kernel, the device encountered a load or store instruction"]
-#[doc = " on a memory address which is not aligned."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_MISALIGNED_ADDRESS: cudaError_enum = 716;
-#[doc = " While executing a kernel, the device encountered an instruction"]
-#[doc = " which can only operate on memory locations in certain address spaces"]
-#[doc = " (global, shared, or local), but was supplied a memory address not"]
-#[doc = " belonging to an allowed address space."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_ADDRESS_SPACE: cudaError_enum = 717;
-#[doc = " While executing a kernel, the device program counter wrapped its address space."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_INVALID_PC: cudaError_enum = 718;
-#[doc = " An exception occurred on the device while executing a kernel. Common"]
-#[doc = " causes include dereferencing an invalid device pointer and accessing"]
-#[doc = " out of bounds shared memory. Less common cases can be system specific - more"]
-#[doc = " information about these cases can be found in the system specific user guide."]
-#[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
-#[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
-#[doc = " and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_LAUNCH_FAILED: cudaError_enum = 719;
-#[doc = " This error indicates that the number of blocks launched per grid for a kernel that was"]
-#[doc = " launched via either ::cuLaunchCooperativeKernel or ::cuLaunchCooperativeKernelMultiDevice"]
-#[doc = " exceeds the maximum number of blocks as allowed by ::cuOccupancyMaxActiveBlocksPerMultiprocessor"]
-#[doc = " or ::cuOccupancyMaxActiveBlocksPerMultiprocessorWithFlags times the number of multiprocessors"]
-#[doc = " as specified by the device attribute ::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT."]
-pub const cudaError_enum_CUDA_ERROR_COOPERATIVE_LAUNCH_TOO_LARGE: cudaError_enum = 720;
-#[doc = " This error indicates that the attempted operation is not permitted."]
-pub const cudaError_enum_CUDA_ERROR_NOT_PERMITTED: cudaError_enum = 800;
-#[doc = " This error indicates that the attempted operation is not supported"]
-#[doc = " on the current system or device."]
-pub const cudaError_enum_CUDA_ERROR_NOT_SUPPORTED: cudaError_enum = 801;
-#[doc = " This error indicates that the system is not yet ready to start any CUDA"]
-#[doc = " work.  To continue using CUDA, verify the system configuration is in a"]
-#[doc = " valid state and all required driver daemons are actively running."]
-#[doc = " More information about this error can be found in the system specific"]
-#[doc = " user guide."]
-pub const cudaError_enum_CUDA_ERROR_SYSTEM_NOT_READY: cudaError_enum = 802;
-#[doc = " This error indicates that there is a mismatch between the versions of"]
-#[doc = " the display driver and the CUDA driver. Refer to the compatibility documentation"]
-#[doc = " for supported versions."]
-pub const cudaError_enum_CUDA_ERROR_SYSTEM_DRIVER_MISMATCH: cudaError_enum = 803;
-#[doc = " This error indicates that the system was upgraded to run with forward compatibility"]
-#[doc = " but the visible hardware detected by CUDA does not support this configuration."]
-#[doc = " Refer to the compatibility documentation for the supported hardware matrix or ensure"]
-#[doc = " that only supported hardware is visible during initialization via the CUDA_VISIBLE_DEVICES"]
-#[doc = " environment variable."]
-pub const cudaError_enum_CUDA_ERROR_COMPAT_NOT_SUPPORTED_ON_DEVICE: cudaError_enum = 804;
-#[doc = " This error indicates that the MPS client failed to connect to the MPS control daemon or the MPS server."]
-pub const cudaError_enum_CUDA_ERROR_MPS_CONNECTION_FAILED: cudaError_enum = 805;
-#[doc = " This error indicates that the remote procedural call between the MPS server and the MPS client failed."]
-pub const cudaError_enum_CUDA_ERROR_MPS_RPC_FAILURE: cudaError_enum = 806;
-#[doc = " This error indicates that the MPS server is not ready to accept new MPS client requests."]
-#[doc = " This error can be returned when the MPS server is in the process of recovering from a fatal failure."]
-pub const cudaError_enum_CUDA_ERROR_MPS_SERVER_NOT_READY: cudaError_enum = 807;
-#[doc = " This error indicates that the hardware resources required to create MPS client have been exhausted."]
-pub const cudaError_enum_CUDA_ERROR_MPS_MAX_CLIENTS_REACHED: cudaError_enum = 808;
-#[doc = " This error indicates the the hardware resources required to support device connections have been exhausted."]
-pub const cudaError_enum_CUDA_ERROR_MPS_MAX_CONNECTIONS_REACHED: cudaError_enum = 809;
-#[doc = " This error indicates that the operation is not permitted when"]
-#[doc = " the stream is capturing."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_UNSUPPORTED: cudaError_enum = 900;
-#[doc = " This error indicates that the current capture sequence on the stream"]
-#[doc = " has been invalidated due to a previous error."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_INVALIDATED: cudaError_enum = 901;
-#[doc = " This error indicates that the operation would have resulted in a merge"]
-#[doc = " of two independent capture sequences."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_MERGE: cudaError_enum = 902;
-#[doc = " This error indicates that the capture was not initiated in this stream."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_UNMATCHED: cudaError_enum = 903;
-#[doc = " This error indicates that the capture sequence contains a fork that was"]
-#[doc = " not joined to the primary stream."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_UNJOINED: cudaError_enum = 904;
-#[doc = " This error indicates that a dependency would have been created which"]
-#[doc = " crosses the capture sequence boundary. Only implicit in-stream ordering"]
-#[doc = " dependencies are allowed to cross the boundary."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_ISOLATION: cudaError_enum = 905;
-#[doc = " This error indicates a disallowed implicit dependency on a current capture"]
-#[doc = " sequence from cudaStreamLegacy."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_IMPLICIT: cudaError_enum = 906;
-#[doc = " This error indicates that the operation is not permitted on an event which"]
-#[doc = " was last recorded in a capturing stream."]
-pub const cudaError_enum_CUDA_ERROR_CAPTURED_EVENT: cudaError_enum = 907;
-#[doc = " A stream capture sequence not initiated with the ::CU_STREAM_CAPTURE_MODE_RELAXED"]
-#[doc = " argument to ::cuStreamBeginCapture was passed to ::cuStreamEndCapture in a"]
-#[doc = " different thread."]
-pub const cudaError_enum_CUDA_ERROR_STREAM_CAPTURE_WRONG_THREAD: cudaError_enum = 908;
-#[doc = " This error indicates that the timeout specified for the wait operation has lapsed."]
-pub const cudaError_enum_CUDA_ERROR_TIMEOUT: cudaError_enum = 909;
-#[doc = " This error indicates that the graph update was not performed because it included"]
-#[doc = " changes which violated constraints specific to instantiated graph update."]
-pub const cudaError_enum_CUDA_ERROR_GRAPH_EXEC_UPDATE_FAILURE: cudaError_enum = 910;
-#[doc = " This indicates that an async error has occurred in a device outside of CUDA."]
-#[doc = " If CUDA was waiting for an external device's signal before consuming shared data,"]
-#[doc = " the external device signaled an error indicating that the data is not valid for"]
-#[doc = " consumption. This leaves the process in an inconsistent state and any further CUDA"]
-#[doc = " work will return the same error. To continue using CUDA, the process must be"]
-#[doc = " terminated and relaunched."]
-pub const cudaError_enum_CUDA_ERROR_EXTERNAL_DEVICE: cudaError_enum = 911;
-#[doc = " This indicates that an unknown internal error has occurred."]
-pub const cudaError_enum_CUDA_ERROR_UNKNOWN: cudaError_enum = 999;
+#[repr(i32)]
 #[doc = " Error codes"]
-pub type cudaError_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum cudaError_enum {
+    #[doc = " The API call returned with no errors. In the case of query calls, this"]
+    #[doc = " also means that the operation being queried is complete (see"]
+    #[doc = " ::cuEventQuery() and ::cuStreamQuery())."]
+    CUDA_SUCCESS = 0,
+    #[doc = " This indicates that one or more of the parameters passed to the API call"]
+    #[doc = " is not within an acceptable range of values."]
+    CUDA_ERROR_INVALID_VALUE = 1,
+    #[doc = " The API call failed because it was unable to allocate enough memory to"]
+    #[doc = " perform the requested operation."]
+    CUDA_ERROR_OUT_OF_MEMORY = 2,
+    #[doc = " This indicates that the CUDA driver has not been initialized with"]
+    #[doc = " ::cuInit() or that initialization has failed."]
+    CUDA_ERROR_NOT_INITIALIZED = 3,
+    #[doc = " This indicates that the CUDA driver is in the process of shutting down."]
+    CUDA_ERROR_DEINITIALIZED = 4,
+    #[doc = " This indicates profiler is not initialized for this run. This can"]
+    #[doc = " happen when the application is running with external profiling tools"]
+    #[doc = " like visual profiler."]
+    CUDA_ERROR_PROFILER_DISABLED = 5,
+    #[doc = " \\deprecated"]
+    #[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
+    #[doc = " to attempt to enable/disable the profiling via ::cuProfilerStart or"]
+    #[doc = " ::cuProfilerStop without initialization."]
+    CUDA_ERROR_PROFILER_NOT_INITIALIZED = 6,
+    #[doc = " \\deprecated"]
+    #[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
+    #[doc = " to call cuProfilerStart() when profiling is already enabled."]
+    CUDA_ERROR_PROFILER_ALREADY_STARTED = 7,
+    #[doc = " \\deprecated"]
+    #[doc = " This error return is deprecated as of CUDA 5.0. It is no longer an error"]
+    #[doc = " to call cuProfilerStop() when profiling is already disabled."]
+    CUDA_ERROR_PROFILER_ALREADY_STOPPED = 8,
+    #[doc = " This indicates that the CUDA driver that the application has loaded is a"]
+    #[doc = " stub library. Applications that run with the stub rather than a real"]
+    #[doc = " driver loaded will result in CUDA API returning this error."]
+    CUDA_ERROR_STUB_LIBRARY = 34,
+    #[doc = " This indicates that requested CUDA device is unavailable at the current"]
+    #[doc = " time. Devices are often unavailable due to use of"]
+    #[doc = " ::CU_COMPUTEMODE_EXCLUSIVE_PROCESS or ::CU_COMPUTEMODE_PROHIBITED."]
+    CUDA_ERROR_DEVICE_UNAVAILABLE = 46,
+    #[doc = " This indicates that no CUDA-capable devices were detected by the installed"]
+    #[doc = " CUDA driver."]
+    CUDA_ERROR_NO_DEVICE = 100,
+    #[doc = " This indicates that the device ordinal supplied by the user does not"]
+    #[doc = " correspond to a valid CUDA device or that the action requested is"]
+    #[doc = " invalid for the specified device."]
+    CUDA_ERROR_INVALID_DEVICE = 101,
+    #[doc = " This error indicates that the Grid license is not applied."]
+    CUDA_ERROR_DEVICE_NOT_LICENSED = 102,
+    #[doc = " This indicates that the device kernel image is invalid. This can also"]
+    #[doc = " indicate an invalid CUDA module."]
+    CUDA_ERROR_INVALID_IMAGE = 200,
+    #[doc = " This most frequently indicates that there is no context bound to the"]
+    #[doc = " current thread. This can also be returned if the context passed to an"]
+    #[doc = " API call is not a valid handle (such as a context that has had"]
+    #[doc = " ::cuCtxDestroy() invoked on it). This can also be returned if a user"]
+    #[doc = " mixes different API versions (i.e. 3010 context with 3020 API calls)."]
+    #[doc = " See ::cuCtxGetApiVersion() for more details."]
+    CUDA_ERROR_INVALID_CONTEXT = 201,
+    #[doc = " This indicated that the context being supplied as a parameter to the"]
+    #[doc = " API call was already the active context."]
+    #[doc = " \\deprecated"]
+    #[doc = " This error return is deprecated as of CUDA 3.2. It is no longer an"]
+    #[doc = " error to attempt to push the active context via ::cuCtxPushCurrent()."]
+    CUDA_ERROR_CONTEXT_ALREADY_CURRENT = 202,
+    #[doc = " This indicates that a map or register operation has failed."]
+    CUDA_ERROR_MAP_FAILED = 205,
+    #[doc = " This indicates that an unmap or unregister operation has failed."]
+    CUDA_ERROR_UNMAP_FAILED = 206,
+    #[doc = " This indicates that the specified array is currently mapped and thus"]
+    #[doc = " cannot be destroyed."]
+    CUDA_ERROR_ARRAY_IS_MAPPED = 207,
+    #[doc = " This indicates that the resource is already mapped."]
+    CUDA_ERROR_ALREADY_MAPPED = 208,
+    #[doc = " This indicates that there is no kernel image available that is suitable"]
+    #[doc = " for the device. This can occur when a user specifies code generation"]
+    #[doc = " options for a particular CUDA source file that do not include the"]
+    #[doc = " corresponding device configuration."]
+    CUDA_ERROR_NO_BINARY_FOR_GPU = 209,
+    #[doc = " This indicates that a resource has already been acquired."]
+    CUDA_ERROR_ALREADY_ACQUIRED = 210,
+    #[doc = " This indicates that a resource is not mapped."]
+    CUDA_ERROR_NOT_MAPPED = 211,
+    #[doc = " This indicates that a mapped resource is not available for access as an"]
+    #[doc = " array."]
+    CUDA_ERROR_NOT_MAPPED_AS_ARRAY = 212,
+    #[doc = " This indicates that a mapped resource is not available for access as a"]
+    #[doc = " pointer."]
+    CUDA_ERROR_NOT_MAPPED_AS_POINTER = 213,
+    #[doc = " This indicates that an uncorrectable ECC error was detected during"]
+    #[doc = " execution."]
+    CUDA_ERROR_ECC_UNCORRECTABLE = 214,
+    #[doc = " This indicates that the ::CUlimit passed to the API call is not"]
+    #[doc = " supported by the active device."]
+    CUDA_ERROR_UNSUPPORTED_LIMIT = 215,
+    #[doc = " This indicates that the ::CUcontext passed to the API call can"]
+    #[doc = " only be bound to a single CPU thread at a time but is already"]
+    #[doc = " bound to a CPU thread."]
+    CUDA_ERROR_CONTEXT_ALREADY_IN_USE = 216,
+    #[doc = " This indicates that peer access is not supported across the given"]
+    #[doc = " devices."]
+    CUDA_ERROR_PEER_ACCESS_UNSUPPORTED = 217,
+    #[doc = " This indicates that a PTX JIT compilation failed."]
+    CUDA_ERROR_INVALID_PTX = 218,
+    #[doc = " This indicates an error with OpenGL or DirectX context."]
+    CUDA_ERROR_INVALID_GRAPHICS_CONTEXT = 219,
+    #[doc = " This indicates that an uncorrectable NVLink error was detected during the"]
+    #[doc = " execution."]
+    CUDA_ERROR_NVLINK_UNCORRECTABLE = 220,
+    #[doc = " This indicates that the PTX JIT compiler library was not found."]
+    CUDA_ERROR_JIT_COMPILER_NOT_FOUND = 221,
+    #[doc = " This indicates that the provided PTX was compiled with an unsupported toolchain."]
+    CUDA_ERROR_UNSUPPORTED_PTX_VERSION = 222,
+    #[doc = " This indicates that the PTX JIT compilation was disabled."]
+    CUDA_ERROR_JIT_COMPILATION_DISABLED = 223,
+    #[doc = " This indicates that the ::CUexecAffinityType passed to the API call is not"]
+    #[doc = " supported by the active device."]
+    CUDA_ERROR_UNSUPPORTED_EXEC_AFFINITY = 224,
+    #[doc = " This indicates that the device kernel source is invalid. This includes"]
+    #[doc = " compilation/linker errors encountered in device code or user error."]
+    CUDA_ERROR_INVALID_SOURCE = 300,
+    #[doc = " This indicates that the file specified was not found."]
+    CUDA_ERROR_FILE_NOT_FOUND = 301,
+    #[doc = " This indicates that a link to a shared object failed to resolve."]
+    CUDA_ERROR_SHARED_OBJECT_SYMBOL_NOT_FOUND = 302,
+    #[doc = " This indicates that initialization of a shared object failed."]
+    CUDA_ERROR_SHARED_OBJECT_INIT_FAILED = 303,
+    #[doc = " This indicates that an OS call failed."]
+    CUDA_ERROR_OPERATING_SYSTEM = 304,
+    #[doc = " This indicates that a resource handle passed to the API call was not"]
+    #[doc = " valid. Resource handles are opaque types like ::CUstream and ::CUevent."]
+    CUDA_ERROR_INVALID_HANDLE = 400,
+    #[doc = " This indicates that a resource required by the API call is not in a"]
+    #[doc = " valid state to perform the requested operation."]
+    CUDA_ERROR_ILLEGAL_STATE = 401,
+    #[doc = " This indicates that a named symbol was not found. Examples of symbols"]
+    #[doc = " are global/constant variable names, driver function names, texture names,"]
+    #[doc = " and surface names."]
+    CUDA_ERROR_NOT_FOUND = 500,
+    #[doc = " This indicates that asynchronous operations issued previously have not"]
+    #[doc = " completed yet. This result is not actually an error, but must be indicated"]
+    #[doc = " differently than ::CUDA_SUCCESS (which indicates completion). Calls that"]
+    #[doc = " may return this value include ::cuEventQuery() and ::cuStreamQuery()."]
+    CUDA_ERROR_NOT_READY = 600,
+    #[doc = " While executing a kernel, the device encountered a"]
+    #[doc = " load or store instruction on an invalid memory address."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_ILLEGAL_ADDRESS = 700,
+    #[doc = " This indicates that a launch did not occur because it did not have"]
+    #[doc = " appropriate resources. This error usually indicates that the user has"]
+    #[doc = " attempted to pass too many arguments to the device kernel, or the"]
+    #[doc = " kernel launch specifies too many threads for the kernel's register"]
+    #[doc = " count. Passing arguments of the wrong size (i.e. a 64-bit pointer"]
+    #[doc = " when a 32-bit int is expected) is equivalent to passing too many"]
+    #[doc = " arguments and can also result in this error."]
+    CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES = 701,
+    #[doc = " This indicates that the device kernel took too long to execute. This can"]
+    #[doc = " only occur if timeouts are enabled - see the device attribute"]
+    #[doc = " ::CU_DEVICE_ATTRIBUTE_KERNEL_EXEC_TIMEOUT for more information."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_LAUNCH_TIMEOUT = 702,
+    #[doc = " This error indicates a kernel launch that uses an incompatible texturing"]
+    #[doc = " mode."]
+    CUDA_ERROR_LAUNCH_INCOMPATIBLE_TEXTURING = 703,
+    #[doc = " This error indicates that a call to ::cuCtxEnablePeerAccess() is"]
+    #[doc = " trying to re-enable peer access to a context which has already"]
+    #[doc = " had peer access to it enabled."]
+    CUDA_ERROR_PEER_ACCESS_ALREADY_ENABLED = 704,
+    #[doc = " This error indicates that ::cuCtxDisablePeerAccess() is"]
+    #[doc = " trying to disable peer access which has not been enabled yet"]
+    #[doc = " via ::cuCtxEnablePeerAccess()."]
+    CUDA_ERROR_PEER_ACCESS_NOT_ENABLED = 705,
+    #[doc = " This error indicates that the primary context for the specified device"]
+    #[doc = " has already been initialized."]
+    CUDA_ERROR_PRIMARY_CONTEXT_ACTIVE = 708,
+    #[doc = " This error indicates that the context current to the calling thread"]
+    #[doc = " has been destroyed using ::cuCtxDestroy, or is a primary context which"]
+    #[doc = " has not yet been initialized."]
+    CUDA_ERROR_CONTEXT_IS_DESTROYED = 709,
+    #[doc = " A device-side assert triggered during kernel execution. The context"]
+    #[doc = " cannot be used anymore, and must be destroyed. All existing device"]
+    #[doc = " memory allocations from this context are invalid and must be"]
+    #[doc = " reconstructed if the program is to continue using CUDA."]
+    CUDA_ERROR_ASSERT = 710,
+    #[doc = " This error indicates that the hardware resources required to enable"]
+    #[doc = " peer access have been exhausted for one or more of the devices"]
+    #[doc = " passed to ::cuCtxEnablePeerAccess()."]
+    CUDA_ERROR_TOO_MANY_PEERS = 711,
+    #[doc = " This error indicates that the memory range passed to ::cuMemHostRegister()"]
+    #[doc = " has already been registered."]
+    CUDA_ERROR_HOST_MEMORY_ALREADY_REGISTERED = 712,
+    #[doc = " This error indicates that the pointer passed to ::cuMemHostUnregister()"]
+    #[doc = " does not correspond to any currently registered memory region."]
+    CUDA_ERROR_HOST_MEMORY_NOT_REGISTERED = 713,
+    #[doc = " While executing a kernel, the device encountered a stack error."]
+    #[doc = " This can be due to stack corruption or exceeding the stack size limit."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_HARDWARE_STACK_ERROR = 714,
+    #[doc = " While executing a kernel, the device encountered an illegal instruction."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_ILLEGAL_INSTRUCTION = 715,
+    #[doc = " While executing a kernel, the device encountered a load or store instruction"]
+    #[doc = " on a memory address which is not aligned."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_MISALIGNED_ADDRESS = 716,
+    #[doc = " While executing a kernel, the device encountered an instruction"]
+    #[doc = " which can only operate on memory locations in certain address spaces"]
+    #[doc = " (global, shared, or local), but was supplied a memory address not"]
+    #[doc = " belonging to an allowed address space."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_INVALID_ADDRESS_SPACE = 717,
+    #[doc = " While executing a kernel, the device program counter wrapped its address space."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_INVALID_PC = 718,
+    #[doc = " An exception occurred on the device while executing a kernel. Common"]
+    #[doc = " causes include dereferencing an invalid device pointer and accessing"]
+    #[doc = " out of bounds shared memory. Less common cases can be system specific - more"]
+    #[doc = " information about these cases can be found in the system specific user guide."]
+    #[doc = " This leaves the process in an inconsistent state and any further CUDA work"]
+    #[doc = " will return the same error. To continue using CUDA, the process must be terminated"]
+    #[doc = " and relaunched."]
+    CUDA_ERROR_LAUNCH_FAILED = 719,
+    #[doc = " This error indicates that the number of blocks launched per grid for a kernel that was"]
+    #[doc = " launched via either ::cuLaunchCooperativeKernel or ::cuLaunchCooperativeKernelMultiDevice"]
+    #[doc = " exceeds the maximum number of blocks as allowed by ::cuOccupancyMaxActiveBlocksPerMultiprocessor"]
+    #[doc = " or ::cuOccupancyMaxActiveBlocksPerMultiprocessorWithFlags times the number of multiprocessors"]
+    #[doc = " as specified by the device attribute ::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT."]
+    CUDA_ERROR_COOPERATIVE_LAUNCH_TOO_LARGE = 720,
+    #[doc = " This error indicates that the attempted operation is not permitted."]
+    CUDA_ERROR_NOT_PERMITTED = 800,
+    #[doc = " This error indicates that the attempted operation is not supported"]
+    #[doc = " on the current system or device."]
+    CUDA_ERROR_NOT_SUPPORTED = 801,
+    #[doc = " This error indicates that the system is not yet ready to start any CUDA"]
+    #[doc = " work.  To continue using CUDA, verify the system configuration is in a"]
+    #[doc = " valid state and all required driver daemons are actively running."]
+    #[doc = " More information about this error can be found in the system specific"]
+    #[doc = " user guide."]
+    CUDA_ERROR_SYSTEM_NOT_READY = 802,
+    #[doc = " This error indicates that there is a mismatch between the versions of"]
+    #[doc = " the display driver and the CUDA driver. Refer to the compatibility documentation"]
+    #[doc = " for supported versions."]
+    CUDA_ERROR_SYSTEM_DRIVER_MISMATCH = 803,
+    #[doc = " This error indicates that the system was upgraded to run with forward compatibility"]
+    #[doc = " but the visible hardware detected by CUDA does not support this configuration."]
+    #[doc = " Refer to the compatibility documentation for the supported hardware matrix or ensure"]
+    #[doc = " that only supported hardware is visible during initialization via the CUDA_VISIBLE_DEVICES"]
+    #[doc = " environment variable."]
+    CUDA_ERROR_COMPAT_NOT_SUPPORTED_ON_DEVICE = 804,
+    #[doc = " This error indicates that the MPS client failed to connect to the MPS control daemon or the MPS server."]
+    CUDA_ERROR_MPS_CONNECTION_FAILED = 805,
+    #[doc = " This error indicates that the remote procedural call between the MPS server and the MPS client failed."]
+    CUDA_ERROR_MPS_RPC_FAILURE = 806,
+    #[doc = " This error indicates that the MPS server is not ready to accept new MPS client requests."]
+    #[doc = " This error can be returned when the MPS server is in the process of recovering from a fatal failure."]
+    CUDA_ERROR_MPS_SERVER_NOT_READY = 807,
+    #[doc = " This error indicates that the hardware resources required to create MPS client have been exhausted."]
+    CUDA_ERROR_MPS_MAX_CLIENTS_REACHED = 808,
+    #[doc = " This error indicates the the hardware resources required to support device connections have been exhausted."]
+    CUDA_ERROR_MPS_MAX_CONNECTIONS_REACHED = 809,
+    #[doc = " This error indicates that the operation is not permitted when"]
+    #[doc = " the stream is capturing."]
+    CUDA_ERROR_STREAM_CAPTURE_UNSUPPORTED = 900,
+    #[doc = " This error indicates that the current capture sequence on the stream"]
+    #[doc = " has been invalidated due to a previous error."]
+    CUDA_ERROR_STREAM_CAPTURE_INVALIDATED = 901,
+    #[doc = " This error indicates that the operation would have resulted in a merge"]
+    #[doc = " of two independent capture sequences."]
+    CUDA_ERROR_STREAM_CAPTURE_MERGE = 902,
+    #[doc = " This error indicates that the capture was not initiated in this stream."]
+    CUDA_ERROR_STREAM_CAPTURE_UNMATCHED = 903,
+    #[doc = " This error indicates that the capture sequence contains a fork that was"]
+    #[doc = " not joined to the primary stream."]
+    CUDA_ERROR_STREAM_CAPTURE_UNJOINED = 904,
+    #[doc = " This error indicates that a dependency would have been created which"]
+    #[doc = " crosses the capture sequence boundary. Only implicit in-stream ordering"]
+    #[doc = " dependencies are allowed to cross the boundary."]
+    CUDA_ERROR_STREAM_CAPTURE_ISOLATION = 905,
+    #[doc = " This error indicates a disallowed implicit dependency on a current capture"]
+    #[doc = " sequence from cudaStreamLegacy."]
+    CUDA_ERROR_STREAM_CAPTURE_IMPLICIT = 906,
+    #[doc = " This error indicates that the operation is not permitted on an event which"]
+    #[doc = " was last recorded in a capturing stream."]
+    CUDA_ERROR_CAPTURED_EVENT = 907,
+    #[doc = " A stream capture sequence not initiated with the ::CU_STREAM_CAPTURE_MODE_RELAXED"]
+    #[doc = " argument to ::cuStreamBeginCapture was passed to ::cuStreamEndCapture in a"]
+    #[doc = " different thread."]
+    CUDA_ERROR_STREAM_CAPTURE_WRONG_THREAD = 908,
+    #[doc = " This error indicates that the timeout specified for the wait operation has lapsed."]
+    CUDA_ERROR_TIMEOUT = 909,
+    #[doc = " This error indicates that the graph update was not performed because it included"]
+    #[doc = " changes which violated constraints specific to instantiated graph update."]
+    CUDA_ERROR_GRAPH_EXEC_UPDATE_FAILURE = 910,
+    #[doc = " This indicates that an async error has occurred in a device outside of CUDA."]
+    #[doc = " If CUDA was waiting for an external device's signal before consuming shared data,"]
+    #[doc = " the external device signaled an error indicating that the data is not valid for"]
+    #[doc = " consumption. This leaves the process in an inconsistent state and any further CUDA"]
+    #[doc = " work will return the same error. To continue using CUDA, the process must be"]
+    #[doc = " terminated and relaunched."]
+    CUDA_ERROR_EXTERNAL_DEVICE = 911,
+    #[doc = " This indicates that an unknown internal error has occurred."]
+    CUDA_ERROR_UNKNOWN = 999,
+}
 #[doc = " Error codes"]
 pub use self::cudaError_enum as CUresult;
-#[doc = "< A relative value indicating the performance of the link between two devices"]
-pub const CUdevice_P2PAttribute_enum_CU_DEVICE_P2P_ATTRIBUTE_PERFORMANCE_RANK:
-    CUdevice_P2PAttribute_enum = 1;
-#[doc = "< P2P Access is enable"]
-pub const CUdevice_P2PAttribute_enum_CU_DEVICE_P2P_ATTRIBUTE_ACCESS_SUPPORTED:
-    CUdevice_P2PAttribute_enum = 2;
-#[doc = "< Atomic operation over the link supported"]
-pub const CUdevice_P2PAttribute_enum_CU_DEVICE_P2P_ATTRIBUTE_NATIVE_ATOMIC_SUPPORTED:
-    CUdevice_P2PAttribute_enum = 3;
-#[doc = "< \\deprecated use CU_DEVICE_P2P_ATTRIBUTE_CUDA_ARRAY_ACCESS_SUPPORTED instead"]
-pub const CUdevice_P2PAttribute_enum_CU_DEVICE_P2P_ATTRIBUTE_ACCESS_ACCESS_SUPPORTED:
-    CUdevice_P2PAttribute_enum = 4;
-#[doc = "< Accessing CUDA arrays over the link supported"]
-pub const CUdevice_P2PAttribute_enum_CU_DEVICE_P2P_ATTRIBUTE_CUDA_ARRAY_ACCESS_SUPPORTED:
-    CUdevice_P2PAttribute_enum = 4;
+impl CUdevice_P2PAttribute_enum {
+    pub const CU_DEVICE_P2P_ATTRIBUTE_CUDA_ARRAY_ACCESS_SUPPORTED: CUdevice_P2PAttribute_enum =
+        CUdevice_P2PAttribute_enum::CU_DEVICE_P2P_ATTRIBUTE_ACCESS_ACCESS_SUPPORTED;
+}
+#[repr(i32)]
 #[doc = " P2P Attributes"]
-pub type CUdevice_P2PAttribute_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUdevice_P2PAttribute_enum {
+    #[doc = "< A relative value indicating the performance of the link between two devices"]
+    CU_DEVICE_P2P_ATTRIBUTE_PERFORMANCE_RANK = 1,
+    #[doc = "< P2P Access is enable"]
+    CU_DEVICE_P2P_ATTRIBUTE_ACCESS_SUPPORTED = 2,
+    #[doc = "< Atomic operation over the link supported"]
+    CU_DEVICE_P2P_ATTRIBUTE_NATIVE_ATOMIC_SUPPORTED = 3,
+    #[doc = "< \\deprecated use CU_DEVICE_P2P_ATTRIBUTE_CUDA_ARRAY_ACCESS_SUPPORTED instead"]
+    CU_DEVICE_P2P_ATTRIBUTE_ACCESS_ACCESS_SUPPORTED = 4,
+}
 #[doc = " P2P Attributes"]
 pub use self::CUdevice_P2PAttribute_enum as CUdevice_P2PAttribute;
 #[doc = " CUDA stream callback"]
@@ -6966,79 +6961,81 @@ fn bindgen_test_layout_CUDA_TEXTURE_DESC_st() {
 pub type CUDA_TEXTURE_DESC_v1 = CUDA_TEXTURE_DESC_st;
 #[doc = " Texture descriptor"]
 pub type CUDA_TEXTURE_DESC = CUDA_TEXTURE_DESC_v1;
-#[doc = "< No resource view format (use underlying resource format)"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_NONE: CUresourceViewFormat_enum = 0;
-#[doc = "< 1 channel unsigned 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_1X8: CUresourceViewFormat_enum = 1;
-#[doc = "< 2 channel unsigned 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_2X8: CUresourceViewFormat_enum = 2;
-#[doc = "< 4 channel unsigned 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_4X8: CUresourceViewFormat_enum = 3;
-#[doc = "< 1 channel signed 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_1X8: CUresourceViewFormat_enum = 4;
-#[doc = "< 2 channel signed 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_2X8: CUresourceViewFormat_enum = 5;
-#[doc = "< 4 channel signed 8-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_4X8: CUresourceViewFormat_enum = 6;
-#[doc = "< 1 channel unsigned 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_1X16: CUresourceViewFormat_enum = 7;
-#[doc = "< 2 channel unsigned 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_2X16: CUresourceViewFormat_enum = 8;
-#[doc = "< 4 channel unsigned 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_4X16: CUresourceViewFormat_enum = 9;
-#[doc = "< 1 channel signed 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_1X16: CUresourceViewFormat_enum = 10;
-#[doc = "< 2 channel signed 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_2X16: CUresourceViewFormat_enum = 11;
-#[doc = "< 4 channel signed 16-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_4X16: CUresourceViewFormat_enum = 12;
-#[doc = "< 1 channel unsigned 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_1X32: CUresourceViewFormat_enum = 13;
-#[doc = "< 2 channel unsigned 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_2X32: CUresourceViewFormat_enum = 14;
-#[doc = "< 4 channel unsigned 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UINT_4X32: CUresourceViewFormat_enum = 15;
-#[doc = "< 1 channel signed 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_1X32: CUresourceViewFormat_enum = 16;
-#[doc = "< 2 channel signed 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_2X32: CUresourceViewFormat_enum = 17;
-#[doc = "< 4 channel signed 32-bit integers"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SINT_4X32: CUresourceViewFormat_enum = 18;
-#[doc = "< 1 channel 16-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_1X16: CUresourceViewFormat_enum = 19;
-#[doc = "< 2 channel 16-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_2X16: CUresourceViewFormat_enum = 20;
-#[doc = "< 4 channel 16-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_4X16: CUresourceViewFormat_enum = 21;
-#[doc = "< 1 channel 32-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_1X32: CUresourceViewFormat_enum = 22;
-#[doc = "< 2 channel 32-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_2X32: CUresourceViewFormat_enum = 23;
-#[doc = "< 4 channel 32-bit floating point"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_FLOAT_4X32: CUresourceViewFormat_enum = 24;
-#[doc = "< Block compressed 1"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC1: CUresourceViewFormat_enum = 25;
-#[doc = "< Block compressed 2"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC2: CUresourceViewFormat_enum = 26;
-#[doc = "< Block compressed 3"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC3: CUresourceViewFormat_enum = 27;
-#[doc = "< Block compressed 4 unsigned"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC4: CUresourceViewFormat_enum = 28;
-#[doc = "< Block compressed 4 signed"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SIGNED_BC4: CUresourceViewFormat_enum = 29;
-#[doc = "< Block compressed 5 unsigned"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC5: CUresourceViewFormat_enum = 30;
-#[doc = "< Block compressed 5 signed"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SIGNED_BC5: CUresourceViewFormat_enum = 31;
-#[doc = "< Block compressed 6 unsigned half-float"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC6H: CUresourceViewFormat_enum =
-    32;
-#[doc = "< Block compressed 6 signed half-float"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_SIGNED_BC6H: CUresourceViewFormat_enum = 33;
-#[doc = "< Block compressed 7"]
-pub const CUresourceViewFormat_enum_CU_RES_VIEW_FORMAT_UNSIGNED_BC7: CUresourceViewFormat_enum = 34;
+#[repr(i32)]
 #[doc = " Resource view format"]
-pub type CUresourceViewFormat_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUresourceViewFormat_enum {
+    #[doc = "< No resource view format (use underlying resource format)"]
+    CU_RES_VIEW_FORMAT_NONE = 0,
+    #[doc = "< 1 channel unsigned 8-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_1X8 = 1,
+    #[doc = "< 2 channel unsigned 8-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_2X8 = 2,
+    #[doc = "< 4 channel unsigned 8-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_4X8 = 3,
+    #[doc = "< 1 channel signed 8-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_1X8 = 4,
+    #[doc = "< 2 channel signed 8-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_2X8 = 5,
+    #[doc = "< 4 channel signed 8-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_4X8 = 6,
+    #[doc = "< 1 channel unsigned 16-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_1X16 = 7,
+    #[doc = "< 2 channel unsigned 16-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_2X16 = 8,
+    #[doc = "< 4 channel unsigned 16-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_4X16 = 9,
+    #[doc = "< 1 channel signed 16-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_1X16 = 10,
+    #[doc = "< 2 channel signed 16-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_2X16 = 11,
+    #[doc = "< 4 channel signed 16-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_4X16 = 12,
+    #[doc = "< 1 channel unsigned 32-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_1X32 = 13,
+    #[doc = "< 2 channel unsigned 32-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_2X32 = 14,
+    #[doc = "< 4 channel unsigned 32-bit integers"]
+    CU_RES_VIEW_FORMAT_UINT_4X32 = 15,
+    #[doc = "< 1 channel signed 32-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_1X32 = 16,
+    #[doc = "< 2 channel signed 32-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_2X32 = 17,
+    #[doc = "< 4 channel signed 32-bit integers"]
+    CU_RES_VIEW_FORMAT_SINT_4X32 = 18,
+    #[doc = "< 1 channel 16-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_1X16 = 19,
+    #[doc = "< 2 channel 16-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_2X16 = 20,
+    #[doc = "< 4 channel 16-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_4X16 = 21,
+    #[doc = "< 1 channel 32-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_1X32 = 22,
+    #[doc = "< 2 channel 32-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_2X32 = 23,
+    #[doc = "< 4 channel 32-bit floating point"]
+    CU_RES_VIEW_FORMAT_FLOAT_4X32 = 24,
+    #[doc = "< Block compressed 1"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC1 = 25,
+    #[doc = "< Block compressed 2"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC2 = 26,
+    #[doc = "< Block compressed 3"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC3 = 27,
+    #[doc = "< Block compressed 4 unsigned"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC4 = 28,
+    #[doc = "< Block compressed 4 signed"]
+    CU_RES_VIEW_FORMAT_SIGNED_BC4 = 29,
+    #[doc = "< Block compressed 5 unsigned"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC5 = 30,
+    #[doc = "< Block compressed 5 signed"]
+    CU_RES_VIEW_FORMAT_SIGNED_BC5 = 31,
+    #[doc = "< Block compressed 6 unsigned half-float"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC6H = 32,
+    #[doc = "< Block compressed 6 signed half-float"]
+    CU_RES_VIEW_FORMAT_SIGNED_BC6H = 33,
+    #[doc = "< Block compressed 7"]
+    CU_RES_VIEW_FORMAT_UNSIGNED_BC7 = 34,
+}
 #[doc = " Resource view format"]
 pub use self::CUresourceViewFormat_enum as CUresourceViewFormat;
 #[doc = " Resource view descriptor"]
@@ -7226,18 +7223,18 @@ fn bindgen_test_layout_CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st() {
 pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_v1 = CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_st;
 #[doc = " GPU Direct v3 tokens"]
 pub type CUDA_POINTER_ATTRIBUTE_P2P_TOKENS = CUDA_POINTER_ATTRIBUTE_P2P_TOKENS_v1;
-#[doc = "< No access, meaning the device cannot access this memory at all, thus must be staged through accessible memory in order to complete certain operations"]
-pub const CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum_CU_POINTER_ATTRIBUTE_ACCESS_FLAG_NONE:
-    CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum = 0;
-#[doc = "< Read-only access, meaning writes to this memory are considered invalid accesses and thus return error in that case."]
-pub const CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum_CU_POINTER_ATTRIBUTE_ACCESS_FLAG_READ:
-    CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum = 1;
-#[doc = "< Read-write access, the device has full read-write access to the memory"]
-pub const CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum_CU_POINTER_ATTRIBUTE_ACCESS_FLAG_READWRITE:
-    CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum = 3;
+#[repr(i32)]
 #[doc = " Access flags that specify the level of access the current context's device has"]
 #[doc = " on the memory referenced."]
-pub type CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum {
+    #[doc = "< No access, meaning the device cannot access this memory at all, thus must be staged through accessible memory in order to complete certain operations"]
+    CU_POINTER_ATTRIBUTE_ACCESS_FLAG_NONE = 0,
+    #[doc = "< Read-only access, meaning writes to this memory are considered invalid accesses and thus return error in that case."]
+    CU_POINTER_ATTRIBUTE_ACCESS_FLAG_READ = 1,
+    #[doc = "< Read-write access, the device has full read-write access to the memory"]
+    CU_POINTER_ATTRIBUTE_ACCESS_FLAG_READWRITE = 3,
+}
 #[doc = " Access flags that specify the level of access the current context's device has"]
 #[doc = " on the memory referenced."]
 pub use self::CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS_enum as CUDA_POINTER_ATTRIBUTE_ACCESS_FLAGS;
@@ -7386,32 +7383,27 @@ fn bindgen_test_layout_CUDA_LAUNCH_PARAMS_st() {
 pub type CUDA_LAUNCH_PARAMS_v1 = CUDA_LAUNCH_PARAMS_st;
 #[doc = " Kernel launch parameters"]
 pub type CUDA_LAUNCH_PARAMS = CUDA_LAUNCH_PARAMS_v1;
-#[doc = " Handle is an opaque file descriptor"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD:
-    CUexternalMemoryHandleType_enum = 1;
-#[doc = " Handle is an opaque shared NT handle"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32:
-    CUexternalMemoryHandleType_enum = 2;
-#[doc = " Handle is an opaque, globally shared handle"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT:
-    CUexternalMemoryHandleType_enum = 3;
-#[doc = " Handle is a D3D12 heap object"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP:
-    CUexternalMemoryHandleType_enum = 4;
-#[doc = " Handle is a D3D12 committed resource"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE:
-    CUexternalMemoryHandleType_enum = 5;
-#[doc = " Handle is a shared NT handle to a D3D11 resource"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_RESOURCE:
-    CUexternalMemoryHandleType_enum = 6;
-#[doc = " Handle is a globally shared handle to a D3D11 resource"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_RESOURCE_KMT:
-    CUexternalMemoryHandleType_enum = 7;
-#[doc = " Handle is an NvSciBuf object"]
-pub const CUexternalMemoryHandleType_enum_CU_EXTERNAL_MEMORY_HANDLE_TYPE_NVSCIBUF:
-    CUexternalMemoryHandleType_enum = 8;
+#[repr(i32)]
 #[doc = " External memory handle types"]
-pub type CUexternalMemoryHandleType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUexternalMemoryHandleType_enum {
+    #[doc = " Handle is an opaque file descriptor"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD = 1,
+    #[doc = " Handle is an opaque shared NT handle"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32 = 2,
+    #[doc = " Handle is an opaque, globally shared handle"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_KMT = 3,
+    #[doc = " Handle is a D3D12 heap object"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_HEAP = 4,
+    #[doc = " Handle is a D3D12 committed resource"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D12_RESOURCE = 5,
+    #[doc = " Handle is a shared NT handle to a D3D11 resource"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_RESOURCE = 6,
+    #[doc = " Handle is a globally shared handle to a D3D11 resource"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_D3D11_RESOURCE_KMT = 7,
+    #[doc = " Handle is an NvSciBuf object"]
+    CU_EXTERNAL_MEMORY_HANDLE_TYPE_NVSCIBUF = 8,
+}
 #[doc = " External memory handle types"]
 pub use self::CUexternalMemoryHandleType_enum as CUexternalMemoryHandleType;
 #[doc = " External memory handle descriptor"]
@@ -7784,35 +7776,31 @@ pub type CUDA_EXTERNAL_MEMORY_MIPMAPPED_ARRAY_DESC_v1 =
     CUDA_EXTERNAL_MEMORY_MIPMAPPED_ARRAY_DESC_st;
 #[doc = " External memory mipmap descriptor"]
 pub type CUDA_EXTERNAL_MEMORY_MIPMAPPED_ARRAY_DESC = CUDA_EXTERNAL_MEMORY_MIPMAPPED_ARRAY_DESC_v1;
-#[doc = " Handle is an opaque file descriptor"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD:
-    CUexternalSemaphoreHandleType_enum = 1;
-#[doc = " Handle is an opaque shared NT handle"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32:
-    CUexternalSemaphoreHandleType_enum = 2;
-#[doc = " Handle is an opaque, globally shared handle"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT:
-    CUexternalSemaphoreHandleType_enum = 3;
-#[doc = " Handle is a shared NT handle referencing a D3D12 fence object"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE:
-    CUexternalSemaphoreHandleType_enum = 4;
-#[doc = " Handle is a shared NT handle referencing a D3D11 fence object"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_FENCE:
-    CUexternalSemaphoreHandleType_enum = 5;
-#[doc = " Opaque handle to NvSciSync Object"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_NVSCISYNC:
-    CUexternalSemaphoreHandleType_enum = 6;
-#[doc = " Handle is a shared NT handle referencing a D3D11 keyed mutex object"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_KEYED_MUTEX:
-    CUexternalSemaphoreHandleType_enum = 7;
-#[doc = " Handle is a globally shared handle referencing a D3D11 keyed mutex object"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_KEYED_MUTEX_KMT : CUexternalSemaphoreHandleType_enum = 8 ;
-#[doc = " Handle is an opaque file descriptor referencing a timeline semaphore"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TIMELINE_SEMAPHORE_FD : CUexternalSemaphoreHandleType_enum = 9 ;
-#[doc = " Handle is an opaque shared NT handle referencing a timeline semaphore"]
-pub const CUexternalSemaphoreHandleType_enum_CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TIMELINE_SEMAPHORE_WIN32 : CUexternalSemaphoreHandleType_enum = 10 ;
+#[repr(i32)]
 #[doc = " External semaphore handle types"]
-pub type CUexternalSemaphoreHandleType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUexternalSemaphoreHandleType_enum {
+    #[doc = " Handle is an opaque file descriptor"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD = 1,
+    #[doc = " Handle is an opaque shared NT handle"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32 = 2,
+    #[doc = " Handle is an opaque, globally shared handle"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_KMT = 3,
+    #[doc = " Handle is a shared NT handle referencing a D3D12 fence object"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D12_FENCE = 4,
+    #[doc = " Handle is a shared NT handle referencing a D3D11 fence object"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_FENCE = 5,
+    #[doc = " Opaque handle to NvSciSync Object"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_NVSCISYNC = 6,
+    #[doc = " Handle is a shared NT handle referencing a D3D11 keyed mutex object"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_KEYED_MUTEX = 7,
+    #[doc = " Handle is a globally shared handle referencing a D3D11 keyed mutex object"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_D3D11_KEYED_MUTEX_KMT = 8,
+    #[doc = " Handle is an opaque file descriptor referencing a timeline semaphore"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TIMELINE_SEMAPHORE_FD = 9,
+    #[doc = " Handle is an opaque shared NT handle referencing a timeline semaphore"]
+    CU_EXTERNAL_SEMAPHORE_HANDLE_TYPE_TIMELINE_SEMAPHORE_WIN32 = 10,
+}
 #[doc = " External semaphore handle types"]
 pub use self::CUexternalSemaphoreHandleType_enum as CUexternalSemaphoreHandleType;
 #[doc = " External semaphore handle descriptor"]
@@ -8718,90 +8706,105 @@ pub type CUDA_EXT_SEM_WAIT_NODE_PARAMS_v1 = CUDA_EXT_SEM_WAIT_NODE_PARAMS_st;
 pub type CUDA_EXT_SEM_WAIT_NODE_PARAMS = CUDA_EXT_SEM_WAIT_NODE_PARAMS_v1;
 pub type CUmemGenericAllocationHandle_v1 = ::std::os::raw::c_ulonglong;
 pub type CUmemGenericAllocationHandle = CUmemGenericAllocationHandle_v1;
-#[doc = "< Does not allow any export mechanism. >"]
-pub const CUmemAllocationHandleType_enum_CU_MEM_HANDLE_TYPE_NONE: CUmemAllocationHandleType_enum =
-    0;
-#[doc = "< Allows a file descriptor to be used for exporting. Permitted only on POSIX systems. (int)"]
-pub const CUmemAllocationHandleType_enum_CU_MEM_HANDLE_TYPE_POSIX_FILE_DESCRIPTOR:
-    CUmemAllocationHandleType_enum = 1;
-#[doc = "< Allows a Win32 NT handle to be used for exporting. (HANDLE)"]
-pub const CUmemAllocationHandleType_enum_CU_MEM_HANDLE_TYPE_WIN32: CUmemAllocationHandleType_enum =
-    2;
-#[doc = "< Allows a Win32 KMT handle to be used for exporting. (D3DKMT_HANDLE)"]
-pub const CUmemAllocationHandleType_enum_CU_MEM_HANDLE_TYPE_WIN32_KMT:
-    CUmemAllocationHandleType_enum = 4;
-pub const CUmemAllocationHandleType_enum_CU_MEM_HANDLE_TYPE_MAX: CUmemAllocationHandleType_enum =
-    2147483647;
+#[repr(i32)]
 #[doc = " Flags for specifying particular handle types"]
-pub type CUmemAllocationHandleType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAllocationHandleType_enum {
+    #[doc = "< Does not allow any export mechanism. >"]
+    CU_MEM_HANDLE_TYPE_NONE = 0,
+    #[doc = "< Allows a file descriptor to be used for exporting. Permitted only on POSIX systems. (int)"]
+    CU_MEM_HANDLE_TYPE_POSIX_FILE_DESCRIPTOR = 1,
+    #[doc = "< Allows a Win32 NT handle to be used for exporting. (HANDLE)"]
+    CU_MEM_HANDLE_TYPE_WIN32 = 2,
+    #[doc = "< Allows a Win32 KMT handle to be used for exporting. (D3DKMT_HANDLE)"]
+    CU_MEM_HANDLE_TYPE_WIN32_KMT = 4,
+    CU_MEM_HANDLE_TYPE_MAX = 2147483647,
+}
 #[doc = " Flags for specifying particular handle types"]
 pub use self::CUmemAllocationHandleType_enum as CUmemAllocationHandleType;
-#[doc = "< Default, make the address range not accessible"]
-pub const CUmemAccess_flags_enum_CU_MEM_ACCESS_FLAGS_PROT_NONE: CUmemAccess_flags_enum = 0;
-#[doc = "< Make the address range read accessible"]
-pub const CUmemAccess_flags_enum_CU_MEM_ACCESS_FLAGS_PROT_READ: CUmemAccess_flags_enum = 1;
-#[doc = "< Make the address range read-write accessible"]
-pub const CUmemAccess_flags_enum_CU_MEM_ACCESS_FLAGS_PROT_READWRITE: CUmemAccess_flags_enum = 3;
-pub const CUmemAccess_flags_enum_CU_MEM_ACCESS_FLAGS_PROT_MAX: CUmemAccess_flags_enum = 2147483647;
+#[repr(i32)]
 #[doc = " Specifies the memory protection flags for mapping."]
-pub type CUmemAccess_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAccess_flags_enum {
+    #[doc = "< Default, make the address range not accessible"]
+    CU_MEM_ACCESS_FLAGS_PROT_NONE = 0,
+    #[doc = "< Make the address range read accessible"]
+    CU_MEM_ACCESS_FLAGS_PROT_READ = 1,
+    #[doc = "< Make the address range read-write accessible"]
+    CU_MEM_ACCESS_FLAGS_PROT_READWRITE = 3,
+    CU_MEM_ACCESS_FLAGS_PROT_MAX = 2147483647,
+}
 #[doc = " Specifies the memory protection flags for mapping."]
 pub use self::CUmemAccess_flags_enum as CUmemAccess_flags;
-pub const CUmemLocationType_enum_CU_MEM_LOCATION_TYPE_INVALID: CUmemLocationType_enum = 0;
-#[doc = "< Location is a device location, thus id is a device ordinal"]
-pub const CUmemLocationType_enum_CU_MEM_LOCATION_TYPE_DEVICE: CUmemLocationType_enum = 1;
-pub const CUmemLocationType_enum_CU_MEM_LOCATION_TYPE_MAX: CUmemLocationType_enum = 2147483647;
+#[repr(i32)]
 #[doc = " Specifies the type of location"]
-pub type CUmemLocationType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemLocationType_enum {
+    CU_MEM_LOCATION_TYPE_INVALID = 0,
+    #[doc = "< Location is a device location, thus id is a device ordinal"]
+    CU_MEM_LOCATION_TYPE_DEVICE = 1,
+    CU_MEM_LOCATION_TYPE_MAX = 2147483647,
+}
 #[doc = " Specifies the type of location"]
 pub use self::CUmemLocationType_enum as CUmemLocationType;
-pub const CUmemAllocationType_enum_CU_MEM_ALLOCATION_TYPE_INVALID: CUmemAllocationType_enum = 0;
-#[doc = " This allocation type is 'pinned', i.e. cannot migrate from its current"]
-#[doc = " location while the application is actively using it"]
-pub const CUmemAllocationType_enum_CU_MEM_ALLOCATION_TYPE_PINNED: CUmemAllocationType_enum = 1;
-#[doc = " This allocation type is 'pinned', i.e. cannot migrate from its current"]
-#[doc = " location while the application is actively using it"]
-pub const CUmemAllocationType_enum_CU_MEM_ALLOCATION_TYPE_MAX: CUmemAllocationType_enum =
-    2147483647;
+#[repr(i32)]
 #[doc = " Defines the allocation types available"]
-pub type CUmemAllocationType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAllocationType_enum {
+    CU_MEM_ALLOCATION_TYPE_INVALID = 0,
+    #[doc = " This allocation type is 'pinned', i.e. cannot migrate from its current"]
+    #[doc = " location while the application is actively using it"]
+    CU_MEM_ALLOCATION_TYPE_PINNED = 1,
+    #[doc = " This allocation type is 'pinned', i.e. cannot migrate from its current"]
+    #[doc = " location while the application is actively using it"]
+    CU_MEM_ALLOCATION_TYPE_MAX = 2147483647,
+}
 #[doc = " Defines the allocation types available"]
 pub use self::CUmemAllocationType_enum as CUmemAllocationType;
-#[doc = "< Minimum required granularity for allocation"]
-pub const CUmemAllocationGranularity_flags_enum_CU_MEM_ALLOC_GRANULARITY_MINIMUM:
-    CUmemAllocationGranularity_flags_enum = 0;
-#[doc = "< Recommended granularity for allocation for best performance"]
-pub const CUmemAllocationGranularity_flags_enum_CU_MEM_ALLOC_GRANULARITY_RECOMMENDED:
-    CUmemAllocationGranularity_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Flag for requesting different optimal and required granularities for an allocation."]
-pub type CUmemAllocationGranularity_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAllocationGranularity_flags_enum {
+    #[doc = "< Minimum required granularity for allocation"]
+    CU_MEM_ALLOC_GRANULARITY_MINIMUM = 0,
+    #[doc = "< Recommended granularity for allocation for best performance"]
+    CU_MEM_ALLOC_GRANULARITY_RECOMMENDED = 1,
+}
 #[doc = " Flag for requesting different optimal and required granularities for an allocation."]
 pub use self::CUmemAllocationGranularity_flags_enum as CUmemAllocationGranularity_flags;
-pub const CUmemRangeHandleType_enum_CU_MEM_RANGE_HANDLE_TYPE_DMA_BUF_FD: CUmemRangeHandleType_enum =
-    1;
-pub const CUmemRangeHandleType_enum_CU_MEM_RANGE_HANDLE_TYPE_MAX: CUmemRangeHandleType_enum =
-    2147483647;
+#[repr(i32)]
 #[doc = " Specifies the handle type for address range"]
-pub type CUmemRangeHandleType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemRangeHandleType_enum {
+    CU_MEM_RANGE_HANDLE_TYPE_DMA_BUF_FD = 1,
+    CU_MEM_RANGE_HANDLE_TYPE_MAX = 2147483647,
+}
 #[doc = " Specifies the handle type for address range"]
 pub use self::CUmemRangeHandleType_enum as CUmemRangeHandleType;
-pub const CUarraySparseSubresourceType_enum_CU_ARRAY_SPARSE_SUBRESOURCE_TYPE_SPARSE_LEVEL:
-    CUarraySparseSubresourceType_enum = 0;
-pub const CUarraySparseSubresourceType_enum_CU_ARRAY_SPARSE_SUBRESOURCE_TYPE_MIPTAIL:
-    CUarraySparseSubresourceType_enum = 1;
+#[repr(i32)]
 #[doc = " Sparse subresource types"]
-pub type CUarraySparseSubresourceType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUarraySparseSubresourceType_enum {
+    CU_ARRAY_SPARSE_SUBRESOURCE_TYPE_SPARSE_LEVEL = 0,
+    CU_ARRAY_SPARSE_SUBRESOURCE_TYPE_MIPTAIL = 1,
+}
 #[doc = " Sparse subresource types"]
 pub use self::CUarraySparseSubresourceType_enum as CUarraySparseSubresourceType;
-pub const CUmemOperationType_enum_CU_MEM_OPERATION_TYPE_MAP: CUmemOperationType_enum = 1;
-pub const CUmemOperationType_enum_CU_MEM_OPERATION_TYPE_UNMAP: CUmemOperationType_enum = 2;
+#[repr(i32)]
 #[doc = " Memory operation types"]
-pub type CUmemOperationType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemOperationType_enum {
+    CU_MEM_OPERATION_TYPE_MAP = 1,
+    CU_MEM_OPERATION_TYPE_UNMAP = 2,
+}
 #[doc = " Memory operation types"]
 pub use self::CUmemOperationType_enum as CUmemOperationType;
-pub const CUmemHandleType_enum_CU_MEM_HANDLE_TYPE_GENERIC: CUmemHandleType_enum = 0;
+#[repr(i32)]
 #[doc = " Memory handle types"]
-pub type CUmemHandleType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemHandleType_enum {
+    CU_MEM_HANDLE_TYPE_GENERIC = 0,
+}
 #[doc = " Memory handle types"]
 pub use self::CUmemHandleType_enum as CUmemHandleType;
 #[doc = " Specifies the CUDA array or CUDA mipmapped array memory mapping information"]
@@ -9304,14 +9307,15 @@ fn bindgen_test_layout_CUmemLocation_st() {
 pub type CUmemLocation_v1 = CUmemLocation_st;
 #[doc = " Specifies a memory location."]
 pub type CUmemLocation = CUmemLocation_v1;
-#[doc = "< Allocating non-compressible memory"]
-pub const CUmemAllocationCompType_enum_CU_MEM_ALLOCATION_COMP_NONE: CUmemAllocationCompType_enum =
-    0;
-#[doc = "< Allocating  compressible memory"]
-pub const CUmemAllocationCompType_enum_CU_MEM_ALLOCATION_COMP_GENERIC:
-    CUmemAllocationCompType_enum = 1;
+#[repr(i32)]
 #[doc = " Specifies compression attribute for an allocation."]
-pub type CUmemAllocationCompType_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemAllocationCompType_enum {
+    #[doc = "< Allocating non-compressible memory"]
+    CU_MEM_ALLOCATION_COMP_NONE = 0,
+    #[doc = "< Allocating  compressible memory"]
+    CU_MEM_ALLOCATION_COMP_GENERIC = 1,
+}
 #[doc = " Specifies compression attribute for an allocation."]
 pub use self::CUmemAllocationCompType_enum as CUmemAllocationCompType;
 #[doc = " Specifies the allocation properties for a allocation."]
@@ -9529,77 +9533,71 @@ fn bindgen_test_layout_CUmemAccessDesc_st() {
 pub type CUmemAccessDesc_v1 = CUmemAccessDesc_st;
 #[doc = " Memory access descriptor"]
 pub type CUmemAccessDesc = CUmemAccessDesc_v1;
-#[doc = "< The update succeeded"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_SUCCESS: CUgraphExecUpdateResult_enum =
-    0;
-#[doc = "< The update failed for an unexpected reason which is described in the return value of the function"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR: CUgraphExecUpdateResult_enum = 1;
-#[doc = "< The update failed because the topology changed"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_TOPOLOGY_CHANGED:
-    CUgraphExecUpdateResult_enum = 2;
-#[doc = "< The update failed because a node type changed"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_NODE_TYPE_CHANGED:
-    CUgraphExecUpdateResult_enum = 3;
-#[doc = "< The update failed because the function of a kernel node changed (CUDA driver < 11.2)"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_FUNCTION_CHANGED:
-    CUgraphExecUpdateResult_enum = 4;
-#[doc = "< The update failed because the parameters changed in a way that is not supported"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_PARAMETERS_CHANGED:
-    CUgraphExecUpdateResult_enum = 5;
-#[doc = "< The update failed because something about the node is not supported"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_NOT_SUPPORTED:
-    CUgraphExecUpdateResult_enum = 6;
-#[doc = "< The update failed because the function of a kernel node changed in an unsupported way"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_UNSUPPORTED_FUNCTION_CHANGE:
-    CUgraphExecUpdateResult_enum = 7;
-#[doc = "< The update failed because the node attributes changed in a way that is not supported"]
-pub const CUgraphExecUpdateResult_enum_CU_GRAPH_EXEC_UPDATE_ERROR_ATTRIBUTES_CHANGED:
-    CUgraphExecUpdateResult_enum = 8;
-pub type CUgraphExecUpdateResult_enum = ::std::os::raw::c_int;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphExecUpdateResult_enum {
+    #[doc = "< The update succeeded"]
+    CU_GRAPH_EXEC_UPDATE_SUCCESS = 0,
+    #[doc = "< The update failed for an unexpected reason which is described in the return value of the function"]
+    CU_GRAPH_EXEC_UPDATE_ERROR = 1,
+    #[doc = "< The update failed because the topology changed"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_TOPOLOGY_CHANGED = 2,
+    #[doc = "< The update failed because a node type changed"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_NODE_TYPE_CHANGED = 3,
+    #[doc = "< The update failed because the function of a kernel node changed (CUDA driver < 11.2)"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_FUNCTION_CHANGED = 4,
+    #[doc = "< The update failed because the parameters changed in a way that is not supported"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_PARAMETERS_CHANGED = 5,
+    #[doc = "< The update failed because something about the node is not supported"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_NOT_SUPPORTED = 6,
+    #[doc = "< The update failed because the function of a kernel node changed in an unsupported way"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_UNSUPPORTED_FUNCTION_CHANGE = 7,
+    #[doc = "< The update failed because the node attributes changed in a way that is not supported"]
+    CU_GRAPH_EXEC_UPDATE_ERROR_ATTRIBUTES_CHANGED = 8,
+}
 pub use self::CUgraphExecUpdateResult_enum as CUgraphExecUpdateResult;
-#[doc = " (value type = int)"]
-#[doc = " Allow cuMemAllocAsync to use memory asynchronously freed"]
-#[doc = " in another streams as long as a stream ordering dependency"]
-#[doc = " of the allocating stream on the free action exists."]
-#[doc = " Cuda events and null stream interactions can create the required"]
-#[doc = " stream ordered dependencies. (default enabled)"]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_REUSE_FOLLOW_EVENT_DEPENDENCIES:
-    CUmemPool_attribute_enum = 1;
-#[doc = " (value type = int)"]
-#[doc = " Allow reuse of already completed frees when there is no dependency"]
-#[doc = " between the free and allocation. (default enabled)"]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_REUSE_ALLOW_OPPORTUNISTIC:
-    CUmemPool_attribute_enum = 2;
-#[doc = " (value type = int)"]
-#[doc = " Allow cuMemAllocAsync to insert new stream dependencies"]
-#[doc = " in order to establish the stream ordering required to reuse"]
-#[doc = " a piece of memory released by cuFreeAsync (default enabled)."]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_REUSE_ALLOW_INTERNAL_DEPENDENCIES:
-    CUmemPool_attribute_enum = 3;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " Amount of reserved memory in bytes to hold onto before trying"]
-#[doc = " to release memory back to the OS. When more than the release"]
-#[doc = " threshold bytes of memory are held by the memory pool, the"]
-#[doc = " allocator will try to release memory back to the OS on the"]
-#[doc = " next call to stream, event or context synchronize. (default 0)"]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_RELEASE_THRESHOLD: CUmemPool_attribute_enum = 4;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " Amount of backing memory currently allocated for the mempool."]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_RESERVED_MEM_CURRENT: CUmemPool_attribute_enum =
-    5;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " High watermark of backing memory allocated for the mempool since the"]
-#[doc = " last time it was reset. High watermark can only be reset to zero."]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_RESERVED_MEM_HIGH: CUmemPool_attribute_enum = 6;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " Amount of memory from the pool that is currently in use by the application."]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_USED_MEM_CURRENT: CUmemPool_attribute_enum = 7;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " High watermark of the amount of memory from the pool that was in use by the application since"]
-#[doc = " the last time it was reset. High watermark can only be reset to zero."]
-pub const CUmemPool_attribute_enum_CU_MEMPOOL_ATTR_USED_MEM_HIGH: CUmemPool_attribute_enum = 8;
+#[repr(i32)]
 #[doc = " CUDA memory pool attributes"]
-pub type CUmemPool_attribute_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmemPool_attribute_enum {
+    #[doc = " (value type = int)"]
+    #[doc = " Allow cuMemAllocAsync to use memory asynchronously freed"]
+    #[doc = " in another streams as long as a stream ordering dependency"]
+    #[doc = " of the allocating stream on the free action exists."]
+    #[doc = " Cuda events and null stream interactions can create the required"]
+    #[doc = " stream ordered dependencies. (default enabled)"]
+    CU_MEMPOOL_ATTR_REUSE_FOLLOW_EVENT_DEPENDENCIES = 1,
+    #[doc = " (value type = int)"]
+    #[doc = " Allow reuse of already completed frees when there is no dependency"]
+    #[doc = " between the free and allocation. (default enabled)"]
+    CU_MEMPOOL_ATTR_REUSE_ALLOW_OPPORTUNISTIC = 2,
+    #[doc = " (value type = int)"]
+    #[doc = " Allow cuMemAllocAsync to insert new stream dependencies"]
+    #[doc = " in order to establish the stream ordering required to reuse"]
+    #[doc = " a piece of memory released by cuFreeAsync (default enabled)."]
+    CU_MEMPOOL_ATTR_REUSE_ALLOW_INTERNAL_DEPENDENCIES = 3,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of reserved memory in bytes to hold onto before trying"]
+    #[doc = " to release memory back to the OS. When more than the release"]
+    #[doc = " threshold bytes of memory are held by the memory pool, the"]
+    #[doc = " allocator will try to release memory back to the OS on the"]
+    #[doc = " next call to stream, event or context synchronize. (default 0)"]
+    CU_MEMPOOL_ATTR_RELEASE_THRESHOLD = 4,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of backing memory currently allocated for the mempool."]
+    CU_MEMPOOL_ATTR_RESERVED_MEM_CURRENT = 5,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " High watermark of backing memory allocated for the mempool since the"]
+    #[doc = " last time it was reset. High watermark can only be reset to zero."]
+    CU_MEMPOOL_ATTR_RESERVED_MEM_HIGH = 6,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of memory from the pool that is currently in use by the application."]
+    CU_MEMPOOL_ATTR_USED_MEM_CURRENT = 7,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " High watermark of the amount of memory from the pool that was in use by the application since"]
+    #[doc = " the last time it was reset. High watermark can only be reset to zero."]
+    CU_MEMPOOL_ATTR_USED_MEM_HIGH = 8,
+}
 #[doc = " CUDA memory pool attributes"]
 pub use self::CUmemPool_attribute_enum as CUmemPool_attribute;
 #[doc = " Specifies the properties of allocations made from the pool."]
@@ -9809,132 +9807,132 @@ fn bindgen_test_layout_CUDA_MEM_ALLOC_NODE_PARAMS_st() {
 }
 #[doc = " Memory allocation node parameters"]
 pub type CUDA_MEM_ALLOC_NODE_PARAMS = CUDA_MEM_ALLOC_NODE_PARAMS_st;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " Amount of memory, in bytes, currently associated with graphs"]
-pub const CUgraphMem_attribute_enum_CU_GRAPH_MEM_ATTR_USED_MEM_CURRENT: CUgraphMem_attribute_enum =
-    0;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " High watermark of memory, in bytes, associated with graphs since the"]
-#[doc = " last time it was reset.  High watermark can only be reset to zero."]
-pub const CUgraphMem_attribute_enum_CU_GRAPH_MEM_ATTR_USED_MEM_HIGH: CUgraphMem_attribute_enum = 1;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " Amount of memory, in bytes, currently allocated for use by"]
-#[doc = " the CUDA graphs asynchronous allocator."]
-pub const CUgraphMem_attribute_enum_CU_GRAPH_MEM_ATTR_RESERVED_MEM_CURRENT:
-    CUgraphMem_attribute_enum = 2;
-#[doc = " (value type = cuuint64_t)"]
-#[doc = " High watermark of memory, in bytes, currently allocated for use by"]
-#[doc = " the CUDA graphs asynchronous allocator."]
-pub const CUgraphMem_attribute_enum_CU_GRAPH_MEM_ATTR_RESERVED_MEM_HIGH: CUgraphMem_attribute_enum =
-    3;
-pub type CUgraphMem_attribute_enum = ::std::os::raw::c_int;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphMem_attribute_enum {
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of memory, in bytes, currently associated with graphs"]
+    CU_GRAPH_MEM_ATTR_USED_MEM_CURRENT = 0,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " High watermark of memory, in bytes, associated with graphs since the"]
+    #[doc = " last time it was reset.  High watermark can only be reset to zero."]
+    CU_GRAPH_MEM_ATTR_USED_MEM_HIGH = 1,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " Amount of memory, in bytes, currently allocated for use by"]
+    #[doc = " the CUDA graphs asynchronous allocator."]
+    CU_GRAPH_MEM_ATTR_RESERVED_MEM_CURRENT = 2,
+    #[doc = " (value type = cuuint64_t)"]
+    #[doc = " High watermark of memory, in bytes, currently allocated for use by"]
+    #[doc = " the CUDA graphs asynchronous allocator."]
+    CU_GRAPH_MEM_ATTR_RESERVED_MEM_HIGH = 3,
+}
 pub use self::CUgraphMem_attribute_enum as CUgraphMem_attribute;
-#[doc = "< ::cuFlushGPUDirectRDMAWrites() and its CUDA Runtime API counterpart are supported on the device."]
-pub const CUflushGPUDirectRDMAWritesOptions_enum_CU_FLUSH_GPU_DIRECT_RDMA_WRITES_OPTION_HOST:
-    CUflushGPUDirectRDMAWritesOptions_enum = 1;
-#[doc = "< The ::CU_STREAM_WAIT_VALUE_FLUSH flag and the ::CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES MemOp are supported on the device."]
-pub const CUflushGPUDirectRDMAWritesOptions_enum_CU_FLUSH_GPU_DIRECT_RDMA_WRITES_OPTION_MEMOPS:
-    CUflushGPUDirectRDMAWritesOptions_enum = 2;
+#[repr(i32)]
 #[doc = " Bitmasks for ::CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_FLUSH_WRITES_OPTIONS"]
-pub type CUflushGPUDirectRDMAWritesOptions_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUflushGPUDirectRDMAWritesOptions_enum {
+    #[doc = "< ::cuFlushGPUDirectRDMAWrites() and its CUDA Runtime API counterpart are supported on the device."]
+    CU_FLUSH_GPU_DIRECT_RDMA_WRITES_OPTION_HOST = 1,
+    #[doc = "< The ::CU_STREAM_WAIT_VALUE_FLUSH flag and the ::CU_STREAM_MEM_OP_FLUSH_REMOTE_WRITES MemOp are supported on the device."]
+    CU_FLUSH_GPU_DIRECT_RDMA_WRITES_OPTION_MEMOPS = 2,
+}
 #[doc = " Bitmasks for ::CU_DEVICE_ATTRIBUTE_GPU_DIRECT_RDMA_FLUSH_WRITES_OPTIONS"]
 pub use self::CUflushGPUDirectRDMAWritesOptions_enum as CUflushGPUDirectRDMAWritesOptions;
-#[doc = "< The device does not natively support ordering of remote writes. ::cuFlushGPUDirectRDMAWrites() can be leveraged if supported."]
-pub const CUGPUDirectRDMAWritesOrdering_enum_CU_GPU_DIRECT_RDMA_WRITES_ORDERING_NONE:
-    CUGPUDirectRDMAWritesOrdering_enum = 0;
-#[doc = "< Natively, the device can consistently consume remote writes, although other CUDA devices may not."]
-pub const CUGPUDirectRDMAWritesOrdering_enum_CU_GPU_DIRECT_RDMA_WRITES_ORDERING_OWNER:
-    CUGPUDirectRDMAWritesOrdering_enum = 100;
-#[doc = "< Any CUDA device in the system can consistently consume remote writes to this device."]
-pub const CUGPUDirectRDMAWritesOrdering_enum_CU_GPU_DIRECT_RDMA_WRITES_ORDERING_ALL_DEVICES:
-    CUGPUDirectRDMAWritesOrdering_enum = 200;
+#[repr(i32)]
 #[doc = " Platform native ordering for GPUDirect RDMA writes"]
-pub type CUGPUDirectRDMAWritesOrdering_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUGPUDirectRDMAWritesOrdering_enum {
+    #[doc = "< The device does not natively support ordering of remote writes. ::cuFlushGPUDirectRDMAWrites() can be leveraged if supported."]
+    CU_GPU_DIRECT_RDMA_WRITES_ORDERING_NONE = 0,
+    #[doc = "< Natively, the device can consistently consume remote writes, although other CUDA devices may not."]
+    CU_GPU_DIRECT_RDMA_WRITES_ORDERING_OWNER = 100,
+    #[doc = "< Any CUDA device in the system can consistently consume remote writes to this device."]
+    CU_GPU_DIRECT_RDMA_WRITES_ORDERING_ALL_DEVICES = 200,
+}
 #[doc = " Platform native ordering for GPUDirect RDMA writes"]
 pub use self::CUGPUDirectRDMAWritesOrdering_enum as CUGPUDirectRDMAWritesOrdering;
-#[doc = "< Blocks until remote writes are visible to the CUDA device context owning the data."]
-pub const CUflushGPUDirectRDMAWritesScope_enum_CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TO_OWNER:
-    CUflushGPUDirectRDMAWritesScope_enum = 100;
-#[doc = "< Blocks until remote writes are visible to all CUDA device contexts."]
-pub const CUflushGPUDirectRDMAWritesScope_enum_CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TO_ALL_DEVICES:
-    CUflushGPUDirectRDMAWritesScope_enum = 200;
+#[repr(i32)]
 #[doc = " The scopes for ::cuFlushGPUDirectRDMAWrites"]
-pub type CUflushGPUDirectRDMAWritesScope_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUflushGPUDirectRDMAWritesScope_enum {
+    #[doc = "< Blocks until remote writes are visible to the CUDA device context owning the data."]
+    CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TO_OWNER = 100,
+    #[doc = "< Blocks until remote writes are visible to all CUDA device contexts."]
+    CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TO_ALL_DEVICES = 200,
+}
 #[doc = " The scopes for ::cuFlushGPUDirectRDMAWrites"]
 pub use self::CUflushGPUDirectRDMAWritesScope_enum as CUflushGPUDirectRDMAWritesScope;
-#[doc = "< Sets the target for ::cuFlushGPUDirectRDMAWrites() to the currently active CUDA device context."]
-pub const CUflushGPUDirectRDMAWritesTarget_enum_CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TARGET_CURRENT_CTX : CUflushGPUDirectRDMAWritesTarget_enum = 0 ;
+#[repr(i32)]
 #[doc = " The targets for ::cuFlushGPUDirectRDMAWrites"]
-pub type CUflushGPUDirectRDMAWritesTarget_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUflushGPUDirectRDMAWritesTarget_enum {
+    #[doc = "< Sets the target for ::cuFlushGPUDirectRDMAWrites() to the currently active CUDA device context."]
+    CU_FLUSH_GPU_DIRECT_RDMA_WRITES_TARGET_CURRENT_CTX = 0,
+}
 #[doc = " The targets for ::cuFlushGPUDirectRDMAWrites"]
 pub use self::CUflushGPUDirectRDMAWritesTarget_enum as CUflushGPUDirectRDMAWritesTarget;
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_VERBOSE: CUgraphDebugDot_flags_enum =
-    1;
-#[doc = " Output all debug data as if every debug flag is enabled"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_RUNTIME_TYPES:
-    CUgraphDebugDot_flags_enum = 2;
-#[doc = " Use CUDA Runtime structures for output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_KERNEL_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 4;
-#[doc = " Adds CUDA_KERNEL_NODE_PARAMS values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_MEMCPY_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 8;
-#[doc = " Adds CUDA_MEMCPY3D values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_MEMSET_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 16;
-#[doc = " Adds CUDA_MEMSET_NODE_PARAMS values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_HOST_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 32;
-#[doc = " Adds CUDA_HOST_NODE_PARAMS values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_EVENT_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 64;
-#[doc = " Adds CUevent handle from record and wait nodes to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_EXT_SEMAS_SIGNAL_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 128;
-#[doc = " Adds CUDA_EXT_SEM_SIGNAL_NODE_PARAMS values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_EXT_SEMAS_WAIT_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 256;
-#[doc = " Adds CUDA_EXT_SEM_WAIT_NODE_PARAMS values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_KERNEL_NODE_ATTRIBUTES:
-    CUgraphDebugDot_flags_enum = 512;
-#[doc = " Adds CUkernelNodeAttrValue values to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_HANDLES: CUgraphDebugDot_flags_enum =
-    1024;
-#[doc = " Adds node handles and every kernel function handle to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_MEM_ALLOC_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 2048;
-#[doc = " Adds memory alloc node parameters to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_MEM_FREE_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 4096;
-#[doc = " Adds memory free node parameters to output"]
-pub const CUgraphDebugDot_flags_enum_CU_GRAPH_DEBUG_DOT_FLAGS_BATCH_MEM_OP_NODE_PARAMS:
-    CUgraphDebugDot_flags_enum = 8192;
+#[repr(i32)]
 #[doc = " The additional write options for ::cuGraphDebugDotPrint"]
-pub type CUgraphDebugDot_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphDebugDot_flags_enum {
+    CU_GRAPH_DEBUG_DOT_FLAGS_VERBOSE = 1,
+    #[doc = " Output all debug data as if every debug flag is enabled"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_RUNTIME_TYPES = 2,
+    #[doc = " Use CUDA Runtime structures for output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_KERNEL_NODE_PARAMS = 4,
+    #[doc = " Adds CUDA_KERNEL_NODE_PARAMS values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_MEMCPY_NODE_PARAMS = 8,
+    #[doc = " Adds CUDA_MEMCPY3D values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_MEMSET_NODE_PARAMS = 16,
+    #[doc = " Adds CUDA_MEMSET_NODE_PARAMS values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_HOST_NODE_PARAMS = 32,
+    #[doc = " Adds CUDA_HOST_NODE_PARAMS values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_EVENT_NODE_PARAMS = 64,
+    #[doc = " Adds CUevent handle from record and wait nodes to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_EXT_SEMAS_SIGNAL_NODE_PARAMS = 128,
+    #[doc = " Adds CUDA_EXT_SEM_SIGNAL_NODE_PARAMS values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_EXT_SEMAS_WAIT_NODE_PARAMS = 256,
+    #[doc = " Adds CUDA_EXT_SEM_WAIT_NODE_PARAMS values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_KERNEL_NODE_ATTRIBUTES = 512,
+    #[doc = " Adds CUkernelNodeAttrValue values to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_HANDLES = 1024,
+    #[doc = " Adds node handles and every kernel function handle to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_MEM_ALLOC_NODE_PARAMS = 2048,
+    #[doc = " Adds memory alloc node parameters to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_MEM_FREE_NODE_PARAMS = 4096,
+    #[doc = " Adds memory free node parameters to output"]
+    CU_GRAPH_DEBUG_DOT_FLAGS_BATCH_MEM_OP_NODE_PARAMS = 8192,
+}
 #[doc = " The additional write options for ::cuGraphDebugDotPrint"]
 pub use self::CUgraphDebugDot_flags_enum as CUgraphDebugDot_flags;
-#[doc = "< Indicates the destructor execution is not synchronized by any CUDA handle."]
-pub const CUuserObject_flags_enum_CU_USER_OBJECT_NO_DESTRUCTOR_SYNC: CUuserObject_flags_enum = 1;
+#[repr(i32)]
 #[doc = " Flags for user objects for graphs"]
-pub type CUuserObject_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUuserObject_flags_enum {
+    #[doc = "< Indicates the destructor execution is not synchronized by any CUDA handle."]
+    CU_USER_OBJECT_NO_DESTRUCTOR_SYNC = 1,
+}
 #[doc = " Flags for user objects for graphs"]
 pub use self::CUuserObject_flags_enum as CUuserObject_flags;
-#[doc = "< Transfer references from the caller rather than creating new references."]
-pub const CUuserObjectRetain_flags_enum_CU_GRAPH_USER_OBJECT_MOVE: CUuserObjectRetain_flags_enum =
-    1;
+#[repr(i32)]
 #[doc = " Flags for retaining user object references for graphs"]
-pub type CUuserObjectRetain_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUuserObjectRetain_flags_enum {
+    #[doc = "< Transfer references from the caller rather than creating new references."]
+    CU_GRAPH_USER_OBJECT_MOVE = 1,
+}
 #[doc = " Flags for retaining user object references for graphs"]
 pub use self::CUuserObjectRetain_flags_enum as CUuserObjectRetain_flags;
-#[doc = "< Automatically free memory allocated in a graph before relaunching."]
-pub const CUgraphInstantiate_flags_enum_CUDA_GRAPH_INSTANTIATE_FLAG_AUTO_FREE_ON_LAUNCH:
-    CUgraphInstantiate_flags_enum = 1;
-#[doc = "< Run the graph using the per-node priority attributes rather than the"]
-#[doc = "priority of the stream it is launched into."]
-pub const CUgraphInstantiate_flags_enum_CUDA_GRAPH_INSTANTIATE_FLAG_USE_NODE_PRIORITY:
-    CUgraphInstantiate_flags_enum = 8;
+#[repr(i32)]
 #[doc = " Flags for instantiating a graph"]
-pub type CUgraphInstantiate_flags_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUgraphInstantiate_flags_enum {
+    #[doc = "< Automatically free memory allocated in a graph before relaunching."]
+    CUDA_GRAPH_INSTANTIATE_FLAG_AUTO_FREE_ON_LAUNCH = 1,
+    #[doc = "< Run the graph using the per-node priority attributes rather than the"]
+    #[doc = "priority of the stream it is launched into."]
+    CUDA_GRAPH_INSTANTIATE_FLAG_USE_NODE_PRIORITY = 8,
+}
 #[doc = " Flags for instantiating a graph"]
 pub use self::CUgraphInstantiate_flags_enum as CUgraphInstantiate_flags;
 extern "C" {
@@ -22779,12 +22777,15 @@ extern "C" {
         flags: cuuint64_t,
     ) -> CUresult;
 }
-#[doc = "< Lazy Kernel Loading is not enabled"]
-pub const CUmoduleLoadingMode_enum_CU_MODULE_EAGER_LOADING: CUmoduleLoadingMode_enum = 1;
-#[doc = "< Lazy Kernel Loading is enabled"]
-pub const CUmoduleLoadingMode_enum_CU_MODULE_LAZY_LOADING: CUmoduleLoadingMode_enum = 2;
+#[repr(i32)]
 #[doc = " CUDA Lazy Loading status"]
-pub type CUmoduleLoadingMode_enum = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum CUmoduleLoadingMode_enum {
+    #[doc = "< Lazy Kernel Loading is not enabled"]
+    CU_MODULE_EAGER_LOADING = 1,
+    #[doc = "< Lazy Kernel Loading is enabled"]
+    CU_MODULE_LAZY_LOADING = 2,
+}
 #[doc = " CUDA Lazy Loading status"]
 pub use self::CUmoduleLoadingMode_enum as CUmoduleLoadingMode;
 extern "C" {
