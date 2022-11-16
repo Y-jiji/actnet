@@ -8,6 +8,7 @@ build="build/main.rs"
 
 [dependencies]
 device_api = {package="device-api", version="*", path="../device-api"}
+num_enum = "0.5.1"
 
-[build.dependencies]
+[build-dependencies]
 bindgen = "0.61.0"                # Automatically generates Rust FFI bindings to C and C++ libraries.
