@@ -88,6 +88,7 @@ struct KerImgBuilder {
     p: *mut CUlinkState_st,
     o: Vec<CUjit_option_enum>,
     ov: Vec<*mut Void>,
+    d: PhysDev,
 }
 
 #[derive(Debug)]
@@ -118,11 +119,12 @@ struct KerImg(*mut Void, usize);
 
 impl KerImgBuilder {
     pub(crate)
-    fn new() -> KerImgBuilder {
+    fn new(physdev: PhysDev) -> KerImgBuilder {
         KerImgBuilder{
             p: std::ptr::null_mut(), 
             o: Vec::new(), 
             ov: Vec::new(),
+            d: physdev,
         }
     }
     pub(crate)
@@ -140,7 +142,7 @@ impl KerImgBuilder {
         return err.wrap(());
     }
     pub(crate)
-    fn data(&mut self, _: &PhysDev, mut d: KerImgData) -> Result<&mut KerImgBuilder, cudaError_enum> {
+    fn data(&mut self, mut d: KerImgData) -> Result<&mut KerImgBuilder, cudaError_enum> {
         if self.p.is_null() { self.lazy_init()?; }
         let err = unsafe{cuLinkAddData_v2(
             self.p, 
@@ -153,7 +155,7 @@ impl KerImgBuilder {
         err.wrap(self)
     }
     pub(crate)
-    fn file(&mut self, _: &PhysDev, mut f: KerImgFile) -> Result<&mut KerImgBuilder, cudaError_enum> {
+    fn file(&mut self, mut f: KerImgFile) -> Result<&mut KerImgBuilder, cudaError_enum> {
         if self.p.is_null() { self.lazy_init()?; }
         let err = unsafe{cuLinkAddFile_v2(
             self.p, 
@@ -163,7 +165,7 @@ impl KerImgBuilder {
         err.wrap(self)
     }
     pub(crate)
-    fn build(mut self, _: &PhysDev) -> Result<KerImg, cudaError_enum> {
+    fn build(mut self) -> Result<KerImg, cudaError_enum> {
         if self.p.is_null() 
         { Err(cudaError_enum::CUDA_ERROR_INVALID_SOURCE)? }
         let mut kerimg = KerImg(null_mut(), 0usize);
@@ -189,8 +191,8 @@ mod check_kerimg_builder {
     #[test]
     fn init() {
         let api = DriverAPI::new().unwrap();
-        let phys_dev = PhysDev::new(&api, 0);
-        let mut builder = KerImgBuilder::new();
+        let physdev = PhysDev::new(&api, 0).unwrap();
+        let mut builder = KerImgBuilder::new(physdev);
         builder.lazy_init().unwrap();
         println!("{builder:?}");
         builder.p = null_mut();
@@ -199,10 +201,10 @@ mod check_kerimg_builder {
     #[test]
     fn data() {
         let api = DriverAPI::new().unwrap();
-        let phys_dev = PhysDev::new(&api, 0).unwrap();
-        let mut builder = KerImgBuilder::new();
+        let physdev = PhysDev::new(&api, 0).unwrap();
+        let mut builder = KerImgBuilder::new(physdev);
         let p = include_str!("../../cu-target/test-case-1.ptx");
-        builder.data(&phys_dev, 
+        builder.data(
             KerImgData {
                 p: p as *const _ as *mut Void, 
                 t: CUjitInputType_enum::CU_JIT_INPUT_PTX, 
@@ -216,11 +218,11 @@ mod check_kerimg_builder {
     #[test]
     fn file() {
         let api = DriverAPI::new().unwrap();
-        let phys_dev = PhysDev::new(&api, 0).unwrap();
-        let mut builder = KerImgBuilder::new();
+        let physdev = PhysDev::new(&api, 0).unwrap();
+        let mut builder = KerImgBuilder::new(physdev);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
-        builder.file(&phys_dev, 
+        builder.file(
             KerImgFile {
                 p: path.to_str().unwrap().to_owned(), 
                 t: CUjitInputType_enum::CU_JIT_INPUT_PTX
@@ -234,10 +236,10 @@ mod check_kerimg_builder {
     fn link_and_build() {
         let api = DriverAPI::new().unwrap();
         let phys_dev = PhysDev::new(&api, 0).unwrap();
-        let mut builder = KerImgBuilder::new();
+        let mut builder = KerImgBuilder::new(phys_dev);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
-        builder.file(&phys_dev, 
+        builder.file( 
             KerImgFile {
                 p: path.to_str().unwrap().to_owned(), 
                 t: CUjitInputType_enum::CU_JIT_INPUT_PTX
@@ -245,14 +247,14 @@ mod check_kerimg_builder {
         ).unwrap();
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-2.ptx");
-        builder.file(&phys_dev, 
+        builder.file(
             KerImgFile {
                 p: path.to_str().unwrap().to_owned(), 
                 t: CUjitInputType_enum::CU_JIT_INPUT_PTX
             }
         ).unwrap();
         println!("{builder:?}");
-        let img = builder.build(&phys_dev);
+        let img = builder.build();
         println!("{img:?}");
     }
 }
