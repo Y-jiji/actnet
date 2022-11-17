@@ -2,6 +2,7 @@ use device_api::*;
 
 mod mem;
 mod raw;
+mod dev;
 
 struct CudaStream;
 
@@ -17,5 +18,5 @@ struct DatBuf {
 impl Device for CudaStream {
     type DatBuf = DatBuf;
     type DevBox = DatBuf;
-    type DevErr = raw::cudaError_enum;
+    type DevErr = raw::drv::cudaError_enum;
 }

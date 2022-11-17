@@ -8,7 +8,8 @@ build="build/main.rs"
 
 [dependencies]
 device_api = {package="device-api", version="*", path="../device-api"}
-num_enum = "0.5.1"
+parking_lot = "0.12.1"                  # More compact and efficient implementations of the standard synchronization primitives.
+scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
 
 [build-dependencies]
 bindgen = "0.61.0"                # Automatically generates Rust FFI bindings to C and C++ libraries.
