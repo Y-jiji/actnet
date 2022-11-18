@@ -10,17 +10,22 @@ use super::keeper::*;
 
 /* ----------------------------------------------------------------------------------- */
 
+pub(crate)
 use crate::raw::drv::{
     // cuda types
     CUjitInputType_enum,
     CUjit_option_enum,
     CUlinkState_st,
+    CUmod_st,
+    CUfunc_st,
     // unsafe functions
     cuLinkCreate_v2,
     cuLinkAddFile_v2,
     cuLinkAddData_v2,
     cuLinkComplete,
     cuLinkDestroy,
+    cuModuleLoadData,
+    cuModuleGetFunction,
 };
 
 /* ----------------------------------------------------------------------------------- */
@@ -29,44 +34,45 @@ use crate::raw::drv::{
 #[derive(Debug)]
 pub struct JITInputData {
     /// pointer to data
-    p: *mut Void,
+    pub p: *mut Void,
     /// type
-    t: CUjitInputType_enum,
+    pub t: CUjitInputType_enum,
     /// size
-    s: usize,
+    pub s: usize,
     /// name
-    n: String,
+    pub n: String,
 }
 
 #[derive(Debug)]
 pub struct JITInputFile {
     /// file path
-    p: String,
+    pub p: String,
     /// type
-    t: CUjitInputType_enum,
+    pub t: CUjitInputType_enum,
 }
 
 // kernel image with size, it should be dropped before cuda device uninitialize
 #[derive(Debug)]
-pub struct JITOutput<'a>(*mut Void, usize, &'a CudaDev);
+pub struct JITOutput<'a>(*mut Void, usize, &'a CuDev);
 
 /* ----------------------------------------------------------------------------------- */
 
 #[derive(Debug)]
 pub struct JITOutputBuilder<'a> {
     /// pointer to CUlinkState, where the JITCompiler will look into before invoking itself
+    pub(crate)
     p: *mut CUlinkState_st,
     /// options of jit build
     o: Vec<CUjit_option_enum>,
-    /// pointers to option values
+    /// pointers to option values (this is error-prone, be careful)
     v: Vec<*mut Void>,
-    /// immutable reference to a CudaDev, indicating this struct should die earlier than CudaDev
-    d: &'a CudaDev,
+    /// immutable reference to a CudaDev, indicating this struct should be dropped earlier than corresponding CudaDev
+    d: &'a CuDev,
 }
 
 impl<'a> JITOutputBuilder<'a> {
     /// create a new builder for JITOutput
-    pub fn new(d: &'a CudaDev) -> JITOutputBuilder<'a> {
+    pub fn new(d: &'a CuDev) -> JITOutputBuilder<'a> {
         JITOutputBuilder {
             p: std::ptr::null_mut(), 
             o: Vec::new(), 
@@ -74,7 +80,7 @@ impl<'a> JITOutputBuilder<'a> {
         }
     }
     /// add an option to JIT Build (see CUDA documentation for details)
-    pub fn option(mut self, o: CUjit_option_enum, v: *mut Void) -> Result<JITOutputBuilder<'a>, cudaError_enum> {
+    pub fn option(&mut self, o: CUjit_option_enum, v: *mut Void) -> Result<&mut JITOutputBuilder<'a>, cudaError_enum> {
         debug_assert!(self.p.is_null(), "Option should be set before adding data!");
         if !self.p.is_null() {Err(cudaError_enum::CUDA_ERROR_ASSERT)}
         else {self.o.push(o); self.v.push(v); Ok(self)}
@@ -127,7 +133,9 @@ impl<'a> JITOutputBuilder<'a> {
 
 impl<'a> Drop for JITOutputBuilder<'a> {
     fn drop(&mut self) {
-        debug_assert!(self.p.is_null(), "Initialized builder is dropped before building anything");
+        if !self.p.is_null() {
+            unsafe{ cuLinkDestroy(self.p); }
+        }
     }
 }
 
@@ -139,7 +147,7 @@ mod check_jit_output_builder {
     #[test]
     fn init() {
         let zk = ZooKeeper::new().unwrap();
-        let cd = CudaDev::new(&zk, 0).unwrap();
+        let cd = CuDev::new(&zk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         builder.lazy_init().unwrap();
         println!("{builder:?}");
@@ -149,7 +157,7 @@ mod check_jit_output_builder {
     #[test]
     fn data() {
         let zk = ZooKeeper::new().unwrap();
-        let cd = CudaDev::new(&zk, 0).unwrap();
+        let cd = CuDev::new(&zk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let p = include_str!("../../cu-target/test-case-1.ptx");
         builder.data(
@@ -166,7 +174,7 @@ mod check_jit_output_builder {
     #[test]
     fn file() {
         let zk = ZooKeeper::new().unwrap();
-        let cd = CudaDev::new(&zk, 0).unwrap();
+        let cd = CuDev::new(&zk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
@@ -183,11 +191,11 @@ mod check_jit_output_builder {
     #[test]
     fn link_and_build() {
         let zk = ZooKeeper::new().unwrap();
-        let cd = CudaDev::new(&zk, 0).unwrap();
+        let cd = CuDev::new(&zk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
-        builder.file( 
+        builder.file(
             JITInputFile {
                 p: path.to_str().unwrap().to_owned(), 
                 t: CUjitInputType_enum::CU_JIT_INPUT_PTX
@@ -195,6 +203,7 @@ mod check_jit_output_builder {
         ).unwrap();
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-2.ptx");
+        assert!(path.exists());
         builder.file(
             JITInputFile {
                 p: path.to_str().unwrap().to_owned(), 
@@ -202,9 +211,74 @@ mod check_jit_output_builder {
             }
         ).unwrap();
         println!("{builder:?}");
-        let img = builder.build();
+        let img = builder.build().unwrap();
         println!("{img:?}");
     }
+}
+
+/* ----------------------------------------------------------------------------------- */
+
+/// a jit caller (to acquire function handle)
+#[derive(Debug)]
+pub struct JITCaller<'a> {
+    p: *mut CUmod_st,
+    d: &'a CuDev,
+    s: usize,
+}
+
+/// a function handle with restricted lifetime
+#[derive(Debug, Clone)]
+pub struct FuncHandle<'a> {
+    pub(super) p: *mut CUfunc_st,
+    d: &'a CuDev,
+}
+
+impl<'a> JITCaller<'a> {
+    /// create a JITCaller from kernel image
+    pub(crate) fn new(img: JITOutput<'a>) -> Result<JITCaller, cudaError_enum> {
+        let mut p = null_mut();
+        unsafe{cuModuleLoadData(&mut p, img.0)}
+            .wrap(JITCaller { p, s: img.1, d: img.2 })
+    }
+    /// get function handle by function name
+    pub(crate) fn get_handle(&self, name: &str) -> Result<FuncHandle<'a>, cudaError_enum> {
+        let mut p = null_mut();
+        unsafe{cuModuleGetFunction(&mut p, self.p, name as *const str as *const i8)}
+            .wrap(FuncHandle { p, d: self.d })
+    }
+}
+
+impl<'a> TryFrom<JITOutput<'a>> for JITCaller<'a> {
+    type Error = cudaError_enum;
+    fn try_from(x: JITOutput<'a>) -> Result<JITCaller, cudaError_enum>
+    { JITCaller::new(x) }
+}
+
+#[cfg(test)]
+mod check_jit_caller {
+    use super::*;
+
+    #[test]
+    fn new() { for _ in 0..100 {
+        let zk = ZooKeeper::new().unwrap();
+        let cd = CuDev::new(&zk, 0, 1024).unwrap();
+        let mut builder = JITOutputBuilder::new(&cd);
+        let p = include_str!("../../cu-target/test-case-1.ptx");
+        builder.data(
+            JITInputData {
+                p: p as *const _ as *mut Void, 
+                t: CUjitInputType_enum::CU_JIT_INPUT_PTX, 
+                s: p.len(), n: String::new()
+            }
+        ).unwrap();
+        println!("{builder:?}");
+        let output = builder.build().unwrap();
+        println!("{output:?}");
+        let caller : JITCaller = output.try_into().unwrap();
+        println!("{caller:?}");
+        let handle = caller.get_handle("add").unwrap();
+        println!("{handle:?}");
+    }}
 }
 
 /* ----------------------------------------------------------------------------------- */
