@@ -28,8 +28,14 @@ impl<T: Clone> SlotVec<T> {
     }
     pub(super)
     fn unset(&mut self, n: usize) {
+        if !self.v[n].0 {return}
         self.q.push(Reverse(n));
         self.v[n].0 = false;
+    }
+    pub(super)
+    fn nofrag(&self) -> bool {
+        for (m, _) in &self.v { if !m { return false } }
+        return true
     }
 }
 
@@ -45,5 +51,29 @@ impl<T: Clone> IndexMut<usize> for SlotVec<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         if !self.v[index].0 { panic!("this slot is marked as empty") }
         &mut self.v[index].1
+    }
+}
+
+#[cfg(test)]
+mod check_slot_vec {
+    use rand::*;
+    use super::*;
+
+    #[test]
+    /// there should be no fragmentation in a slot vector
+    fn nofrag() {
+        // initialize a slot vector
+        let mut sv = SlotVec::new(Vec::<(i32, i32)>::new());
+        let mut v = Vec::<(bool, (i32, i32))>::new();
+        // randomly put some values
+        for _ in 0..1024 { let x = (random(), random()); sv.put(x); v.push((true, x)); }
+        assert!(sv.nofrag());
+        assert!(sv.v == v);
+        // randomly unset some slots
+        for _ in 0..128 { sv.unset(random::<usize>() % 1024); }
+        assert!(!sv.nofrag());
+        // randomly put some values to fill fragments
+        for _ in 0..128 { sv.put((random(), random())); }
+        assert!(sv.nofrag());
     }
 }

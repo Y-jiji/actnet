@@ -1,3 +1,5 @@
+// many tests depend on this file, don't change/move it unless you know what you are doing
+
 extern "C" __global__ void sub(
     const int*   x,
     const int*   y,

@@ -6,7 +6,7 @@ use std::ptr::null_mut;
 
 use crate::Void;
 use super::err::*;
-use super::keeper::*;
+use super::zk::*;
 
 /* ----------------------------------------------------------------------------------- */
 
@@ -67,16 +67,16 @@ pub struct JITOutputBuilder<'a> {
     /// pointers to option values (this is error-prone, be careful)
     v: Vec<*mut Void>,
     /// immutable reference to a CudaDev, indicating this struct should be dropped earlier than corresponding CudaDev
-    d: &'a CuDev,
+    cd: &'a CuDev,
 }
 
 impl<'a> JITOutputBuilder<'a> {
     /// create a new builder for JITOutput
-    pub fn new(d: &'a CuDev) -> JITOutputBuilder<'a> {
+    pub fn new(cd: &'a CuDev) -> JITOutputBuilder<'a> {
         JITOutputBuilder {
             p: std::ptr::null_mut(), 
             o: Vec::new(), 
-            v: Vec::new(), d
+            v: Vec::new(), cd
         }
     }
     /// add an option to JIT Build (see CUDA documentation for details)
@@ -121,7 +121,7 @@ impl<'a> JITOutputBuilder<'a> {
     pub fn build(mut self) -> Result<JITOutput<'a>, cudaError_enum> {
         if self.p.is_null() 
         { Err(cudaError_enum::CUDA_ERROR_INVALID_SOURCE)? }
-        let mut kerimg = JITOutput(null_mut(), 0usize, self.d);
+        let mut kerimg = JITOutput(null_mut(), 0usize, self.cd);
         let err = unsafe{
             cuLinkComplete(self.p, &mut kerimg.0, &mut kerimg.1);
             cuLinkDestroy(self.p)
@@ -178,6 +178,8 @@ mod check_jit_output_builder {
         let mut builder = JITOutputBuilder::new(&cd);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
+        assert!(path.exists());
+        println!("{path:?}");
         builder.file(
             JITInputFile {
                 p: path.to_str().unwrap().to_owned(), 
@@ -193,23 +195,20 @@ mod check_jit_output_builder {
         let zk = ZooKeeper::new().unwrap();
         let cd = CuDev::new(&zk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
-        let path = current_dir().unwrap();
-        let path = path.join("cu-target").join("test-case-1.ptx");
-        builder.file(
-            JITInputFile {
-                p: path.to_str().unwrap().to_owned(), 
-                t: CUjitInputType_enum::CU_JIT_INPUT_PTX
-            }
-        ).unwrap();
-        let path = current_dir().unwrap();
-        let path = path.join("cu-target").join("test-case-2.ptx");
-        assert!(path.exists());
-        builder.file(
-            JITInputFile {
-                p: path.to_str().unwrap().to_owned(), 
-                t: CUjitInputType_enum::CU_JIT_INPUT_PTX
-            }
-        ).unwrap();
+        let mut add_f = |target: &str| {
+            let path = current_dir().unwrap();
+            let path = path.join("cu-target").join(target);
+            assert!(path.exists());
+            println!("{path:?}");
+            builder.file(
+                JITInputFile {
+                    p: path.to_str().unwrap().to_owned(), 
+                    t: CUjitInputType_enum::CU_JIT_INPUT_PTX
+                }
+            ).unwrap();
+        };
+        add_f("test-case-1.ptx");
+        add_f("test-case-2.ptx");
         println!("{builder:?}");
         let img = builder.build().unwrap();
         println!("{img:?}");
@@ -222,7 +221,7 @@ mod check_jit_output_builder {
 #[derive(Debug)]
 pub struct JITCaller<'a> {
     p: *mut CUmod_st,
-    d: &'a CuDev,
+    cd: &'a CuDev,
     s: usize,
 }
 
@@ -230,21 +229,24 @@ pub struct JITCaller<'a> {
 #[derive(Debug, Clone)]
 pub struct FuncHandle<'a> {
     pub(super) p: *mut CUfunc_st,
-    d: &'a CuDev,
+    cd: &'a CuDev,
 }
+
+unsafe impl<'a> Sync for FuncHandle<'a> {}
+unsafe impl<'a> Send for FuncHandle<'a> {}
 
 impl<'a> JITCaller<'a> {
     /// create a JITCaller from kernel image
     pub(crate) fn new(img: JITOutput<'a>) -> Result<JITCaller, cudaError_enum> {
         let mut p = null_mut();
         unsafe{cuModuleLoadData(&mut p, img.0)}
-            .wrap(JITCaller { p, s: img.1, d: img.2 })
+            .wrap(JITCaller { p, s: img.1, cd: img.2 })
     }
     /// get function handle by function name
     pub(crate) fn get_handle(&self, name: &str) -> Result<FuncHandle<'a>, cudaError_enum> {
         let mut p = null_mut();
         unsafe{cuModuleGetFunction(&mut p, self.p, name as *const str as *const i8)}
-            .wrap(FuncHandle { p, d: self.d })
+            .wrap(FuncHandle { p, cd: self.cd })
     }
 }
 
@@ -259,26 +261,35 @@ mod check_jit_caller {
     use super::*;
 
     #[test]
-    fn new() { for _ in 0..100 {
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 1024).unwrap();
-        let mut builder = JITOutputBuilder::new(&cd);
-        let p = include_str!("../../cu-target/test-case-1.ptx");
-        builder.data(
-            JITInputData {
-                p: p as *const _ as *mut Void, 
-                t: CUjitInputType_enum::CU_JIT_INPUT_PTX, 
-                s: p.len(), n: String::new()
-            }
-        ).unwrap();
-        println!("{builder:?}");
-        let output = builder.build().unwrap();
-        println!("{output:?}");
-        let caller : JITCaller = output.try_into().unwrap();
-        println!("{caller:?}");
-        let handle = caller.get_handle("add").unwrap();
-        println!("{handle:?}");
-    }}
+    fn new() { 
+        let mut cnt = 0;
+        for _ in 0..128 {
+            let zk = ZooKeeper::new().unwrap();
+            let cd = CuDev::new(&zk, 0, 1024).unwrap();
+            let mut builder = JITOutputBuilder::new(&cd);
+            let p = include_str!("../../cu-target/test-case-1.ptx");
+            builder.data(
+                JITInputData {
+                    p: p as *const _ as *mut Void, 
+                    t: CUjitInputType_enum::CU_JIT_INPUT_PTX, 
+                    s: p.len(), n: String::new()
+                }
+            ).unwrap();
+            println!("{builder:?}");
+            let output = builder.build();
+            println!("{output:?}");
+            if output.is_err() { continue; }
+            let caller : Result<JITCaller, _> = output.unwrap().try_into();
+            println!("{caller:?}");
+            if caller.is_err() { continue; }
+            let handle = caller.unwrap().get_handle("add");
+            println!("{handle:?}");
+            if handle.is_err() { continue; }
+            cnt += 1;
+        }
+        println!("{cnt:?}");
+        assert!(cnt >= 32);
+    }
 }
 
 /* ----------------------------------------------------------------------------------- */

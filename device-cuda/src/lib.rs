@@ -1,7 +1,7 @@
-use device_api::*;
+ use device_api::*;
 
-mod mem;
 mod raw;
+mod mem;
 mod dev;
 
 struct CudaStream;
@@ -9,14 +9,17 @@ struct CudaStream;
 type Void = std::ffi::c_void;
 
 #[derive(Debug)]
-struct DatBuf {
+struct DevBox {
+    /// base pointer
     p: *mut Void,
+    /// length of the boxed array
     s: usize,
+    /// type of the boxed array
     t: Type,
 }
 
 impl Device for CudaStream {
-    type DatBuf = DatBuf;
-    type DevBox = DatBuf;
+    type DatBuf = DevBox;
+    type DevBox = DevBox;
     type DevErr = raw::drv::cudaError_enum;
 }

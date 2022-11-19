@@ -1,5 +1,4 @@
-mod slot_vec;
-use slot_vec::*;
+use slotvec::*;
 
 use std::{ffi::c_void, ptr::null_mut};
 
@@ -22,8 +21,7 @@ struct MemNode {
 }
 
 #[derive(Debug)]
-pub(crate)
-struct MemShadow<const ALIGN: usize> {
+pub struct MemShadow<const ALIGN: usize> {
     /// state of the memory, first nodes are free list heads
     state: SlotVec<MemNode>,
     /// the memory size it manages
@@ -142,8 +140,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         return n;
     }
     /// find a suitable block and return
-    pub(crate)
-    fn alloc(&mut self, s: usize) -> Option<usize> {
+    pub fn alloc(&mut self, s: usize) -> Option<usize> {
         let s = Self::align(s);
         let n = match self.find(s) { 
             None => return None, 
@@ -155,8 +152,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         Some(n)
     }
     /// free a block
-    pub(crate)
-    fn free(&mut self, n: usize) {
+    pub     fn free(&mut self, n: usize) {
         debug_assert!(self.state[n].s & 1 == 1);
         let n = self.merge(n);
         self.push_free(n);

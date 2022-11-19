@@ -18,7 +18,6 @@ use crate::raw::drv::{
     CUdevice,
     CUctx_st,
     CUctx_flags_enum,
-    CUdeviceptr,
     // unsafe functions
     cuInit,
     cuCtxCreate_v2,
@@ -60,8 +59,8 @@ pub struct CuDev {
     pub(super) p: *mut Void,
     /// memory size
     pub(super) s: usize,
-    /// a global keeper (daemon) to keep uniqueness of each thread
-    k: ZooKeeper,
+    /// a global zoo keeper (daemon object?) to keep uniqueness of device on each thread
+    zk: ZooKeeper,
 }
 
 impl CuDev {
@@ -69,9 +68,9 @@ impl CuDev {
     /// else, return CUDA_ERROR_INVALID_DEVICE
     pub fn new(zk: &ZooKeeper, n: usize, s: usize) -> Result<CuDev, cudaError_enum> {
         let tid = thread::current().id();
-        let k = zk.clone();
+        let zk = zk.clone();
         // query the device
-        match k.0.read(&tid, |_| true) {
+        match zk.0.read(&tid, |_| true) {
             None => unsafe {
                 let mut c = null_mut();
                 let flg = CUctx_flags_enum::CU_CTX_BLOCKING_SYNC as u32;
@@ -80,13 +79,13 @@ impl CuDev {
                     cuDeviceGet(&mut d, n as c_int).wrap(())?; d
                 };
                 cuCtxCreate_v2(&mut c, flg, n).wrap(())?;
-                k.0.insert(tid).expect("This should not happen, each key have only one thread");
+                zk.0.insert(tid).expect("This should not happen, each key have only one thread");
                 let p = {
                     let mut p = 0u64;
                     cuMemAlloc_v2(&mut p, s);
                     null_mut::<Void>().add(p as usize)
                 };
-                Ok(CuDev {c, n, k, p, s})
+                Ok(CuDev {c, n, zk, p, s})
             }
             Some(_) => Err(cudaError_enum::CUDA_ERROR_INVALID_DEVICE),
         }
@@ -96,9 +95,11 @@ impl CuDev {
 impl Drop for CuDev {
     fn drop(&mut self) {
         let tid = thread::current().id();
+        let r = unsafe{cuMemFree_v2(self.p as u64).wrap(())};
+        debug_assert!(r.is_ok(), "cuMemFree failed");
         let r = unsafe{cuCtxDestroy_v2(self.c)}.wrap(());
         debug_assert!(r.is_ok(), "cuCtxDestroy failed");
-        let ZooKeeper(inner) = &self.k;
+        let ZooKeeper(inner) = &self.zk;
         inner
             .remove(&tid)
             .expect("A device is in use but unrecorded on thread {tid:?}. ");
@@ -113,20 +114,20 @@ mod check_zoo_keeper {
 
     #[test]
     fn new_and_drop() {
-        let keeper = ZooKeeper::new().expect("cuInit(0) failed");
-        let keeper_1 = keeper.clone();
+        let zk = ZooKeeper::new().expect("cuInit(0) failed");
+        let zk_1 = zk.clone();
         let handle_1 = std::thread::spawn(move || {
-            let cuda_device_1 = CuDev::new(&keeper_1, 0, 1024).unwrap();
-            let cuda_device_2 = CuDev::new(&keeper_1, 0, 1024).expect_err("This should be an error");
-            drop(keeper_1);
+            let cuda_device_1 = CuDev::new(&zk_1, 0, 1024).unwrap();
+            let cuda_device_2 = CuDev::new(&zk_1, 0, 1024).expect_err("This should be an error");
+            drop(zk_1);
             drop(cuda_device_1);
             drop(cuda_device_2);
         });
-        let keeper_2 = keeper.clone();
+        let zk_2 = zk.clone();
         let handle_2 = std::thread::spawn(move || {
-            let cuda_device_1 = CuDev::new(&keeper_2, 0, 1024).unwrap();
-            let cuda_device_2 = CuDev::new(&keeper_2, 0, 1024).expect_err("This should be an error");
-            drop(keeper_2);
+            let cuda_device_1 = CuDev::new(&zk_2, 0, 1024).unwrap();
+            let cuda_device_2 = CuDev::new(&zk_2, 0, 1024).expect_err("This should be an error");
+            drop(zk_2);
             drop(cuda_device_1);
             drop(cuda_device_2);
         });
