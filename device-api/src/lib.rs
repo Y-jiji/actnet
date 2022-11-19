@@ -22,7 +22,7 @@ pub enum DevFunc<DevBox: Debug> {
     SubF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
     MulF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
     DivF32 {read: (DevBox, DevBox), write: DevBox, meta: ()},
-    ContractF32{read: (DevBox, DevBox), write: DevBox, meta: (usize, usize, usize)},
+    TMulF32{read: (DevBox, DevBox), write: DevBox, meta: (usize, usize, usize)},
     Cpy {read: DevBox, write: DevBox, meta: ()},
 }
 
