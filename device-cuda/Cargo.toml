@@ -12,7 +12,7 @@ parking_lot = "0.12.1"                  # More compact and efficient implementat
 scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
 
 [build-dependencies]
-bindgen = "0.62.0"                # Automatically generates Rust FFI bindings to C and C++ libraries.
+bindgen = "0.62.0"          # Automatically generates Rust FFI bindings to C and C++ libraries.
 
 [dev-dependencies]
 rand = "0.8.5"              # Random number generators and other randomness functionality. 
