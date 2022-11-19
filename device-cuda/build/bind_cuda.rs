@@ -32,7 +32,7 @@ pub fn bind_cuda(
     println!("cargo:rustc-link-lib={library}");
     builder = builder
         .header(include_path.to_str().unwrap())
-        .rustified_enum("*enum");
+        .rustified_enum(".*enum");
     let binding = builder.generate()?;
     assert!(writeto_path.exists() && writeto_path.is_file(), "There is no file {writeto_path:?}");
     let writeto_file = Box::new(File::create(&writeto_path).expect(&format!("Cannot open file {writeto_path:?}")));
