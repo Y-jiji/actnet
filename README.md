@@ -29,13 +29,14 @@ An neural network toolkit in pure rust.
 
 # TODO list
 
-- [ ] device-cuda
+- [ ] device
+  - [ ] device-cuda
+  - [ ] device-toy
 - [ ] mem
   - [x] mem-slotvec
   - [x] mem-allocator
   - [x] mem-tgraph
 - [ ] ndarray
-- [ ] device-toy
 - [ ] tensor
 - [ ] neuron
 - [ ] nn
