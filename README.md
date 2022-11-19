@@ -31,9 +31,9 @@ An neural network toolkit in pure rust.
 
 - [ ] device-cuda
 - [ ] mem
-      - [x] mem-slotvec
-      - [x] mem-allocator
-      - [x] mem-tgraph
+  - [x] mem-slotvec
+  - [x] mem-allocator
+  - [x] mem-tgraph
 - [ ] ndarray
 - [ ] device-toy
 - [ ] tensor
