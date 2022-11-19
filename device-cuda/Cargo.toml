@@ -1,0 +1,24 @@
+[package]
+name = "device-cuda"
+version = "0.1.0"
+edition = "2021"
+build="build/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+device_api = {package="device-api", version="*", path="../device-api"}
+parking_lot = "0.12.1"                  # More compact and efficient implementations of the standard synchronization primitives.
+scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
+
+[build-dependencies]
+bindgen = "0.62.0"                # Automatically generates Rust FFI bindings to C and C++ libraries.
+
+[dev-dependencies]
+rand = "0.8.5"              # Random number generators and other randomness functionality. 
+
+[profile.dev]
+opt-level = 1               # Use slightly better optimizations.
+
+[profile.test]
+opt-level = 1               # Use slightly better optimizations.
