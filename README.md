@@ -36,6 +36,7 @@ An neural network toolkit in pure rust.
   - [x] mem-slotvec
   - [x] mem-allocator
   - [ ] mem-tgraph
+  - [ ] mem-tstack
 - [ ] ndarray
 - [ ] tensor
 - [ ] neuron
