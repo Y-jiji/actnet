@@ -12,8 +12,7 @@ use scc::HashSet;
 use crate::Void;
 
 /* ----------------------------------------------------------------------------------- */
-
-use crate::raw::drv::{
+use raw::drv::{
     // CUDA types
     CUdevice,
     CUctx_st,

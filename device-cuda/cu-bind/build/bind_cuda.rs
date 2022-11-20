@@ -14,7 +14,7 @@ const CUDA_LIBRARY_PATH: &str = env!(
     "In build script: Environment variable CUDA_LIBRARY_PATH is missing. It should be where \"cuda.lib\" or \"libcuda.a\" file lives"
 );
 
-const CUDA_BINDING_PATH: &str = "cu-bind";
+const CUDA_BINDING_PATH: &str = "src";
 
 pub fn bind_cuda(
     include: &str, 

@@ -1,7 +1,6 @@
- use device_api::*;
+use device_api::*;
+use mem_allocator::*;
 
-mod raw;
-mod mem;
 mod dev;
 
 struct CudaStream;
@@ -15,11 +14,11 @@ struct DevBox {
     /// length of the boxed array
     s: usize,
     /// type of the boxed array
-    t: Type,
+    t: DType,
 }
 
-impl Device for CudaStream {
-    type DatBuf = DevBox;
-    type DevBox = DevBox;
-    type DevErr = raw::drv::cudaError_enum;
-}
+// impl Device for CudaStream {
+//     type DatBuf = DevBox;
+//     type DevBox = DevBox;
+//     type DevErr = raw::drv::cudaError_enum;
+// }

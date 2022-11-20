@@ -1,4 +1,4 @@
-pub(crate) use crate::raw::drv::cudaError_enum;
+pub(crate) use raw::drv::cudaError_enum;
 
 pub(crate) trait Wrap 
 where Self: Sized {

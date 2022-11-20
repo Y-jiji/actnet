@@ -11,7 +11,7 @@ use super::zk::*;
 /* ----------------------------------------------------------------------------------- */
 
 pub(crate)
-use crate::raw::drv::{
+use raw::drv::{
     // cuda types
     CUjitInputType_enum,
     CUjit_option_enum,

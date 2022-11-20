@@ -8,11 +8,10 @@ build="build/main.rs"
 
 [dependencies]
 device_api = {package="device-api", version="*", path="../device-api"}
+mem_allocator = {package="mem-allocator", version="*", path="../mem-allocator"}
+raw = {package="cu-bind", version="*", path="./cu-bind"}
 parking_lot = "0.12.1"                  # More compact and efficient implementations of the standard synchronization primitives.
 scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
-
-[build-dependencies]
-bindgen = "0.62.0"          # Automatically generates Rust FFI bindings to C and C++ libraries.
 
 [dev-dependencies]
 rand = "0.8.5"              # Random number generators and other randomness functionality. 

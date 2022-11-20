@@ -11,7 +11,7 @@ use super::jit::*;
 
 /* ----------------------------------------------------------------------------------- */
 
-use crate::raw::drv::{
+use raw::drv::{
     // CUDA types
     CUstream_st,
     CUstream_flags_enum,
