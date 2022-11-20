@@ -8,7 +8,7 @@ It allows training and using big models with limited GPU memory and reasonable t
 
 The underlying mechanism concerns recomputing and reloading tensors. By recomputing and reloading tensors, some GPU memory can be released when memory is insufficient so that new tensors can readily take its space. 
 
-The designing question here is which tensor (or tensors) should we release, so that it (or they) can be recomputed or reloaded at relatively low expense. 
+The designing question here is which tensor (or tensors) we should release, so that it (or they) can be recomputed or reloaded at relatively low expense. 
 
 ## Goal of this crate
 
