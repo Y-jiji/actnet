@@ -11,7 +11,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     { children_proc.push(nvcc_compile(cu.as_str())?); }
     for mut ch in children_proc
     { ch.wait()?; }
-    println!("rerun-if-changed=build/main.rs");
     println!("rerun-if-changed=cu-src/*");
     Ok(())
 }

@@ -51,13 +51,13 @@ impl ZooKeeper {
 #[derive(Debug)]
 pub struct CuDev {
     /// cuda context
-    pub(super) c: *mut CUctx_st,
+    pub(crate) c: *mut CUctx_st,
     /// device number
     pub n: CUdevice,
     /// memory base
-    pub(super) p: *mut Void,
+    pub(crate) p: *mut Void,
     /// memory size
-    pub(super) s: usize,
+    pub(crate) s: usize,
     /// a global zoo keeper (daemon object?) to keep uniqueness of device on each thread
     zk: ZooKeeper,
 }
@@ -81,7 +81,8 @@ impl CuDev {
                 zk.0.insert(tid).expect("This should not happen, each key have only one thread");
                 let p = {
                     let mut p = 0u64;
-                    cuMemAlloc_v2(&mut p, s);
+                    let err = cuMemAlloc_v2(&mut p, s);
+                    err.wrap(())?;
                     null_mut::<Void>().add(p as usize)
                 };
                 Ok(CuDev {c, n, zk, p, s})
@@ -92,6 +93,8 @@ impl CuDev {
 }
 
 impl Drop for CuDev {
+    /// release memory and destroy context
+    /// notify a global ZooKeeper
     fn drop(&mut self) {
         let tid = thread::current().id();
         let r = unsafe{cuMemFree_v2(self.p as u64).wrap(())};

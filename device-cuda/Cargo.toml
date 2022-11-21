@@ -12,12 +12,15 @@ mem_allocator = {package="mem-allocator", version="*", path="../mem-allocator"}
 raw = {package="cu-bind", version="*", path="./cu-bind"}
 parking_lot = "0.12.1"                  # More compact and efficient implementations of the standard synchronization primitives.
 scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
+ouroboros = "0.15.5"                   # Easy, safe self-referential struct generation.
 
 [dev-dependencies]
 rand = "0.8.5"              # Random number generators and other randomness functionality. 
 
 [profile.dev]
 opt-level = 1               # Use slightly better optimizations.
+incremental = true
 
 [profile.test]
 opt-level = 1               # Use slightly better optimizations.
+incremental = true
