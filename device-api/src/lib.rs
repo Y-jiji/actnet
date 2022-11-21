@@ -4,7 +4,7 @@ use std::result::*;
 mod ops;
 pub use ops::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum DType {
     F32,
     F64,
@@ -14,12 +14,16 @@ pub enum DType {
 }
 
 /// common error format
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum ComErr {
     /// (wanted, total)
-    OutOfMemory(usize, usize),
+    MemNotEnough(usize, usize),
+    /// invalid access
+    MemInvalidAccess,
     /// operation not implemented
     OpNoImpl,
+    /// device initialization failed
+    InitFailure,
 }
 
 pub trait ArrayPrint {
@@ -28,13 +32,13 @@ pub trait ArrayPrint {
 }
 
 pub trait Device
-where Self::DevBox: Debug,
-      Self::DatBuf: ArrayPrint {
+where Self::DevBox: Debug + Clone,
+      Self::DatBuf: Debug + ArrayPrint {
 
-    /// device box in device
+    /// device box in device, serves as a mutable reference like RefCell
     type DevBox;
 
-    /// data buffer on host
+    /// data buffer on host, serves as a unique reference like Box
     type DatBuf;
 
     /// device error
@@ -44,9 +48,9 @@ where Self::DevBox: Debug,
     fn launch(&self, func: DevFunc<Self::DevBox>) -> Result<(), (ComErr, Self::DevErr)>
     { todo!("launch({func:?})") }
 
-    /// allocate a new box on this device
-    fn newbox(&self, size: usize, dtype: DType) -> Result<Self::DevBox, (ComErr, Self::DevErr)>
-    { todo!("newbox({size:?}, {dtype:?})") }
+    /// allocate a new box on this device with filling data
+    fn newbox(&self, datbuf: Self::DatBuf) -> Result<Self::DevBox, (ComErr, Self::DevErr)>
+    { todo!("newbox({datbuf:?})") }
 
     /// delete a box
     fn delbox(&self, devbox: Self::DevBox) -> Result<(), (ComErr, Self::DevErr)>

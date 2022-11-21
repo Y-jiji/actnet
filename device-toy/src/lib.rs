@@ -67,11 +67,11 @@ impl Device for Toy {
         }
     }
 
-    fn newbox(&self, size: usize, dtype: DType) -> Result<Self::DevBox, (ComErr, Self::DevErr)> {
+    fn newbox(&self, datbuf: DatBuf) -> Result<Self::DevBox, (ComErr, Self::DevErr)> {
+        let size = datbuf.s;
         let s = Layout::from_size_align(size, 4).unwrap();
         let p = unsafe{alloc(s)} as *mut ();
-        let t = dtype;
-        return Ok(DevBox { p, s: s.size(), t })
+        return Ok(DevBox { p, s: s.size(), t: datbuf.t })
     }
 
     fn seebox(&self, devbox: Self::DevBox) -> Result<Self::DatBuf, (ComErr, Self::DevErr)> {

@@ -28,6 +28,14 @@ impl<T: Clone> SlotVec<T> {
         self.q.push(Reverse(n));
         self.v[n].0 = false;
     }
+    pub fn get(&self, i: usize) -> Option<&T> {
+        if !self.v[i].0 { None }
+        else { Some(&self.v[i].1) }
+    }
+    pub fn get_mut(&mut self, i: usize) -> Option<&mut T> {
+        if !self.v[i].0 { None }
+        else { Some(&mut self.v[i].1) }
+    }
     pub fn nofrag(&self) -> bool {
         for (m, _) in &self.v { if !m { return false } }
         return true
@@ -36,16 +44,14 @@ impl<T: Clone> SlotVec<T> {
 
 impl<T: Clone> Index<usize> for SlotVec<T> {
     type Output = T;
-    fn index(&self, index: usize) -> &Self::Output {
-        if !self.v[index].0 { panic!("this slot is marked as empty") }
-        &self.v[index].1
+    fn index(&self, i: usize) -> &Self::Output {
+        self.get(i).expect("try to access an empty slot [{i:?}]")
     }
 }
 
 impl<T: Clone> IndexMut<usize> for SlotVec<T> {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if !self.v[index].0 { panic!("this slot is marked as empty") }
-        &mut self.v[index].1
+    fn index_mut(&mut self, i: usize) -> &mut Self::Output {   
+        self.get_mut(i).expect("try to access an empty slot [{i:?}]")
     }
 }
 

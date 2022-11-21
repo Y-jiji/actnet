@@ -3,6 +3,7 @@ use std::alloc::*;
 
 use std::fmt::Display;
 
+#[derive(Debug)]
 pub struct DatBuf {
     pub(crate) p: *mut (),
     pub(crate) s: usize,
