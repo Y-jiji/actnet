@@ -10,6 +10,11 @@ An neural network toolkit in pure rust.
       device | unify computation runtime API, implement operators
              | in future: implement distributed computation
  - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      bridge | make a device available to other threads / processes / machines
+             | with a correspondent device client
+             | in future: a master scheduler may collect a bundle of bridged devices 
+             | and behaves like a single device
+ - - - - - - | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
          mem | a memory management schedulor toolkit
              | some components will have unified api
 --------------------------------------------------------------------------------------
