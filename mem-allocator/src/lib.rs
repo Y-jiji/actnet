@@ -68,7 +68,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
     fn push_free(&mut self, n: usize) {
         let node = &self.state[n];
         let head = self.get_level(node.s & (usize::MAX ^ 1));
-        let left = self.state[n].fl;
+        let left = self.state[head].fl;
         self.state[left].fr = n;
         self.state[head].fl = n;
         self.state[n].fr = head;
