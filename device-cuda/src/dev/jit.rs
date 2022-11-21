@@ -108,6 +108,7 @@ impl<'a> JITOutputBuilder<'a> {
         err.wrap(self)
     }
     /// add file to source by file name
+    /// when multiple threads works on the same file, this function will fail with CUDA_ERROR_FILE_NOT_FOUND
     pub fn file(&mut self, f: JITInputFile) -> Result<&mut JITOutputBuilder<'a>, cudaError_enum> {
         if self.p.is_null() { self.lazy_init()?; }
         let err = unsafe{cuLinkAddFile_v2(
