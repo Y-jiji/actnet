@@ -1,6 +1,7 @@
 use slotvec::*;
 
 use std::{ffi::c_void, ptr::null_mut};
+use device_api::ComErr;
 
 type Void = c_void;
 
@@ -30,18 +31,20 @@ pub struct MemShadow<const ALIGN: usize> {
     mbase: *mut Void,
     /// level[i] = size upper bound for free list [i]
     level: Vec<usize>,
+    /// usage accounting
+    usage: usize,
 }
 
 impl<const ALIGN: usize> MemShadow<ALIGN> {
     /// create an empty MemShadow
-    fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> MemShadow<ALIGN> {
+    pub fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> MemShadow<ALIGN> {
         let mut state = Vec::new();
         let ll = level.len();
         for i in 0..ll 
         { state.push(MemNode { fl: i, fr: i, pl: i, pr: i, s: 0, p: null_mut() }) }
         state.push(MemNode {fl: ll+1, fr: ll+1, pl: ll, pr: ll, s: 0, p: null_mut()});
         state.push(MemNode {fl: ll, fr: ll, pl: ll+1, pr: ll+1, s: msize, p: mbase});
-        MemShadow { state: SlotVec::new(state), msize, mbase, level }
+        MemShadow { state: SlotVec::new(state), msize, mbase, level, usage: 0 }
     }
     /// input: size, return aligned size
     #[inline]
@@ -52,6 +55,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         (s + (1 << ALIGN) - 1) & mask
     }
     /// find a suitable level for a memory node
+    #[inline]
     fn get_level(&self, s: usize) -> usize {
         for l in 0..self.level.len() {
             if s <= self.level[l]
@@ -60,10 +64,11 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         self.level.len()
     }
     /// push node into free list
+    #[inline]
     fn push_free(&mut self, n: usize) {
         let node = &self.state[n];
         let head = self.get_level(node.s & (usize::MAX ^ 1));
-        let left = self.state[head].fl;
+        let left = self.state[n].fl;
         self.state[left].fr = n;
         self.state[head].fl = n;
         self.state[n].fr = head;
@@ -72,6 +77,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         self.state[n].s &= usize::MAX ^ 1;
     }
     /// remove a node from freelist and mark as not free
+    #[inline]
     fn pull_free(&mut self, n: usize) {
         let node = &self.state[n];
         let l = node.fl;
@@ -82,6 +88,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         self.state[n].s |= 1;
     }
     /// find a suitable memory node, size greater than s
+    #[inline]
     fn find(&self, s: usize) -> Option<usize> {
         let start = self.get_level(s.clone());
         let end = self.level.len() + 1;
@@ -96,8 +103,9 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         None
     }
     /// split a node and free part of them
+    #[inline]
     fn split(&mut self, n: usize, s: usize) {
-        if self.state[n].s < s - (1 << ALIGN) { return }
+        if self.state[n].s < s + (1 << ALIGN) { return }
         debug_assert!(self.state[n].s & 1 == 1);
         let rh = MemNode {
             pl: n, pr: self.state[n].pr, 
@@ -115,6 +123,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
     /// merge a node if the left or right is free
     /// 
     /// unset correspondent slot
+    #[inline]
     fn merge(&mut self, mut n: usize) -> usize {
         debug_assert!(self.state[n].s & 1 == 1);
         let l = self.state[n].pl;
@@ -140,22 +149,43 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         return n;
     }
     /// find a suitable block and return
-    pub fn alloc(&mut self, s: usize) -> Option<usize> {
+    pub fn alloc(&mut self, s: usize) -> Result<usize, ComErr> {
         let s = Self::align(s);
         let n = match self.find(s) { 
-            None => return None, 
+            None => Err({let (a, b) = self.usage(); ComErr::MemNotEnough(a + s, b)})?, 
             Some(n) => n 
         };
         self.pull_free(n);
         self.split(n, s);
+        self.usage += self.state[n].s;
         debug_assert!(self.state[n].s & 1 == 1);
-        Some(n)
+        Ok(n)
+    }
+    /// get pointer
+    #[inline]
+    pub fn getptr(&self, n: usize) -> *mut Void {
+        self.state[n].p
+    }
+    /// get size
+    #[inline]
+    pub fn getsiz(&self, n: usize) -> usize {
+        self.state[n].s
     }
     /// free a block
-    pub     fn free(&mut self, n: usize) {
+    pub fn free(&mut self, n: usize) -> Result<(), ComErr> {
         debug_assert!(self.state[n].s & 1 == 1);
+        match self.state.get(n) {
+            None => Err(ComErr::MemInvalidAccess)?,
+            Some(x) => { self.usage += x.s }
+        };
         let n = self.merge(n);
         self.push_free(n);
+        Ok(())
+    }
+    /// get usage and total
+    #[inline]
+    pub fn usage(&self) -> (usize, usize) {
+        (self.usage, self.msize)
     }
 }
 
@@ -211,13 +241,14 @@ mod check_mem_shadow {
         for _ in 0..2048 {
             let s = random::<usize>() % (128 * 1023) + 1;
             println!("[[alloc {s}]]");
-            let n = match ms.alloc(s) { None=>break, Some(n)=>n };
+            print_free(&ms);
+            let n = match ms.alloc(s) { Err(_)=>break, Ok(n)=>n };
             mh.push(n);
         }
         println!("{}", mh.len());
         for j in mh.iter() {
             println!("[[free {j}]]");
-            ms.free(*j);
+            ms.free(*j).unwrap();
         }
     }
 
@@ -229,7 +260,7 @@ mod check_mem_shadow {
         let mut max_usage = 0f32;
         for _ in 0..2048 {
             let s = random::<usize>() % (64 * 1024) + 1;
-            let n = match ms.alloc(s) { None=>break, Some(n)=>n };
+            let n = match ms.alloc(s) { Err(_)=>break, Ok(n)=>n };
             mh.insert(n, s); usage += s as f32;
         }
         let mut delta = 0;
@@ -238,14 +269,14 @@ mod check_mem_shadow {
             let mut is_free = HashSet::new();
             for n in mh.keys().choose_multiple(&mut rng, 256) {
                 if is_free.contains(n) { continue; }
-                is_free.insert(*n); ms.free(*n);
+                is_free.insert(*n); ms.free(*n).unwrap();
             }
             for n in is_free.iter()
             { usage -= mh.remove(n).unwrap() as f32; }
             let mut cnt = 0;
             for _ in 0..256 {
                 let s = random::<usize>() % (128 * 1023) + 1 + delta;
-                let n = match ms.alloc(s) { None=>break, Some(n)=>n };
+                let n = match ms.alloc(s) { Err(_)=>break, Ok(n)=>n };
                 mh.insert(n, s);
                 cnt += 1; usage += s as f32;
             }
