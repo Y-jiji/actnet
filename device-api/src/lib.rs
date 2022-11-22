@@ -31,6 +31,7 @@ pub trait ArrayPrint {
     { todo!("ArrayPrint::print({shape:?})"); }
 }
 
+/// a device is an internally mutable type
 pub trait Device
 where Self::DevBox: Debug + Clone,
       Self::DatBuf: Debug + ArrayPrint {

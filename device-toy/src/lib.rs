@@ -1,5 +1,5 @@
 use device_api::*;
-use std::{alloc::*, ops::Index};
+use std::alloc::*;
 
 pub struct Toy;
 
