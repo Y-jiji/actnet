@@ -4,15 +4,6 @@ use std::result::*;
 mod ops;
 pub use ops::*;
 
-#[derive(Debug, Clone, Copy)]
-pub enum DType {
-    F32,
-    F64,
-    I32,
-    I64,
-    Bool,
-}
-
 /// common error format
 #[derive(Debug, Clone, Copy)]
 pub enum ComErr {
@@ -20,8 +11,14 @@ pub enum ComErr {
     MemNotEnough(usize, usize),
     /// invalid access
     MemInvalidAccess,
-    /// operation not implemented
-    OpNoImpl,
+    /// invalid input length
+    FuncInvalidInputLength,
+    /// invalid input meta
+    FuncInvalidInputMeta,
+    /// invalid input type
+    FuncInvalidInputType,
+    /// function not implemented
+    FuncNotimplemented,
     /// device initialization failed
     InitFailure,
 }
@@ -32,32 +29,35 @@ pub trait ArrayPrint {
 }
 
 /// a device is an internally mutable type
-pub trait Device
-where Self::DevBox: Debug + Clone,
-      Self::DatBuf: Debug + ArrayPrint {
+pub trait Device<'a: 'b, 'b>
+where Self: 'a, // device should outlive associated structures
+      Self::Symbol: Debug + DTyped + 'b,
+      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>> + 'b, {
 
-    /// device box in device, serves as a mutable reference like RefCell
-    type DevBox;
+    /// symbol on device, models a flat vector of given data type
+    /// 
+    /// symbol type is immutable
+    type Symbol;
 
-    /// data buffer on host, serves as a unique reference like Box
-    type DatBuf;
+    /// data buffer on host, a unique reference with ownership like Box
+    type DatBox;
 
-    /// device error
+    /// device specific error
     type DevErr;
 
-    /// launch a device function
-    fn launch(&self, func: DevFunc<Self::DevBox>) -> Result<(), (ComErr, Self::DevErr)>
+    /// emit a function to this device
+    fn emit(&self, func: Func<Self::Symbol>) -> Result<Vec<Self::Symbol>, (ComErr, Self::DevErr)>
     { todo!("launch({func:?})") }
 
-    /// allocate a new box on this device with filling data
-    fn newbox(&self, datbuf: Self::DatBuf) -> Result<Self::DevBox, (ComErr, Self::DevErr)>
-    { todo!("newbox({datbuf:?})") }
+    /// drop a symbol without retrieving content
+    fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
+    { todo!("delsym({symbol:?})") }
 
-    /// delete a box
-    fn delbox(&self, devbox: Self::DevBox) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("delbox({devbox:?})") }
+    /// dump data from given symbol
+    fn dump(&self, symbol: Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)>
+    { todo!("dump({symbol:?})") }
 
-    /// inspect devbox (dump bytes into a data buffer)
-    fn seebox(&self, devbox: Self::DevBox) -> Result<Self::DatBuf, (ComErr, Self::DevErr)>
-    { todo!("seebox({devbox:?})") }
+    /// load given data to a new symbol 
+    fn load(&self, datbox: Self::DatBox) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
+    { todo!("load({datbox:?})") }
 }

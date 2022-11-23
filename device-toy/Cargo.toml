@@ -7,6 +7,11 @@ edition = "2021"
 
 [dependencies]
 device_api = {package="device-api", version="*", path="../device-api"}
-
-[dev-dependencies]
 rand = "0.8.5"              # Random number generators and other randomness functionality. 
+
+
+[profile.dev]
+opt-level = 1               # Use slightly better optimizations.
+
+[profile.release]
+strip = "debuginfo"
