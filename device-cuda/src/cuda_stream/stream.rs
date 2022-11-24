@@ -14,6 +14,7 @@ pub struct InnerCudaStream {
     cs: CuStream<'this>,
 }
 
+/// a very simple implementation of CudaStream
 pub struct CudaStream {
     pub(super)
     zk: ZooKeeper,
@@ -28,6 +29,7 @@ const MB: usize = 1024*KB;
 const GB: usize = 1024*MB;
 
 impl CudaStream {
+    /// create a new cuda stream with given size on default device (device 0)
     pub fn new(s: usize) -> Result<CudaStream, (ComErr, cudaError_enum)> {
         let zk = match ZooKeeper::new() {
             Err(e) => Err((ComErr::InitFailure, e))?,

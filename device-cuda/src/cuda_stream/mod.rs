@@ -2,20 +2,22 @@
 mod stream;
 pub use stream::*;
 
-mod devbox;
-pub use devbox::*;
+mod symbol;
+pub use symbol::*;
 
-mod datbuf;
-pub use datbuf::*;
+mod datbox;
+pub use datbox::*;
 
 use crate::cuda_wrap::*;
 use device_api::*;
 
-impl Device for Stream {
-    type DatBuf = DatBuf;
-    type DevBox = DevBox;
-    type DevErr = cudaError_enum;
+#[cfg(test)]
+mod check_cuda_stream {
+    use super::*;
 
-    fn delbox(&self, devbox: &mut Self::DevBox) -> Result<(), (ComErr, Self::DevErr)> {
+    #[test]
+    fn new() {
+        let cuda_stream = CudaStream::new(1024);
+        drop(cuda_stream);
     }
 }
