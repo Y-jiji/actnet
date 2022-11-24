@@ -1,4 +1,5 @@
 mod err;
+pub use err::*;
 
 mod zk;
 pub use zk::*;

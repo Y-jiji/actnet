@@ -1,84 +1,83 @@
 use device_api::*;
-use std::{alloc::*, ops::Index};
+use std::mem::size_of;
 
-pub struct Toy;
+mod datbox;
+use datbox::*;
 
-mod datbuf;
-use datbuf::*;
+mod symbol;
+use symbol::*;
+
+mod ops;
+use ops::*;
 
 #[derive(Debug)]
-pub struct DevBox {
-    p: *mut (),
-    s: usize,
-    t: DType,
-}
-
-impl DevBox {
-    fn p_f32(&self) -> *mut f32 {
-        self.p as *mut f32
-    }
-}
+pub struct Toy;
 
 impl Device for Toy {
-    type DatBuf = DatBuf;
-    type DevBox = DevBox;
+    type Symbol = Symbol;
+    type DatBox = DatBox;
     type DevErr = ();
 
-    fn delbox(&self, devbox: Self::DevBox) -> Result<(), (ComErr, Self::DevErr)> {
-        unsafe{dealloc(devbox.p as *mut u8, Layout::from_size_align(devbox.s, 4).unwrap())};
-        Ok(())
+    fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)> {
+        unsafe{Vec::from_raw_parts(symbol.inner, symbol.msize, symbol.msize)};
+        std::mem::forget(symbol); Ok(())
     }
 
-    fn launch(&self, func: DevFunc<Self::DevBox>) -> Result<(), (ComErr, Self::DevErr)> {
+    fn emit(&self, func: Func<Self::Symbol>) -> Result<Vec<Self::Symbol>, (ComErr, Self::DevErr)> {
         match func {
-            DevFunc::AddF32 { read, write, meta } => {
-                let l = meta.0;
-                for i in 0..l {unsafe{
-                    *write.p_f32().add(i) = 
-                        *read.0.p_f32().add(i) + *read.1.p_f32().add(i);
-                }}
-                Ok(())
-            },
-            DevFunc::SubF32 { read, write, meta } => {
-                let l = meta.0;
-                for i in 0..l {unsafe{
-                    *write.p_f32().add(i) = 
-                        *read.0.p_f32().add(i) - *read.1.p_f32().add(i);
-                }}
-                Ok(())
-            },
-            DevFunc::MulF32 { read, write, meta } => {
-                let l = meta.0;
-                for i in 0..l {unsafe{
-                    *write.p_f32().add(i) = 
-                        *read.0.p_f32().add(i) * *read.1.p_f32().add(i);
-                }}
-                Ok(())
-            },
-            DevFunc::DivF32 { read, write, meta } => {
-                let l = meta.0;
-                for i in 0..l {unsafe{
-                    *write.p_f32().add(i) = 
-                        *read.0.p_f32().add(i) / *read.1.p_f32().add(i);
-                }}
-                Ok(())
-            },
-            _ => todo!("")
+            Func::AddF32 { read: (a, b), meta: (len, ) } => add_f32(a, b, len), 
+            Func::SubF32 { read: (a, b), meta: (len, ) } => sub_f32(a, b, len),
+            Func::MulF32 { read: (a, b), meta: (len, ) } => mul_f32(a, b, len),
+            Func::DivF32 { read: (a, b), meta: (len, ) } => div_f32(a, b, len),
+            Func::RandF32 { read: (), meta: (len, ) } => rand_f32(len),
+            Func::MMulF32 { read: (a, b), meta } => mmul_f32(a, b, meta),
+            Func::Clone { read: (a, ), meta: () } => clone(a),
+            _ => Err((ComErr::FuncNotimplemented, ()))
         }
     }
 
-    fn newbox(&self, size: usize, dtype: DType) -> Result<Self::DevBox, (ComErr, Self::DevErr)> {
-        let s = Layout::from_size_align(size, 4).unwrap();
-        let p = unsafe{alloc(s)} as *mut ();
-        let t = dtype;
-        return Ok(DevBox { p, s: s.size(), t })
+    fn dump(&self, symbol: Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)> {
+        let r = Ok(DatBox { inner: symbol.inner, dtype: symbol.dtype, msize: symbol.msize });
+        std::mem::forget(symbol); r
     }
 
-    fn seebox(&self, devbox: Self::DevBox) -> Result<Self::DatBuf, (ComErr, Self::DevErr)> {
-        let s = devbox.s;
-        let p = unsafe{alloc(Layout::from_size_align(s, 4).unwrap())};
-        let t = devbox.t;
-        unsafe{std::ptr::copy_nonoverlapping(devbox.p as *mut u8, p, s)};
-        Ok(DatBuf{ p: p as *mut (), s, t })
+    fn load(&self, datbox: Self::DatBox) -> Result<Self::Symbol, (ComErr, Self::DevErr)> {
+        let r = Ok(Symbol { inner: datbox.inner, dtype: datbox.dtype,  msize: datbox.msize });
+        std::mem::forget(datbox); r
+    }
+}
+
+#[cfg(test)]
+mod check_device_toy {
+    use super::*;
+
+    #[test]
+    fn launch_add() {
+        let toy = Toy;
+        let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        let b = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        let c = toy.emit(Func::AddF32 { read: (&a, &b), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        toy.drop(a).unwrap();
+        toy.drop(b).unwrap();
+        let c = toy.dump(c).unwrap();
+        println!("{}", c.print(vec![8,7,6,5,4,3,2]));
+        let c: Vec<f32> = c.into();
+        let c_mean: f32 = c.iter().sum::<f32>() / 40_320f32;
+        // this is very very unlikely to fail, in the name of Markov's inequality
+        assert!((c_mean - 1f32).abs() < 1e-2);
+    }
+
+    #[test]
+    fn launch_copy() {
+        let toy = Toy;
+        let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        let b = toy.emit(Func::Clone { read: (&a, ), meta: () }).unwrap().into_iter().next().unwrap();
+        // toy.drop(a);
+        // toy.drop(b);
+        let a = toy.dump(a).unwrap();
+        let b = toy.dump(b).unwrap();
+        let a: Vec<f32> = a.into();
+        let b: Vec<f32> = b.into();
+        assert!(a == b);
     }
 }

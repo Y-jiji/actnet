@@ -12,7 +12,9 @@ The designing question here is which tensor (or tensors) we should release, so t
 
 ## Goal of this crate
 
-This crate aims to implement an accounting data structure (i.e. TGraph) for a DTR-like schedulor. 
+This crate aims to implement an accounting data structure (i.e. TGraph) for a DTR-like memory managment strategy. 
+
+TGraph captures data dependency and determines whether all operands of an operator are ready. 
 
 ## API
 

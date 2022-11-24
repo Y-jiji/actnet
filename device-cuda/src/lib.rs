@@ -1,9 +1,10 @@
 use device_api::*;
 use mem_allocator::*;
 
-mod dev;
-
-struct CudaStream;
+mod cuda_wrap;
+mod cuda_stream;
+mod cuda_device;
+mod cuda_bundle;
 
 type Void = std::ffi::c_void;
 
