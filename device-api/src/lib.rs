@@ -30,8 +30,9 @@ pub trait ArrayPrint {
 
 /// a device is an internally mutable type
 pub trait Device
-where Self::Symbol: Debug + Eq + DTyped,
-      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>>, {
+where Self::Symbol: Debug + Eq + DTyped + Default,
+      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>>,
+      Self::DevErr: Debug + Default, {
 
     /// symbol on device, models a flat vector of given data type
     /// 
@@ -50,13 +51,13 @@ where Self::Symbol: Debug + Eq + DTyped,
 
     /// drop a symbol without retrieving content
     fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("delsym({symbol:?})") }
+    { todo!("drop({symbol:?})") }
 
     /// dump data from given symbol
     fn dump(&self, symbol: Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)>
     { todo!("dump({symbol:?})") }
 
-    /// load given data to a new symbol 
+    /// load given data to a new symbol
     fn load(&self, datbox: Self::DatBox) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
     { todo!("load({datbox:?})") }
 }

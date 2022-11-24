@@ -1,3 +1,5 @@
+use std::ptr::null_mut;
+
 use crate::*;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -8,6 +10,12 @@ pub struct Symbol {
     pub(crate) inner: *mut u8,
     /// memory size
     pub(crate) msize: usize,
+}
+
+impl Default for Symbol {
+    fn default() -> Self {
+        Symbol { dtype: DType::Bool, inner: null_mut(), msize: 0 }
+    }
 }
 
 impl Symbol {
