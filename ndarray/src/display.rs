@@ -19,6 +19,7 @@ mod check_display {
     use device_toy::*;
 
     fn display() {
-        todo!("test displaying ndarray with toy");
+        let toy = Toy;
+        let 
     }
 }

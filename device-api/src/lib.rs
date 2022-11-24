@@ -29,10 +29,9 @@ pub trait ArrayPrint {
 }
 
 /// a device is an internally mutable type
-pub trait Device<'a: 'b, 'b>
-where Self: 'a, // device should outlive associated structures
-      Self::Symbol: Debug + Eq + DTyped + 'b,
-      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>> + 'b, {
+pub trait Device
+where Self::Symbol: Debug + Eq + DTyped,
+      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>>, {
 
     /// symbol on device, models a flat vector of given data type
     /// 

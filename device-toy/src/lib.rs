@@ -13,7 +13,7 @@ use ops::*;
 #[derive(Debug)]
 pub struct Toy;
 
-impl<'a: 'b, 'b> Device<'a, 'b> for Toy {
+impl Device for Toy {
     type Symbol = Symbol;
     type DatBox = DatBox;
     type DevErr = ();
