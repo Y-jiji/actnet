@@ -13,16 +13,3 @@ impl<'a,  D: Device> Display for NDArray<'a, D> {
         }
     }
 }
-
-#[cfg(test)]
-mod check_display {
-    use crate::{ops::Rand, NDArray};
-    use device_toy::*;
-
-    #[test]
-    fn display() {
-        let toy = Toy;
-        let a: NDArray<Toy> = Rand::rand_f32(&[5, 12, 13], &toy).unwrap();
-        println!("{a}");
-    }
-}
