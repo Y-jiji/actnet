@@ -15,12 +15,12 @@ pub trait DTyped {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum Func<Symbol: Debug + DTyped> {
+pub enum Func<'a, Symbol: Debug + DTyped> {
     /// compute addition for each element
     /// c[i] = a[i] + b[i]
     AddF32 {
         /// (a, b)
-        read: (Symbol, Symbol), 
+        read: (&'a Symbol, &'a Symbol), 
         /// size of a, size of b
         meta: (usize,)
     },
@@ -28,7 +28,7 @@ pub enum Func<Symbol: Debug + DTyped> {
     /// c[i] = a[i] - b[i]
     SubF32 {
         /// (a, b)
-        read: (Symbol, Symbol), 
+        read: (&'a Symbol, &'a Symbol), 
         /// size of a, size of b
         meta: (usize,)
     },
@@ -36,7 +36,7 @@ pub enum Func<Symbol: Debug + DTyped> {
     /// c[i] = a[i] * b[i]
     MulF32 {
         /// (a, b)
-        read: (Symbol, Symbol), 
+        read: (&'a Symbol, &'a Symbol), 
         /// size of a, size of b
         meta: (usize,)
     },
@@ -44,7 +44,7 @@ pub enum Func<Symbol: Debug + DTyped> {
     /// c[i] = a[i] / b[i]
     DivF32 {
         /// (a, b)
-        read: (Symbol, Symbol), 
+        read: (&'a Symbol, &'a Symbol), 
         /// size of a, size of b
         meta: (usize,)
     },
@@ -58,13 +58,13 @@ pub enum Func<Symbol: Debug + DTyped> {
     ///     \sum_j a[ai * laj * lak + j * lak + ak] * b[bi * lbj + j * lbk + bk]
     MMulF32 {
         /// (a, b)
-        read: (Symbol, Symbol), 
+        read: (&'a Symbol, &'a Symbol), 
         /// (lai, laj, lak, lbi, lbj, lbk), where laj == lbj
         meta: (usize, usize, usize, usize, usize, usize)
     },
     /// copy from one box to another, return this box and another
     Clone {
-        read: (Symbol, ), 
+        read: (&'a Symbol, ), 
         meta: ()
     },
     /// this faciliates _ => ... by making this enum non exhaustive 

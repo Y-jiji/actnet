@@ -1,3 +1,2 @@
-pub struct DatBuf {
-    
+pub struct DatBox {
 }

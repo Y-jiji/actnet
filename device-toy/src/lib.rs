@@ -56,12 +56,11 @@ mod check_device_toy {
         let toy = Toy;
         let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
         let b = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
-        let mut abc = toy.emit(Func::AddF32 { read: (a, b), meta: (40_320, ) }).unwrap().into_iter();
-        toy.drop(abc.next().unwrap()).unwrap();
-        toy.drop(abc.next().unwrap()).unwrap();
-        let c = abc.next().unwrap();
+        let c = toy.emit(Func::AddF32 { read: (&a, &b), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        toy.drop(a).unwrap();
+        toy.drop(b).unwrap();
         let c = toy.dump(c).unwrap();
-        println!("{}", c.print(vec![2,3,4,5,6,7,8]));
+        println!("{}", c.print(vec![8,7,6,5,4,3,2]));
         let c: Vec<f32> = c.into();
         let c_mean: f32 = c.iter().sum::<f32>() / 40_320f32;
         // this is very very unlikely to fail, in the name of Markov's inequality

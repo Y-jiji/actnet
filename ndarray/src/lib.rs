@@ -6,10 +6,11 @@ use display::*;
 mod ops;
 use ops::*;
 
-struct NDArray<D: Device> {
-    devbox: D::DevBox,
-    /// 
-    device: D,
+struct NDArray<'a: 'b, 'b, D: Device<'a, 'b>> {
+    /// the correspondent symbol
+    symbol: D::Symbol,
+    /// the correspondent device
+    device: &'b D,
     /// shape of an ndarray
     shape: Vec<usize>,
     /// data type

@@ -6,7 +6,7 @@ unsafe fn allocsiz(s: usize) -> *mut u8 {
     Vec::leak(vec![0u8; s]).as_ptr() as *mut u8
 }
 
-pub(crate) fn add_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn add_f32(a: &Symbol, b: &Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -14,10 +14,10 @@ pub(crate) fn add_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (
     for i in 0..len {unsafe{
         *c.ptr::<f32>().add(i) = *a.ptr::<f32>().add(i) + *b.ptr::<f32>().add(i);
     }}
-    Ok(vec![a, b, c])
+    Ok(vec![c])
 }
 
-pub(crate) fn sub_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn sub_f32(a: &Symbol, b: &Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -25,10 +25,10 @@ pub(crate) fn sub_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (
     for i in 0..len {unsafe{
         *c.ptr::<f32>().add(i) = *a.ptr::<f32>().add(i) - *b.ptr::<f32>().add(i);
     }}
-    Ok(vec![a, b, c])
+    Ok(vec![c])
 }
 
-pub(crate) fn mul_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn mul_f32(a: &Symbol, b: &Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -36,10 +36,10 @@ pub(crate) fn mul_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (
     for i in 0..len {unsafe{
         *c.ptr::<f32>().add(i) = *a.ptr::<f32>().add(i) * *b.ptr::<f32>().add(i);
     }}
-    Ok(vec![a, b, c])
+    Ok(vec![c])
 }
 
-pub(crate) fn div_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn div_f32(a: &Symbol, b: &Symbol, len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -47,10 +47,10 @@ pub(crate) fn div_f32(a: Symbol, b: Symbol, len: usize) -> Result<Vec<Symbol>, (
     for i in 0..len {unsafe{
         *c.ptr::<f32>().add(i) = *a.ptr::<f32>().add(i) / *b.ptr::<f32>().add(i);
     }}
-    Ok(vec![a, b, c])
+    Ok(vec![c])
 }
 
-pub(crate) fn mmul_f32(a: Symbol, b: Symbol, meta: (usize, usize, usize, usize, usize, usize)) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn mmul_f32(a: &Symbol, b: &Symbol, meta: (usize, usize, usize, usize, usize, usize)) -> Result<Vec<Symbol>, (ComErr, ())> {
     let (lai, laj, lak, lbi, lbj, lbk) = meta;
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize * size_of::<f32>() != lai * laj * lak { Err((ComErr::FuncInvalidInputMeta, ()))? }
@@ -75,7 +75,7 @@ pub(crate) fn mmul_f32(a: Symbol, b: Symbol, meta: (usize, usize, usize, usize, 
             }
         }
     }
-    Ok(vec![a, b, c])
+    Ok(vec![c])
 }
 
 pub(crate) fn rand_f32(len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
@@ -87,8 +87,8 @@ pub(crate) fn rand_f32(len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
     Ok(vec![a])
 }
 
-pub(crate) fn clone(a: Symbol) -> Result<Vec<Symbol>, (ComErr, ())> {
+pub(crate) fn clone(a: &Symbol) -> Result<Vec<Symbol>, (ComErr, ())> {
     let b = Symbol { inner: unsafe{allocsiz(a.msize)}, msize: a.msize, dtype: DType::F32 };
     unsafe{copy_nonoverlapping(a.ptr::<f32>(), b.ptr::<f32>(), a.msize)};
-    Ok(vec![a, b])
+    Ok(vec![b])
 }
