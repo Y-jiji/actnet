@@ -66,4 +66,18 @@ mod check_device_toy {
         // this is very very unlikely to fail, in the name of Markov's inequality
         assert!((c_mean - 1f32).abs() < 1e-2);
     }
+
+    #[test]
+    fn launch_copy() {
+        let toy = Toy;
+        let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        let b = toy.emit(Func::Clone { read: (&a, ), meta: () }).unwrap().into_iter().next().unwrap();
+        // toy.drop(a);
+        // toy.drop(b);
+        let a = toy.dump(a).unwrap();
+        let b = toy.dump(b).unwrap();
+        let a: Vec<f32> = a.into();
+        let b: Vec<f32> = b.into();
+        assert!(a == b);
+    }
 }

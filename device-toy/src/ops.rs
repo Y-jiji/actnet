@@ -89,6 +89,6 @@ pub(crate) fn rand_f32(len: usize) -> Result<Vec<Symbol>, (ComErr, ())> {
 
 pub(crate) fn clone(a: &Symbol) -> Result<Vec<Symbol>, (ComErr, ())> {
     let b = Symbol { inner: unsafe{allocsiz(a.msize)}, msize: a.msize, dtype: DType::F32 };
-    unsafe{copy_nonoverlapping(a.ptr::<f32>(), b.ptr::<f32>(), a.msize)};
+    unsafe{copy_nonoverlapping(a.inner, b.inner, a.msize)};
     Ok(vec![b])
 }
