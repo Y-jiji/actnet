@@ -39,18 +39,28 @@ Developers can freely combine sub-crates in this project to build their own proj
 # TODO list
 
 - [ ] device
+  - [ ] device-api
+    - [ ] basic stream models
+  
   - [ ] device-cuda
-  - [ ] device-toy
+  - [x] device-toy
+    - [ ] some operators are left unimplemented
+  - [ ] device-ext
+    - [ ] implement memory-management extensions
+  
 - [ ] mem
   - [x] mem-slotvec
   - [x] mem-allocator
   - [ ] mem-tgraph
   - [ ] mem-tstack
 - [ ] ndarray
-  - [ ] display
-  - [ ] send operators
-
+  - [x] display
+  - [x] send operators to device
+    - [ ] implement all operators
 - [ ] tensor
+  - [ ] display
+  - [ ] implement using ndarray
+
 - [ ] neuron
 - [ ] nn
 - [ ] util
