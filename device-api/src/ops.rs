@@ -14,58 +14,73 @@ pub trait DTyped {
     fn dtype(&self) -> DType;
 }
 
-#[derive(Debug, Clone, Copy)]
-pub enum Func<'a, Symbol: Debug + DTyped> {
+#[derive(Debug)]
+/// device function on device
+/// i: input Symbol
+/// o: output Symbol
+/// m: meta data
+pub enum Func<'t, Symbol: Debug + DTyped> {
     /// compute addition for each element
     /// c[i] = a[i] + b[i]
     AddF32 {
-        /// (a, b)
-        read: (&'a Symbol, &'a Symbol), 
+        /// input (a, b)
+        i: (&'t Symbol, &'t Symbol, ), 
+        /// output c (consume c)
+        o: (&'t mut Symbol, ),
         /// size of a, size of b
-        meta: (usize,)
+        m: (usize, )
     },
     /// compute subtraction for each element
     /// c[i] = a[i] - b[i]
     SubF32 {
-        /// (a, b)
-        read: (&'a Symbol, &'a Symbol), 
+        /// input (a, b)
+        i: (&'t Symbol, &'t Symbol, ), 
+        /// output c
+        o: (&'t mut Symbol, ),
         /// size of a, size of b
-        meta: (usize,)
+        m: (usize, )
     },
     /// compute multiplication for each element
     /// c[i] = a[i] * b[i]
     MulF32 {
-        /// (a, b)
-        read: (&'a Symbol, &'a Symbol), 
+        /// input (a, b)
+        i: (&'t Symbol, &'t Symbol, ), 
+        /// output c
+        o: (&'t mut Symbol, ),
         /// size of a, size of b
-        meta: (usize,)
+        m: (usize, )
     },
     /// compute division for each element
     /// c[i] = a[i] / b[i]
     DivF32 {
-        /// (a, b)
-        read: (&'a Symbol, &'a Symbol), 
+        /// input (a, b)
+        i: (&'t Symbol, &'t Symbol, ), 
+        /// output c
+        o: (&'t mut Symbol, ),
         /// size of a, size of b
-        meta: (usize,)
+        m: (usize, )
     },
-    /// generate a random array [x; meta.0], x\in [0, 1)
+    /// generate a random array [x; m.0], x\in [0, 1)
     RandF32 {
-        read: (), 
-        meta: (usize,)
+        i: (), 
+        o: (&'t mut Symbol, ),
+        m: (usize, )
     },
     /// tensor contraction on a given dimension
     /// c[ai * lbi*lak*lbk + bi * lak*lbk + ak * lbk + bk] =
     ///     \sum_j a[ai * laj * lak + j * lak + ak] * b[bi * lbj + j * lbk + bk]
     MMulF32 {
         /// (a, b)
-        read: (&'a Symbol, &'a Symbol), 
+        i: (&'t Symbol, &'t Symbol), 
         /// (lai, laj, lak, lbi, lbj, lbk), where laj == lbj
-        meta: (usize, usize, usize, usize, usize, usize)
+        o: (&'t mut Symbol, ),
+        m: (usize, usize, usize, usize, usize, usize, )
     },
     /// copy from one box to another, return this box and another
     Clone {
-        read: (&'a Symbol, ), 
-        meta: ()
+        i: (&'t Symbol, ), 
+        o: (&'t mut Symbol, ),
+        m: ()
     },
     /// this faciliates _ => ... by making this enum non exhaustive 
     FallBack,
