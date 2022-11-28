@@ -61,83 +61,102 @@ pub trait AsVec {
     fn as_vec(self) -> WrapVec;
 }
 
+/* ------------------------------------------------------------------------------------------ */
+/*                                       operation types                                      */
+/* ------------------------------------------------------------------------------------------ */
+
 #[derive(Debug)]
-/// device function on device
-/// i: input Symbol
-/// o: output Symbol
-/// m: meta data
+/// device function on device, will get even larger in near future
+/// (i: input Symbol;  o: output Symbol;  m: meta data)
 pub enum Func<'t, Symbol: Debug + DTyped> {
-    /// compute addition for each element
-    /// c[i] = a[i] + b[i]
+    /// c(i) <-- a(i) + b(i)
     AddF32 {
-        /// input (a, b)
+        /// (a, b)
         i: (&'t Symbol, &'t Symbol, ), 
-        /// output c (consume c)
+        /// (c, )
         o: (&'t mut Symbol, ),
         /// size of a, size of b
         m: (usize, )
     },
-    /// compute subtraction for each element
-    /// c[i] = a[i] - b[i]
+    /// c(i) <-- a(i) - b(i)
     SubF32 {
-        /// input (a, b)
+        /// (a, b)
         i: (&'t Symbol, &'t Symbol, ), 
-        /// output c
+        /// (c, )
         o: (&'t mut Symbol, ),
         /// size of a, size of b
         m: (usize, )
     },
-    /// compute multiplication for each element
-    /// c[i] = a[i] * b[i]
+    /// c(i) <-- a(i) * b(i)
     MulF32 {
-        /// input (a, b)
+        /// (a, b)
         i: (&'t Symbol, &'t Symbol, ), 
-        /// output c
+        /// (c, )
         o: (&'t mut Symbol, ),
-        /// size of a, size of b
+        /// length of a, length of b
         m: (usize, )
     },
-    /// compute division for each element
-    /// c[i] = a[i] / b[i]
+    /// c(i) <-- a(i) / b(i)
     DivF32 {
-        /// input (a, b)
+        /// (a, b)
         i: (&'t Symbol, &'t Symbol, ), 
-        /// output c
+        /// (c, )
         o: (&'t mut Symbol, ),
         /// size of a, size of b
         m: (usize, )
     },
     /// generate a random array [x; m.0], x\in [0, 1)
     RandF32 {
+        /// none
         i: (), 
+        /// output symbol
         o: (&'t mut Symbol, ),
+        /// length
         m: (usize, )
     },
-    /// tensor contraction on a given dimension
-    /// c[ai * lbi*lak*lbk + bi * lak*lbk + ak * lbk + bk] =
-    ///     \sum_j a[ai * laj * lak + j * lak + ak] * b[bi * lbj + j * lbk + bk]
+    /// c(ai \* lbi\*lak\*lbk + bi \* lak\*lbk + ak \* lbk + bk) =
+    ///     \sum_j a(ai \* laj \* lak + j \* lak + ak) \* b(bi \* lbj + j \* lbk + bk)
     MMulF32 {
         /// (a, b)
         i: (&'t Symbol, &'t Symbol), 
-        /// (lai, laj, lak, lbi, lbj, lbk), where laj == lbj
+        /// (c, )
         o: (&'t mut Symbol, ),
+        /// (lai, laj, lak, lbi, lbj, lbk), where laj == lbj
         m: (usize, usize, usize, usize, usize, usize, )
     },
-    /// copy from one box to another, return this box and another
-    Clone {
+    /// copy from one box to another
+    Copy {
+        /// source
         i: (&'t Symbol, ), 
+        /// destination
         o: (&'t mut Symbol, ),
+        /// none
+        m: ()
+    },
+    /// transpose with given shape
+    Transpose {
+        /// source, (shape concatenated with permutation)
+        i: (&'t Symbol, &'t Symbol, ),
+        /// transposed symbol
+        o: (&'t mut Symbol, ),
+        /// (shape, permutation)
         m: ()
     },
     /// this faciliates _ => ... by making this enum non exhaustive 
     FallBack,
 }
 
-pub trait MemBridge<D0: Device, D1: Device>
+/* ------------------------------------------------------------------------------------------ */
+/*                              traits for cooperative operations                             */
+/* ------------------------------------------------------------------------------------------ */
+
+/// data copy between peer devices
+pub trait PeerCopy<D0: Device, D1: Device>
 where Self: Device {
     /// copy data from d0 to d1, default implementation is [d0 -> host -> d1]
-    fn copy(d0: &D0, d1: &D1, s0: &D0::Symbol, s1: &mut D1::Symbol)
-    -> Result<(), (ComErr, Either<D0::DevErr, D1::DevErr>)> {
+    fn pcpy(d0: &D0, d1: &D1, s0: &D0::Symbol, s1: &mut D1::Symbol)
+        -> Result<(), (ComErr, Either<D0::DevErr, D1::DevErr>)> 
+    {
         let data: Vec<u8> = match d0.dump(s0) {
             Err((ce, de)) => Err((ce, Either::A(de)))?,
             Ok(datbox) => datbox.into(),

@@ -29,24 +29,12 @@ where Self: Device {
     /// together with any extension id
     /// 
     /// (offset, a mapping indicated by vec : segment_number -> size)
-    fn ext_init(&self, size: usize) -> Result<(usize, Vec<usize>), (ComErr, Self::DevErr)>
+    fn ext_defn(&self, size: usize) -> Result<(usize, Vec<usize>), (ComErr, Self::DevErr)>
     { todo!("{size:?}") }
 
-    /// unload the extension indicated by id, release its resources
-    fn ext_kill(&self, id: usize) -> Result<(), (ComErr, Self::DevErr)>
+    /// unload the extension indicated by id, release its resources to device
+    fn ext_drop(&self, id: usize) -> Result<(), (ComErr, Self::DevErr)>
     { todo!("{id:?}") }
-
-    /// emit a copy function to copy from one memory segment to another
-    /// 
-    /// id: id of this extension; 
-    /// src: (segment_number, offset); 
-    /// dst: (segment_number, offset); 
-    /// size: the size to copy in byte; 
-    fn ext_copy(&self, id: usize, 
-        src: &ExtSymbol,
-        dst: &mut ExtSymbol
-    ) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("copy({id:?}, {src:?}, {dst:?})") }
 
     /// emit a device function on leaf device (physical device with a unified memory address)
     fn ext_emit(&self, id: usize, func: Func<ExtSymbol>) -> Result<(), (ComErr, Self::DevErr)>
