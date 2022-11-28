@@ -1,3 +1,5 @@
+//! this module defines essential traits that a device extension to operate the device
+ 
 use crate::*;
 
 /// extensions implement memory allocation and releasing on this type

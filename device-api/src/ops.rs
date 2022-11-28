@@ -1,4 +1,11 @@
+//! this module defines basic operations and operands for a device and correspondent data box
+
 use std::fmt::Debug;
+use crate::*;
+
+/* ------------------------------------------------------------------------------------------ */
+/*                                         data types                                         */
+/* ------------------------------------------------------------------------------------------ */
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DType {
@@ -10,8 +17,48 @@ pub enum DType {
     FallBack
 }
 
+pub use DType::F32 as DF32;
+pub use DType::F64 as DF64;
+pub use DType::I32 as DI32;
+pub use DType::I64 as DI64;
+pub use DType::Bool as DBool;
+pub use DType::FallBack as DFallBack;
+
 pub trait DTyped {
     fn dtype(&self) -> DType;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/*                                        datbox traits                                       */
+/* ------------------------------------------------------------------------------------------ */
+
+pub trait ArrayPrint {
+    fn print(&self, shape: Vec<usize>) -> String 
+    { todo!("ArrayPrint::print({shape:?})"); }
+}
+
+pub trait AsBytes {
+    fn as_bytes(self) -> Vec<u8>;
+}
+
+pub enum WrapVec {
+    F32(Vec<f32>),
+    F64(Vec<f64>),
+    I32(Vec<i32>),
+    I64(Vec<i64>),
+    Bool(Vec<bool>),
+    FallBack,
+}
+
+pub use WrapVec::F32 as WF32;
+pub use WrapVec::F64 as WF64;
+pub use WrapVec::I32 as WI32;
+pub use WrapVec::I64 as WI64;
+pub use WrapVec::Bool as WBool;
+pub use WrapVec::FallBack as WFallback;
+
+pub trait AsVec {
+    fn as_vec(self) -> WrapVec;
 }
 
 #[derive(Debug)]
@@ -84,4 +131,20 @@ pub enum Func<'t, Symbol: Debug + DTyped> {
     },
     /// this faciliates _ => ... by making this enum non exhaustive 
     FallBack,
+}
+
+pub trait MemBridge<D0: Device, D1: Device>
+where Self: Device {
+    /// copy data from d0 to d1, default implementation is [d0 -> host -> d1]
+    fn copy(d0: &D0, d1: &D1, s0: &D0::Symbol, s1: &mut D1::Symbol)
+    -> Result<(), (ComErr, Either<D0::DevErr, D1::DevErr>)> {
+        let data: Vec<u8> = match d0.dump(s0) {
+            Err((ce, de)) => Err((ce, Either::A(de)))?,
+            Ok(datbox) => datbox.into(),
+        };
+        match d1.load(data.into(), s1) {
+            Err((ce, de)) => Err((ce, Either::B(de)))?,
+            Ok(s1) => Ok(s1),
+        }
+    }
 }

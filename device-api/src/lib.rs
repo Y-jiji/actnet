@@ -28,11 +28,6 @@ pub enum ComErr {
     InitFailure,
 }
 
-pub trait ArrayPrint {
-    fn print(&self, shape: Vec<usize>) -> String 
-    { todo!("ArrayPrint::print({shape:?})"); }
-}
-
 /// a device should be an internally mutable type
 /// 
 /// there are many symbols on a device. you can launch functions that read from and write to symbols. 
@@ -76,22 +71,6 @@ where Self::Symbol: Debug + Eq + DTyped + Default,
     /// drop a symbol without retrieving content
     fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
     { todo!("drop({symbol:?})") }
-}
-
-pub trait MemBridge<D0: Device, D1: Device>
-where Self: Device {
-    /// copy data from d0 to d1, default implementation is [d0 -> host -> d1]
-    fn copy(d0: &D0, d1: &D1, s0: &D0::Symbol, s1: &mut D1::Symbol)
-    -> Result<(), (ComErr, Either<D0::DevErr, D1::DevErr>)> {
-        let data: Vec<u8> = match d0.dump(s0) {
-            Err((ce, de)) => Err((ce, Either::A(de)))?,
-            Ok(datbox) => datbox.into(),
-        };
-        match d1.load(data.into(), s1) {
-            Err((ce, de)) => Err((ce, Either::B(de)))?,
-            Ok(s1) => Ok(s1),
-        }
-    }
 }
 
 /// if we want to bundle many streams into one stream, unexpected failure cannot be avoided. (e.g. power failure)
