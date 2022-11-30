@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 device-cuda = {version="*", path="./device-cuda"}
+device-api = {version="*", path="./device-api"}

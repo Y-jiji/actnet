@@ -1,2 +1,2 @@
-target
-cu-bind/target
+/target
+/Cargo.lock

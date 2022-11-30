@@ -36,16 +36,18 @@ pub enum ComErr {
 /// 
 /// there are many symbols on a device. you can launch functions that read from and write to symbols. 
 /// 
+/// 5 associated functions and 3 associated types
+/// 
 /// for some applications, you guarantee every symbol to be written only once
 pub trait Device
-where Self::Symbol: Debug + Eq + DTyped + Default, 
-      Self::DatBox: Debug + ArrayPrint + From<Vec<f32>> + From<Vec<f64>> + From<Vec<i32>> + From<Vec<i64>> + From<Vec<u8>> + Into<Vec<u8>>, 
+where Self::Symbol: Debug + DTyped + Default + Eq, 
+      Self::DatBox: Debug + DTyped + ArrayPrint + VecConvert + Default, 
       Self::DevErr: Debug + Default, 
       Self: Debug + Clone + Sized, {
 
     /// symbol on device, models a flat vector of given data type
     /// 
-    /// symbol type is immutable and should not implement Clone
+    /// symbol type is immutable and should not implement clone publicly (however, implementing clone to keep track of unexecuted device functions is a good practice)
     /// 
     /// default symbol should be empty i.e. of size 0
     type Symbol;
@@ -61,7 +63,7 @@ where Self::Symbol: Debug + Eq + DTyped + Default,
     { todo!("emit({func:?})") }
 
     /// define a symbol on this device
-    fn defn(&self, size: usize, ty: DType) -> Result<(), (ComErr, Self::DevErr)>
+    fn defn(&self, size: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
     { todo!("defn(size:{size:?}, ty:{ty:?})") }
 
     /// dump given symbol to a datbox, not consuming this symbol

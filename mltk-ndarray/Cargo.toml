@@ -6,7 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# ndarray utilizes device api to facilitate high performance computation
 device_api = {package="device-api", path="../device-api", version="*"}
 
 [dev-dependencies]
+# the toy device for testing
 device_toy = {package="device-toy", path="../device-toy", version="*"}

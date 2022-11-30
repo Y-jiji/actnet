@@ -3,7 +3,7 @@ use std::{ops::{Index, IndexMut}, fmt::Debug};
 /// a data structure that use index to substitute pointers
 /// 
 /// light-weight, usually faster than hash sets
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SlotVec<T: Clone> {
     /// a slot vector
     v: Vec<(bool, T)>,

@@ -30,6 +30,6 @@ impl DTyped for Symbol {
 
 impl Drop for Symbol {
     fn drop(&mut self) {
-        panic!("symbol drop should be managed by device. use toy.drop(...) instead")
+        panic!("symbol drop should be managed by device. please use Toy::drop(...)")
     }
 }

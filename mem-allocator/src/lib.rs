@@ -1,12 +1,13 @@
 use slotvec::*;
 
-use std::{ffi::c_void, ptr::null_mut};
+use std::{ffi::c_void, ptr::null_mut, fmt::Debug};
 use device_api::ComErr;
 
 type Void = c_void;
 
 #[derive(Debug, Clone)]
-struct MemNode {
+struct MemNode<T> 
+where T: Debug + Clone {
     /// free list next
     fl: usize,
     /// free list last
@@ -18,32 +19,36 @@ struct MemNode {
     /// size
     s: usize,
     /// pointer
-    p: *mut Void
+    p: *mut Void,
+    /// misc info,
+    info: Option<T>,
 }
 
 #[derive(Debug)]
-pub struct MemShadow<const ALIGN: usize> {
+pub struct MemShadow<const ALIGN: usize, T> 
+where T : Debug + Clone {
     /// state of the memory, first nodes are free list heads
-    state: SlotVec<MemNode>,
+    state: SlotVec<MemNode<T>>,
     /// the memory size it manages
-    msize: usize,
+    pub msize: usize,
     /// memory base
-    mbase: *mut Void,
+    pub mbase: *mut Void,
     /// level[i] = size upper bound for free list [i]
     level: Vec<usize>,
     /// usage accounting
     usage: usize,
 }
 
-impl<const ALIGN: usize> MemShadow<ALIGN> {
+impl<const ALIGN: usize, T> MemShadow<ALIGN, T> 
+where T: Debug + Clone {
     /// create an empty MemShadow
-    pub fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> MemShadow<ALIGN> {
+    pub fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> MemShadow<ALIGN, T> {
         let mut state = Vec::new();
         let ll = level.len();
         for i in 0..ll 
-        { state.push(MemNode { fl: i, fr: i, pl: i, pr: i, s: 0, p: null_mut() }) }
-        state.push(MemNode {fl: ll+1, fr: ll+1, pl: ll, pr: ll, s: 0, p: null_mut()});
-        state.push(MemNode {fl: ll, fr: ll, pl: ll+1, pr: ll+1, s: msize, p: mbase});
+        { state.push(MemNode { fl: i, fr: i, pl: i, pr: i, s: 0, p: null_mut(), info: None }) }
+        state.push(MemNode {fl: ll+1, fr: ll+1, pl: ll, pr: ll, s: 0, p: null_mut(), info: None});
+        state.push(MemNode {fl: ll, fr: ll, pl: ll+1, pr: ll+1, s: msize, p: mbase, info: None});
         MemShadow { state: SlotVec::new(state), msize, mbase, level, usage: 0 }
     }
     /// input: size, return aligned size
@@ -111,7 +116,8 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
             pl: n, pr: self.state[n].pr, 
             fl: 0, fr: 0, 
             s: self.state[n].s - s, 
-            p: unsafe{self.state[n].p.add(s)} 
+            p: unsafe{self.state[n].p.add(s)},
+            info: None
         };
         let rh = self.state.put(rh);
         let r = self.state[n].pr;
@@ -176,7 +182,7 @@ impl<const ALIGN: usize> MemShadow<ALIGN> {
         debug_assert!(self.state[n].s & 1 == 1);
         match self.state.get(n) {
             None => Err(ComErr::MemInvalidAccess)?,
-            Some(x) => { self.usage += x.s }
+            Some(x) => { self.usage -= x.s }
         };
         let n = self.merge(n);
         self.push_free(n);
@@ -196,7 +202,7 @@ mod check_mem_shadow {
     use super::*;
     use rand::{*, seq::IteratorRandom};
 
-    fn print_free<const ALIGN: usize>(ms: &MemShadow<ALIGN>) {
+    fn print_free<const ALIGN: usize>(ms: &MemShadow<ALIGN, ()>) {
         // number of levels
         let ls = ms.level.len();
         // final string output
@@ -235,7 +241,7 @@ mod check_mem_shadow {
 
     #[test]
     fn alloc() {
-        let mut ms = MemShadow::<3>::new(128*1024*1024, null_mut(), vec![64, 128, 1024, 4096, 4096*1024]);
+        let mut ms = MemShadow::<3, ()>::new(128*1024*1024, null_mut(), vec![64, 128, 1024, 4096, 4096*1024]);
         print_free(&ms);
         let mut mh = Vec::new();
         for _ in 0..2048 {
@@ -250,11 +256,12 @@ mod check_mem_shadow {
             println!("[[free {j}]]");
             ms.free(*j).unwrap();
         }
+        println!("{:?}", ms.usage());
     }
 
     #[test]
     fn rolling() {
-        let mut ms = MemShadow::<3>::new(128*1024*1024, null_mut(), vec![64, 128, 1024, 4096, 4096*1024]);
+        let mut ms = MemShadow::<3, ()>::new(128*1024*1024, null_mut(), vec![64, 128, 1024, 4096, 4096*1024]);
         let mut mh = HashMap::new();
         let mut usage = 0f32;
         let mut max_usage = 0f32;

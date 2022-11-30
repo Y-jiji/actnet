@@ -1,5 +1,5 @@
 use device_api::*;
-use std::mem::size_of;
+use std::{mem::size_of, ptr::copy_nonoverlapping};
 
 mod datbox;
 use datbox::*;
@@ -10,7 +10,7 @@ use symbol::*;
 mod ops;
 use ops::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Toy;
 
 impl Device for Toy {
@@ -18,32 +18,41 @@ impl Device for Toy {
     type DatBox = DatBox;
     type DevErr = ();
 
+    fn load(&self, datbox: Self::DatBox, symbol: &mut Self::Symbol) -> Result<(), (ComErr, Self::DevErr)> {
+        assert!(datbox.msize == symbol.msize);
+        assert!(datbox.dtype == symbol.dtype);
+        unsafe{copy_nonoverlapping(datbox.inner, symbol.inner, datbox.msize)};
+        Ok(())
+    }
+
     fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)> {
         unsafe{Vec::from_raw_parts(symbol.inner, symbol.msize, symbol.msize)};
         std::mem::forget(symbol); Ok(())
     }
 
-    fn emit(&self, func: Func<Self::Symbol>) -> Result<Vec<Self::Symbol>, (ComErr, Self::DevErr)> {
+    fn defn(&self, size: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)> {        
+        let inner = Vec::leak({let mut x = vec![0u8; size]; x.shrink_to_fit(); x}).as_ptr() as *mut u8;
+        Ok(Symbol { dtype: ty, inner, msize: size })
+    }
+
+    fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)> {
+        let ty = symbol.dtype;
+        let symvec = unsafe{Vec::from_raw_parts(symbol.inner, symbol.msize, symbol.msize)};
+        let datbox = DatBox::from_byte(symvec.clone(), ty);
+        std::mem::forget(symvec); Ok(datbox)
+    }
+
+    fn emit(&self, func: Func<Self::Symbol>) -> Result<(), (ComErr, Self::DevErr)> {
         match func {
-            Func::AddF32 { read: (a, b), meta: (len, ) } => add_f32(a, b, len), 
-            Func::SubF32 { read: (a, b), meta: (len, ) } => sub_f32(a, b, len),
-            Func::MulF32 { read: (a, b), meta: (len, ) } => mul_f32(a, b, len),
-            Func::DivF32 { read: (a, b), meta: (len, ) } => div_f32(a, b, len),
-            Func::RandF32 { read: (), meta: (len, ) } => rand_f32(len),
-            Func::MMulF32 { read: (a, b), meta } => mmul_f32(a, b, meta),
-            Func::Clone { read: (a, ), meta: () } => clone(a),
+            Func::AddF32 { i: (a, b), o: (c, ), m: (len, ) } => add_f32(a, b, c, len),
+            Func::SubF32 { i: (a, b), o: (c, ), m: (len, ) } => sub_f32(a, b, c, len),
+            Func::MulF32 { i: (a, b), o: (c, ), m: (len, ) } => mul_f32(a, b, c, len),
+            Func::DivF32 { i: (a, b), o: (c, ), m: (len, ) } => div_f32(a, b, c, len),
+            Func::MMulF32 { i: (a, b), o: (c, ), m } => mmul_f32(a, b, c, m),
+            Func::Copy { i: (a,), o: (b, ), m: () } => copy(a, b),
+            Func::RandF32 { i: (), o: (a, ), m: (len, ) } => rand_f32(len, a),
             _ => Err((ComErr::FuncNotimplemented, ()))
         }
-    }
-
-    fn dump(&self, symbol: Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)> {
-        let r = Ok(DatBox { inner: symbol.inner, dtype: symbol.dtype, msize: symbol.msize });
-        std::mem::forget(symbol); r
-    }
-
-    fn load(&self, datbox: Self::DatBox) -> Result<Self::Symbol, (ComErr, Self::DevErr)> {
-        let r = Ok(Symbol { inner: datbox.inner, dtype: datbox.dtype,  msize: datbox.msize });
-        std::mem::forget(datbox); r
     }
 }
 
@@ -52,32 +61,20 @@ mod check_device_toy {
     use super::*;
 
     #[test]
-    fn launch_add() {
+    fn add_f32() {for _ in 0..100 {
+        const CASE_SIZE: usize = 1<<15;
         let toy = Toy;
-        let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
-        let b = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
-        let c = toy.emit(Func::AddF32 { read: (&a, &b), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
+        let mut a = toy.defn(CASE_SIZE*4, DF32).unwrap();
+        toy.emit(Func::RandF32 { i: (), o: (&mut a, ), m: (CASE_SIZE, ) }).unwrap();
+        let mut b = toy.defn(CASE_SIZE*4, DF32).unwrap();
+        toy.emit(Func::RandF32 { i: (), o: (&mut b, ), m: (CASE_SIZE, ) }).unwrap();
+        let mut c = toy.defn(CASE_SIZE*4, DF32).unwrap();
+        toy.emit(Func::AddF32 { i: (&a, &b), o: (&mut c, ), m: (CASE_SIZE, ) }).unwrap();
+        let cvec = if let WF32(x) = toy.dump(&c).unwrap().as_vec() { x } else { todo!() };
+        let mean: f32 = cvec.iter().sum::<f32>() / cvec.len() as f32;
+        assert!((mean - 1.0).abs() < 0.01);
         toy.drop(a).unwrap();
         toy.drop(b).unwrap();
-        let c = toy.dump(c).unwrap();
-        println!("{}", c.print(vec![8,7,6,5,4,3,2]));
-        let c: Vec<f32> = c.into();
-        let c_mean: f32 = c.iter().sum::<f32>() / 40_320f32;
-        // this is very very unlikely to fail, in the name of Markov's inequality
-        assert!((c_mean - 1f32).abs() < 1e-2);
-    }
-
-    #[test]
-    fn launch_copy() {
-        let toy = Toy;
-        let a = toy.emit(Func::RandF32 { read: (), meta: (40_320, ) }).unwrap().into_iter().next().unwrap();
-        let b = toy.emit(Func::Clone { read: (&a, ), meta: () }).unwrap().into_iter().next().unwrap();
-        // toy.drop(a);
-        // toy.drop(b);
-        let a = toy.dump(a).unwrap();
-        let b = toy.dump(b).unwrap();
-        let a: Vec<f32> = a.into();
-        let b: Vec<f32> = b.into();
-        assert!(a == b);
-    }
+        toy.drop(c).unwrap();
+    }}
 }

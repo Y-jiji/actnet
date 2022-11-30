@@ -17,12 +17,12 @@ pub enum DType {
     FallBack
 }
 
-pub use DType::F32 as DF32;
-pub use DType::F64 as DF64;
-pub use DType::I32 as DI32;
-pub use DType::I64 as DI64;
-pub use DType::Bool as DBool;
-pub use DType::FallBack as DFallBack;
+pub use DType::{
+    F32 as DF32, F64 as DF64, 
+    I32 as DI32, I64 as DI64, 
+    Bool as DBool, 
+    FallBack as DFallBack
+};
 
 pub trait DTyped {
     fn dtype(&self) -> DType;
@@ -37,10 +37,7 @@ pub trait ArrayPrint {
     { todo!("ArrayPrint::print({shape:?})"); }
 }
 
-pub trait AsBytes {
-    fn as_bytes(self) -> Vec<u8>;
-}
-
+#[derive(Debug)]
 pub enum WrapVec {
     F32(Vec<f32>),
     F64(Vec<f64>),
@@ -50,15 +47,27 @@ pub enum WrapVec {
     FallBack,
 }
 
-pub use WrapVec::F32 as WF32;
-pub use WrapVec::F64 as WF64;
-pub use WrapVec::I32 as WI32;
-pub use WrapVec::I64 as WI64;
-pub use WrapVec::Bool as WBool;
-pub use WrapVec::FallBack as WFallback;
+pub use WrapVec::{
+    F32 as WF32, F64 as WF64,
+    I32 as WI32, I64 as WI64,
+    Bool as WBool,
+    FallBack as WFallback
+};
 
-pub trait AsVec {
-    fn as_vec(self) -> WrapVec;
+pub trait VecConvert 
+where Self: Sized {
+    fn as_vec(self) -> WrapVec
+    { todo!("as_vec()") }
+    fn from_vec(x: WrapVec) -> Self
+    { todo!("from_vec({x:?})") }
+}
+
+pub trait ByteConvert
+where Self: Sized {
+    fn as_byte(self) -> Vec<u8>
+    { todo!("as_byte()") }
+    fn from_byte(x: Vec<u8>, ty: DType) -> Self
+    { todo!("from_byte({x:?}, {ty:?})") }
 }
 
 /* ------------------------------------------------------------------------------------------ */
@@ -153,15 +162,16 @@ pub enum Func<'t, Symbol: Debug + DTyped> {
 /// data copy between peer devices
 pub trait PeerCopy<D0: Device, D1: Device>
 where Self: Device {
+
     /// copy data from d0 to d1, default implementation is [d0 -> host -> d1]
     fn pcpy(d0: &D0, d1: &D1, s0: &D0::Symbol, s1: &mut D1::Symbol)
         -> Result<(), (ComErr, Either<D0::DevErr, D1::DevErr>)> 
     {
-        let data: Vec<u8> = match d0.dump(s0) {
+        let datvec: WrapVec = match d0.dump(s0) {
             Err((ce, de)) => Err((ce, Either::A(de)))?,
-            Ok(datbox) => datbox.into(),
+            Ok(datbox) => datbox.as_vec(),
         };
-        match d1.load(data.into(), s1) {
+        match d1.load(VecConvert::from_vec(datvec), s1) {
             Err((ce, de)) => Err((ce, Either::B(de)))?,
             Ok(s1) => Ok(s1),
         }

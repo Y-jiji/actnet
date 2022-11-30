@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 slotvec = {package="mem-slotvec", version="*", path="../mem-slotvec"}
+device_api = {package="device-api", version="*", path="../device-api"}

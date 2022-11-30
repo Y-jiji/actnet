@@ -2,7 +2,7 @@ use device_api::*;
 use std::alloc::*;
 
 use std::fmt::Display;
-use std::mem::size_of;
+use std::ptr::null_mut;
 
 #[derive(Debug)]
 pub struct DatBox {
@@ -14,45 +14,70 @@ pub struct DatBox {
     pub(crate) msize: usize,
 }
 
+impl Clone for DatBox {
+    fn clone(&self) -> Self {
+        let a = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
+        let b = a.clone();
+        let r = ByteConvert::from_byte(b, self.dtype);
+        std::mem::forget(a); r
+    }
+}
+
+impl DTyped for DatBox {fn dtype(&self) -> DType {self.dtype}}
+
+impl ByteConvert for DatBox {
+    fn as_byte(self) -> Vec<u8> {
+        let r = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
+        std::mem::forget(self); r
+    }
+    fn from_byte(mut x: Vec<u8>, ty: DType) -> Self {
+        x.shrink_to_fit();
+        let msize = x.len();
+        DatBox { dtype: ty, inner: Vec::leak(x).as_ptr() as *mut u8, msize }
+    }
+}
+
+impl VecConvert for DatBox {
+    fn as_vec(self) -> WrapVec {        
+        fn f<T>(_self: DatBox, _cons: fn(Vec<T>)-> WrapVec) -> WrapVec {
+            let len = _self.msize/std::mem::size_of::<T>();
+            let r = _cons(unsafe{Vec::from_raw_parts(_self.inner as *mut T, len, len)});
+            std::mem::forget(_self); r
+        }
+        match self.dtype {
+            DF32 => f(self, WF32),
+            DF64 => f(self, WF64),
+            DI32 => f(self, WI32),
+            DI64 => f(self, WI64),
+            DBool => f(self, WBool),
+            _ => todo!()
+        }
+    }
+    fn from_vec(x: WrapVec) -> DatBox {
+        fn f<T>(mut x: Vec<T>, dtype: DType) -> DatBox {
+            let x = {x.shrink_to_fit(); x};
+            let msize = if dtype != DBool { x.len() * std::mem::size_of::<T>() } else { (x.len() + 7) / 8 };
+            let inner = Vec::leak(x).as_ptr() as *mut u8;
+            return DatBox { dtype, inner, msize }
+        }
+        match x {
+            WF32(x) => f::<f32>(x, DF32),
+            WF64(x) => f::<f64>(x, DF64),
+            WI32(x) => f::<i32>(x, DI32),
+            WI64(x) => f::<i64>(x, DI64),
+            WBool(x) => f::<bool>(x, DBool),
+            _ => todo!(),
+        }
+    }
+}
+
+impl Default for DatBox {
+    fn default() -> Self {DatBox { dtype: DFallBack, inner: null_mut(), msize: 0 }}
+}
+
 impl Drop for DatBox {
     fn drop(&mut self) {
-        unsafe{dealloc(self.inner as *mut u8, Layout::from_size_align_unchecked(self.msize, 1))};
-    }
-}
-
-impl From<Vec<f32>> for DatBox {
-    fn from(v: Vec<f32>) -> Self {
-        let v = Vec::leak(v);
-        DatBox { dtype: DType::F32, inner: v as *mut _ as *mut u8, msize: v.len() * size_of::<f32>() }
-    }
-}
-
-impl From<Vec<i32>> for DatBox {
-    fn from(v: Vec<i32>) -> Self {
-        let v = Vec::leak(v);
-        DatBox { dtype: DType::I32, inner: v as *mut _ as *mut u8, msize: v.len() * size_of::<i32>() }
-    }
-}
-
-impl From<Vec<f64>> for DatBox {
-    fn from(v: Vec<f64>) -> Self {
-        let v = Vec::leak(v);
-        DatBox { dtype: DType::F64, inner: v as *mut _ as *mut u8, msize: v.len() * size_of::<f64>() }
-    }
-}
-
-impl From<Vec<i64>> for DatBox {
-    fn from(v: Vec<i64>) -> Self {
-        let v = Vec::leak(v);
-        DatBox { dtype: DType::I64, inner: v as *mut _ as *mut u8, msize: v.len() * size_of::<i64>() }
-    }
-}
-
-#[cfg(test)]
-impl Into<Vec<f32>> for DatBox {
-    fn into(self) -> Vec<f32> {
-        let r = unsafe{Vec::from_raw_parts(self.inner as *mut f32, self.msize / size_of::<f32>(), self.msize / size_of::<f32>())};
-        std::mem::forget(self); r
+        drop(unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)});
     }
 }
 
@@ -134,7 +159,7 @@ impl ArrayPrint for DatBox {
             },
             DType::Bool => {
                 let p = self.inner as *const bool; 
-                debug_assert!(shape_prod == self.msize * 8);
+                debug_assert!((shape_prod + 7) / 8 == self.msize);
                 print_rec(p, shape, 1, width_rec(p, shape))    
             },
             _ => String::from("")
@@ -158,5 +183,13 @@ mod check_array_print {
         let a: Vec<_> = (0..(3*4*5)).map(|_| {random::<i64>()}).collect();
         let shape = [4,3,5];
         println!("{}", print_rec(a.as_ptr(), &shape, 1, width_rec(a.as_ptr(), &shape)));
+    }
+
+    #[test]
+    fn new_and_drop() {
+        let a: Vec<_> = (0..(3*4*5)).map(|_| {random::<bool>()}).collect();
+        let a = DatBox::from_vec(WBool(a));
+        println!("{a:?}");
+        println!("{}", a.print(vec![4,3,5]));
     }
 }

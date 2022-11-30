@@ -52,7 +52,7 @@ Developers can freely combine sub-crates in this project to build their own proj
   - [x] mem-slotvec
   - [x] mem-allocator
   - [ ] mem-tgraph
-  - [ ] mem-tstack
+  - [ ] ext-tstack
 - [ ] ndarray
   - [x] display
   - [x] send operators to device
