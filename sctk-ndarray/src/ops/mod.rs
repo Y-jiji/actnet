@@ -1,12 +1,15 @@
-mod elementary;
-pub use elementary::*;
-
-mod mmul;
-pub use mmul::*;
-
+mod elem;
+mod gemm;
+mod lalg;
 mod init;
+mod copy;
+mod bit;
+mod ord;
+
+pub use elem::*;
+pub use gemm::*;
+pub use lalg::*;
 pub use init::*;
-
-mod clone;
-pub use clone::*;
-
+pub use copy::*;
+pub use bit::*;
+pub use ord::*;

@@ -9,5 +9,4 @@ edition = "2021"
 dvapi = {package="dv-api", path="../dv-api", version="*"}
 
 [dev-dependencies]
-# the toy device for testing
 dvtoy = {package="dv-toy", path="../dv-toy", version="*"}

@@ -1,29 +1,41 @@
-use crate::{NDArray, Device, Func, ComErr, DType, ManuallyDrop};
+use crate::*;
 
-pub trait Rand<'a, D: Device>
+trait Init<'a, D: Device, T: Num + Basic> 
 where Self: Sized {
-    fn rand_f32(shape: &[usize], device: &'a D) -> Result<Self, (ComErr, D::DevErr)>;
+    type Err;
+    /// initialize an ndarray with value
+    fn with(value: T, shape: &[usize], device: &'a D) -> Result<Self, Self::Err>;
+    /// initialize an ndarray with uniformly distributed random value in [0, upper)
+    fn rand(upper: T, shape: &[usize], device: &'a D) -> Result<Self, Self::Err>;
 }
 
-impl<'a, D: Device> Rand<'a, D> for NDArray<'a, D> {
-    fn rand_f32(shape: &[usize], device: &'a D) -> Result<Self, (ComErr, D::DevErr)> {
-        let symbol = device.emit(Func::RandF32 { read: (), meta: (shape.iter().product(),) })?
-            .into_iter().next().unwrap();
-        let shape = shape.to_vec();
-        Ok(NDArray { symbol: ManuallyDrop::new(symbol), device, shape, dtype: DType::F32 })
+impl<'a, D: Device, T: Num + Basic> Init<'static, D, T> for NDArray<'a, D, T> {
+    type Err = TupErr<D>;
+    fn rand(u: T, sh: &[usize], dv: &'a D) -> Result<Self, Self::Err> {
+        let sh = sh.to_vec();
+        let ln = sh.iter().product();
+        let sz = T::msize(ln);
+        let mut sy = dv.defn(sz, T::ty())?;
+        match dv.emit(Func::Rand {i: (), o: (&mut sy, ), m: (u.wrap(), ln)}) {
+            Err(e) => {dv.drop(sy)?; Err(e)},
+            Ok(()) => Ok(NDArray { sh, sy: nodrop(sy), ln, ty: phant(), dv })
+        }
+    }
+    fn with(v: T, sh: &[usize], dv: &'a D) -> Result<Self, Self::Err> {
+        let sh = sh.to_vec();
+        let ln = sh.iter().product();
+        let sz = T::msize(ln);
+        let mut sy = dv.defn(sz, T::ty())?;
+        match dv.emit(Func::Rand {i: (), o: (&mut sy, ), m: (v.wrap(), ln)}) {
+            Err(e) => {dv.drop(sy)?; Err(e)},
+            Ok(()) => Ok(NDArray { sh, sy: nodrop(sy), ln, ty: phant(), dv })
+        }
     }
 }
 
-
 #[cfg(test)]
-mod check_rand {
-    use crate::{ops::Rand, NDArray};
-    use device_toy::*;
-
+mod check_init {
     #[test]
-    fn rand_f32_and_display() {
-        let toy = Toy;
-        let a: NDArray<Toy> = Rand::rand_f32(&[5, 12, 13], &toy).unwrap();
-        println!("{a}");
+    fn rand() {
     }
 }
