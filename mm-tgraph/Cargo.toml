@@ -1,10 +1,10 @@
 [package]
-name = "actnet"
+name = "mm-tgraph"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-# dvcuda = {package="./dv-cuda", version="*", path="./dv-cuda"}
-dvapi = {package="dv-api", version="*", path="./dv-api"}
+slotvec = {package="mm-slotvec", version="*", path="../mm-slotvec"}
+dvapi = {package="dv-api", version="*", path="../dv-api"}

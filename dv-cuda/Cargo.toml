@@ -1,0 +1,26 @@
+[package]
+name = "dv-cuda"
+version = "0.1.0"
+edition = "2021"
+build="build/main.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dvapi = {package="dv-api", version="*", path="../dv-api"}
+mm_alloc = {package="mm-alloc", version="*", path="../mm-alloc"}
+raw = {package="cu-bind", version="*", path="./cu-bind"}
+parking_lot = "0.12.1"                  # More compact and efficient implementations of the standard synchronization primitives.
+scc = "0.11.3"                           # High performance containers and utilities for concurrent and asynchronous programming
+ouroboros = "0.15.5"                   # Easy, safe self-referential struct generation.
+
+[dev-dependencies]
+rand = "0.8.5"              # Random number generators and other randomness functionality. 
+
+[profile.dev]
+opt-level = 1               # Use slightly better optimizations.
+incremental = true
+
+[profile.test]
+opt-level = 1               # Use slightly better optimizations.
+incremental = true

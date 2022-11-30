@@ -1,0 +1,11 @@
+[package]
+name = "dv-toy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dvapi = {package="dv-api", version="*", path="../dv-api"}
+rand = "0.8.5"              # Random number generators and other randomness functionality. 
+
+[profile.dev]
+opt-level = 1               # Use slightly better optimizations.

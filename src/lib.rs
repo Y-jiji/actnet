@@ -1,10 +1,5 @@
-use device_cuda;
+mod dv;
+mod sctk;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
-    }
-}
+pub use dv::*;
+pub use sctk::*;

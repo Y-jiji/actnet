@@ -49,9 +49,9 @@ Developers can freely combine sub-crates in this project to build their own proj
     - [ ] implement memory-management extensions
   
 - [ ] mem
-  - [x] mem-slotvec
-  - [x] mem-allocator
-  - [ ] mem-tgraph
+  - [x] mm-slotvec
+  - [x] mm-allocator
+  - [ ] mm-tgraph
   - [ ] ext-tstack
 - [ ] ndarray
   - [x] display
