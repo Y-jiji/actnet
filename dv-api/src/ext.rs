@@ -17,7 +17,10 @@ pub struct ExtSymbol {
     pub t: DType,
 }
 
-impl DTyped for ExtSymbol {fn dtype(&self) -> DType {self.t}}
+impl Symbol for ExtSymbol {
+    fn dtype(&self) -> DType {self.t}
+    fn msize(&self) -> usize {self.s}
+}
 
 /// with some known features about system load, customized memory management over devices can be critical to system performance. 
 /// 

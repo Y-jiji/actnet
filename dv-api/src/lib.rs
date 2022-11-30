@@ -4,12 +4,14 @@ use std::result::*;
 mod ops;
 mod ext;
 mod log;
+mod typ;
+mod mrg;
 
 pub use ops::*;
 pub use ext::*;
 pub use log::*;
-
-pub enum Either<A, B> {A(A), B(B)}
+pub use typ::*;
+pub use mrg::*;
 
 /// common error format for devices
 #[derive(Debug, Clone, Copy)]
@@ -19,7 +21,7 @@ pub enum ComErr {
     /// invalid access
     MemInvalidAccess,
     /// function read from corrupted symbol (unintialized or written by failed functions)
-    FuncReadCorrupted, 
+    FuncReadCorrupted,
     /// invalid input length
     FuncInvalidInputLength,
     /// invalid input meta
@@ -42,8 +44,8 @@ pub enum ComErr {
 /// 
 /// on error, device returns a tuple of common error and device specific error
 pub trait Device
-where Self::Symbol: Debug + DTyped + Default + Eq, 
-      Self::DatBox: Debug + DTyped + ArrayPrint + VecConvert + Default, 
+where Self::Symbol: Debug + Symbol + Default + Eq, 
+      Self::DatBox: Debug + DatBox + Default, 
       Self::DevErr: Debug + Default, 
       Self: Debug + Clone + Sized, {
 
@@ -64,9 +66,9 @@ where Self::Symbol: Debug + DTyped + Default + Eq,
     fn emit(&self, func: Func<Self::Symbol>) -> Result<(), (ComErr, Self::DevErr)>
     { todo!("emit({func:?})") }
 
-    /// define a symbol on this device
-    fn defn(&self, size: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
-    { todo!("defn(size:{size:?}, ty:{ty:?})") }
+    /// define a symbol on this device, size: memory size in bytes, ty: datatype
+    fn defn(&self, sz: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
+    { todo!("defn(sz:{sz:?}, ty:{ty:?})") }
 
     /// dump given symbol to a datbox, not consuming this symbol
     fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)>
