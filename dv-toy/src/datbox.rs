@@ -23,7 +23,7 @@ impl Clone for DatBox {
     }
 }
 
-impl DTyped for DatBox {fn dtype(&self) -> DType {self.dtype}}
+impl GetDType for DatBox {fn dtype(&self) -> DType {self.dtype}}
 
 impl ByteConvert for DatBox {
     fn as_byte(self) -> Vec<u8> {

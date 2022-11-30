@@ -28,6 +28,8 @@ pub enum ComErr {
     FuncInvalidInputMeta,
     /// invalid input type
     FuncInvalidInputType,
+    /// input on different device,
+    FuncInvalidInputDifferentDevice,
     /// function not implemented
     FuncNotimplemented,
     /// device initialization failed
@@ -47,7 +49,7 @@ pub trait Device
 where Self::Symbol: Debug + Symbol + Default + Eq, 
       Self::DatBox: Debug + DatBox + Default, 
       Self::DevErr: Debug + Default, 
-      Self: Debug + Clone + Sized, {
+      Self: Debug + Clone + Sized + PartialEq + Eq, {
 
     /// symbol on device, models a flat vector of given data type
     /// 
@@ -64,21 +66,27 @@ where Self::Symbol: Debug + Symbol + Default + Eq,
 
     /// emit a function to this device, i.e. push a function to execution queue
     fn emit(&self, func: Func<Self::Symbol>) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("emit({func:?})") }
+    { todo!("Device.emit({func:?})") }
 
     /// define a symbol on this device, size: memory size in bytes, ty: datatype
     fn defn(&self, sz: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
-    { todo!("defn(sz:{sz:?}, ty:{ty:?})") }
+    { todo!("Device.defn(sz:{sz:?}, ty:{ty:?})") }
 
     /// dump given symbol to a datbox, not consuming this symbol
     fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)>
-    { todo!("dupl({symbol:?})") }
+    { todo!("Device.dump({symbol:?})") }
 
     /// load given data to a new symbol
     fn load(&self, datbox: Self::DatBox, symbol: &mut Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("load({datbox:?}, {symbol:?})") }
+    { todo!("Device.load({datbox:?}, {symbol:?})") }
 
     /// drop a symbol without retrieving content
     fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
-    { todo!("drop({symbol:?})") }
+    { todo!("Device.drop({symbol:?})") }
+
+    /// print the name for this device
+    fn name(&self) -> String
+    { todo!("Device.name()") }
 }
+
+pub type TupErr<D> = (ComErr, <D as Device>::DevErr);

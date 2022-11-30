@@ -48,6 +48,24 @@ pub enum Func<'t, S: Debug + Symbol> {
         /// size of a, size of b
         m: (usize, )
     },
+    /// -a(i) <-- a(i)
+    Neg {
+        i: (&'t S, ),
+        o: (&'t mut S, ),
+        m: (usize, )
+    },
+    /// a random number in given range
+    Rand {
+        i: (),
+        o: (&'t mut S, ),
+        m: (WrapVal, usize, )
+    },
+    /// fill with a single scalar
+    Fill {
+        i: (),
+        o: (&'t mut S, ),
+        m: (WrapVal, usize, )
+    },
     /// c(ai \* lbi\*lak\*lbk + bi \* lak\*lbk + ak \* lbk + bk) =
     ///     \sum_j a(ai \* laj \* lak + j \* lak + ak) \* b(bi \* lbj + j \* lbk + bk)
     MMul {

@@ -22,6 +22,16 @@ pub use DType::{
 };
 
 #[derive(Debug)]
+pub enum WrapVal {
+    F32(f32),
+    F64(f64),
+    I32(i32),
+    I64(i64),
+    Bool(bool),
+    FallBack,
+}
+
+#[derive(Debug)]
 pub enum WrapVec {
     F32(Vec<f32>),
     F64(Vec<f64>),

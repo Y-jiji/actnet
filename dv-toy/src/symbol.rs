@@ -24,7 +24,7 @@ impl Symbol {
     }
 }
 
-impl DTyped for Symbol {
+impl GetDType for Symbol {
     fn dtype(&self) -> DType {self.dtype}
 }
 
