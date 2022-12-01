@@ -32,14 +32,14 @@ where Self: Device {
     /// together with any extension id
     /// 
     /// (offset, a mapping indicated by vec : segment_number -> size)
-    fn ext_defn(&self, size: usize) -> Result<(usize, Vec<usize>), (ComErr, Self::DevErr)>
+    fn ext_defn(&self, size: usize) -> Result<(usize, Vec<usize>), DevErr<Self>>
     { todo!("{size:?}") }
 
     /// unload the extension indicated by id, release its resources to device
-    fn ext_drop(&self, id: usize) -> Result<(), (ComErr, Self::DevErr)>
+    fn ext_drop(&self, id: usize) -> Result<(), DevErr<Self>>
     { todo!("{id:?}") }
 
     /// emit a device function on leaf device (physical device with a unified memory address)
-    fn ext_emit(&self, id: usize, func: Func<ExtSymbol>) -> Result<(), (ComErr, Self::DevErr)>
+    fn ext_emit(&self, id: usize, func: Func<ExtSymbol>) -> Result<(), DevErr<Self>>
     { todo!("exec({id:?}, {func:?})") }
 }

@@ -6,35 +6,14 @@ mod ext;
 mod log;
 mod typ;
 mod mrg;
+mod err;
 
 pub use ops::*;
 pub use ext::*;
 pub use log::*;
 pub use typ::*;
 pub use mrg::*;
-
-/// common error format for devices
-#[derive(Debug, Clone, Copy)]
-pub enum ComErr {
-    /// (wanted, total)
-    MemNotEnough(usize, usize),
-    /// invalid access
-    MemInvalidAccess,
-    /// function read from corrupted symbol (unintialized or written by failed functions)
-    FuncReadCorrupted,
-    /// invalid input length
-    FuncInvalidInputLength,
-    /// invalid input meta
-    FuncInvalidInputMeta,
-    /// invalid input type
-    FuncInvalidInputType,
-    /// input on different device,
-    FuncInvalidInputDifferentDevice,
-    /// function not implemented
-    FuncNotimplemented,
-    /// device initialization failed
-    InitFailure,
-}
+pub use err::*;
 
 /// a device should be an internally mutable type
 /// 
@@ -65,28 +44,26 @@ where Self::Symbol: Debug + Symbol + Default + Eq,
     type DevErr;
 
     /// emit a function to this device, i.e. push a function to execution queue
-    fn emit(&self, func: Func<Self::Symbol>) -> Result<(), (ComErr, Self::DevErr)>
+    fn emit(&self, func: Func<Self::Symbol>) -> Result<(), DevErr<Self>>
     { todo!("Device.emit({func:?})") }
 
     /// define a symbol on this device, size: memory size in bytes, ty: datatype
-    fn defn(&self, sz: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)>
+    fn defn(&self, sz: usize, ty: DType) -> Result<Self::Symbol, DevErr<Self>>
     { todo!("Device.defn(sz:{sz:?}, ty:{ty:?})") }
 
     /// dump given symbol to a datbox, not consuming this symbol
-    fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)>
+    fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, DevErr<Self>>
     { todo!("Device.dump({symbol:?})") }
 
     /// load given data to a new symbol
-    fn load(&self, datbox: Self::DatBox, symbol: &mut Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
+    fn load(&self, datbox: Self::DatBox, symbol: &mut Self::Symbol) -> Result<(), DevErr<Self>>
     { todo!("Device.load({datbox:?}, {symbol:?})") }
 
     /// drop a symbol without retrieving content
-    fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)>
+    fn drop(&self, symbol: Self::Symbol) -> Result<(), DevErr<Self>>
     { todo!("Device.drop({symbol:?})") }
 
     /// print the name for this device
     fn name(&self) -> String
     { todo!("Device.name()") }
 }
-
-pub type TupErr<D> = (ComErr, <D as Device>::DevErr);

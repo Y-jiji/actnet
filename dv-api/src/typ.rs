@@ -48,6 +48,40 @@ pub use WrapVec::{
     FallBack as WFallback
 };
 
+
+pub trait FromVal {
+    /// give correspondent data type
+    fn ty() -> DType;
+    /// wrap self with data type
+    fn wrap(self) -> WrapVal;
+    /// memory size from array size
+    fn msize(len: usize) -> usize;
+}
+
+use std::mem::size_of;
+
+macro_rules! impl_from_val {
+    ($LowerCase: tt, $BigCase: ident) => {
+        impl FromVal for $LowerCase {
+            #[inline]
+            fn ty() -> DType {DType::$BigCase}
+            #[inline]
+            fn wrap(self) -> WrapVal {WrapVal::$BigCase(self)}
+            #[inline]
+            fn msize(x: usize) -> usize {
+                if Self::ty() == DBool { return (x + 7) & (usize::MAX<<3) }
+                else { return x * size_of::<Self>() }
+            }
+        }
+    };
+}
+
+impl_from_val!(f32, F32);
+impl_from_val!(f64, F64);
+impl_from_val!(i32, I32);
+impl_from_val!(i64, I64);
+impl_from_val!(bool, Bool);
+
 /* ------------------------------------------------------------------------------------------ */
 /*                        common behaviours for device associated types                       */
 /* ------------------------------------------------------------------------------------------ */
