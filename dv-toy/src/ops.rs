@@ -2,7 +2,7 @@ use std::ptr::copy_nonoverlapping;
 
 use crate::*;
 
-pub(crate) fn add_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Result<(), (ComErr, ())> {
+pub(crate) fn add_f32(a: &ToySymbol, b: &ToySymbol, c: &mut ToySymbol, len: usize) -> Result<(), (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -12,7 +12,7 @@ pub(crate) fn add_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Res
     Ok(())
 }
 
-pub(crate) fn sub_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Result<(), (ComErr, ())> {
+pub(crate) fn sub_f32(a: &ToySymbol, b: &ToySymbol, c: &mut ToySymbol, len: usize) -> Result<(), (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -23,7 +23,7 @@ pub(crate) fn sub_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Res
 }
 
 
-pub(crate) fn mul_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Result<(), (ComErr, ())> {
+pub(crate) fn mul_f32(a: &ToySymbol, b: &ToySymbol, c: &mut ToySymbol, len: usize) -> Result<(), (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -34,7 +34,7 @@ pub(crate) fn mul_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Res
 }
 
 
-pub(crate) fn div_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Result<(), (ComErr, ())> {
+pub(crate) fn div_f32(a: &ToySymbol, b: &ToySymbol, c: &mut ToySymbol, len: usize) -> Result<(), (ComErr, ())> {
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize != len * size_of::<f32>() { Err((ComErr::FuncInvalidInputMeta, ()))? }
     if a.dtype != DType::F32 || b.dtype != DType::F32 { Err((ComErr::FuncInvalidInputType, ()))? }
@@ -45,7 +45,7 @@ pub(crate) fn div_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, len: usize) -> Res
 }
 
 
-pub(crate) fn mmul_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, meta: (usize, usize, usize, usize, usize, usize)) -> Result<(), (ComErr, ())> {
+pub(crate) fn mmul_f32(a: &ToySymbol, b: &ToySymbol, c: &mut ToySymbol, meta: (usize, usize, usize, usize, usize, usize)) -> Result<(), (ComErr, ())> {
     let (lai, laj, lak, lbi, lbj, lbk) = meta;
     if a.msize != b.msize { Err((ComErr::FuncInvalidInputLength, ()))? }
     if a.msize * size_of::<f32>() != lai * laj * lak { Err((ComErr::FuncInvalidInputMeta, ()))? }
@@ -72,14 +72,14 @@ pub(crate) fn mmul_f32(a: &Symbol, b: &Symbol, c: &mut Symbol, meta: (usize, usi
     Ok(())
 }
 
-pub(crate) fn rand_f32(len: usize, a: &mut Symbol) -> Result<(), (ComErr, ())> {
+pub(crate) fn rand_f32(len: usize, a: &mut ToySymbol) -> Result<(), (ComErr, ())> {
     for i in 0..len {
         unsafe{*((a.ptr::<f32>() as *mut f32).add(i)) = rand::random::<f32>()}
     }
     Ok(())
 }
 
-pub(crate) fn copy(a: &Symbol, b: &mut Symbol) -> Result<(), (ComErr, ())> {
+pub(crate) fn copy(a: &ToySymbol, b: &mut ToySymbol) -> Result<(), (ComErr, ())> {
     unsafe{copy_nonoverlapping(a.inner, b.inner, a.msize)};
     Ok(())
 }

@@ -10,47 +10,47 @@ use symbol::*;
 mod ops;
 use ops::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Toy;
 
 impl Device for Toy {
-    type Symbol = Symbol;
-    type DatBox = DatBox;
+    type Symbol = ToySymbol;
+    type DatBox = ToyDatBox;
     type DevErr = ();
 
-    fn load(&self, datbox: Self::DatBox, symbol: &mut Self::Symbol) -> Result<(), (ComErr, Self::DevErr)> {
+    fn load(&self, datbox: Self::DatBox, symbol: &mut ToySymbol) -> Result<(), (ComErr, Self::DevErr)> {
         assert!(datbox.msize == symbol.msize);
         assert!(datbox.dtype == symbol.dtype);
         unsafe{copy_nonoverlapping(datbox.inner, symbol.inner, datbox.msize)};
         Ok(())
     }
 
-    fn drop(&self, symbol: Self::Symbol) -> Result<(), (ComErr, Self::DevErr)> {
+    fn drop(&self, symbol: ToySymbol) -> Result<(), (ComErr, Self::DevErr)> {
         unsafe{Vec::from_raw_parts(symbol.inner, symbol.msize, symbol.msize)};
         std::mem::forget(symbol); Ok(())
     }
 
-    fn defn(&self, size: usize, ty: DType) -> Result<Self::Symbol, (ComErr, Self::DevErr)> {        
+    fn defn(&self, size: usize, ty: DType) -> Result<ToySymbol, (ComErr, Self::DevErr)> {        
         let inner = Vec::leak({let mut x = vec![0u8; size]; x.shrink_to_fit(); x}).as_ptr() as *mut u8;
-        Ok(Symbol { dtype: ty, inner, msize: size })
+        Ok(ToySymbol { dtype: ty, inner, msize: size })
     }
 
-    fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)> {
+    fn dump(&self, symbol: &ToySymbol) -> Result<Self::DatBox, (ComErr, Self::DevErr)> {
         let ty = symbol.dtype;
         let symvec = unsafe{Vec::from_raw_parts(symbol.inner, symbol.msize, symbol.msize)};
         let datbox = DatBox::from_byte(symvec.clone(), ty);
         std::mem::forget(symvec); Ok(datbox)
     }
 
-    fn emit(&self, func: Func<Self::Symbol>) -> Result<(), (ComErr, Self::DevErr)> {
+    fn emit(&self, func: Func<ToySymbol>) -> Result<(), (ComErr, Self::DevErr)> {
         match func {
-            Func::AddF32 { i: (a, b), o: (c, ), m: (len, ) } => add_f32(a, b, c, len),
-            Func::SubF32 { i: (a, b), o: (c, ), m: (len, ) } => sub_f32(a, b, c, len),
-            Func::MulF32 { i: (a, b), o: (c, ), m: (len, ) } => mul_f32(a, b, c, len),
-            Func::DivF32 { i: (a, b), o: (c, ), m: (len, ) } => div_f32(a, b, c, len),
-            Func::MMulF32 { i: (a, b), o: (c, ), m } => mmul_f32(a, b, c, m),
+            Func::Add { i: (a, b), o: (c, ), m: (len, ) } => add_f32(a, b, c, len),
+            Func::Sub { i: (a, b), o: (c, ), m: (len, ) } => sub_f32(a, b, c, len),
+            Func::Mul { i: (a, b), o: (c, ), m: (len, ) } => mul_f32(a, b, c, len),
+            Func::Div { i: (a, b), o: (c, ), m: (len, ) } => div_f32(a, b, c, len),
+            Func::MMul { i: (a, b), o: (c, ), m } => mmul_f32(a, b, c, m),
             Func::Copy { i: (a,), o: (b, ), m: () } => copy(a, b),
-            Func::RandF32 { i: (), o: (a, ), m: (len, ) } => rand_f32(len, a),
+            Func::Rand { i: (), o: (a, ), m: (len, ) } => rand_f32(len, a),
             _ => Err((ComErr::FuncNotimplemented, ()))
         }
     }

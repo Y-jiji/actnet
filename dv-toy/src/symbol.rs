@@ -3,7 +3,7 @@ use std::ptr::null_mut;
 use crate::*;
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct Symbol {
+pub struct ToySymbol {
     /// data type
     pub(crate) dtype: DType,
     /// inner pointer
@@ -12,24 +12,25 @@ pub struct Symbol {
     pub(crate) msize: usize,
 }
 
-impl Default for Symbol {
+impl Default for ToySymbol {
     fn default() -> Self {
-        Symbol { dtype: DType::Bool, inner: null_mut(), msize: 0 }
+        ToySymbol { dtype: DType::Bool, inner: null_mut(), msize: 0 }
     }
 }
 
-impl Symbol {
+impl ToySymbol {
     pub(crate) fn ptr<T>(&self) -> *mut T {
         self.inner as *mut T
     }
 }
 
-impl GetDType for Symbol {
-    fn dtype(&self) -> DType {self.dtype}
-}
-
-impl Drop for Symbol {
+impl Drop for ToySymbol {
     fn drop(&mut self) {
         panic!("symbol drop should be managed by device. please use Toy::drop(...)")
     }
+}
+
+impl Symbol for ToySymbol {
+    fn dtype(&self) -> DType {self.dtype}
+    fn msize(&self) -> usize {self.msize}
 }
