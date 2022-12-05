@@ -48,8 +48,12 @@ pub use WrapVec::{
     FallBack as WFallback
 };
 
-
-pub trait FromVal {
+/// ### *brief*
+/// ```pseudocode
+/// data type recognized by device. 
+/// can be wrapped into wrapval type. 
+/// ```
+pub trait DevVal {
     /// give correspondent data type
     fn ty() -> DType;
     /// wrap self with data type
@@ -62,7 +66,7 @@ use std::mem::size_of;
 
 macro_rules! impl_from_val {
     ($LowerCase: tt, $BigCase: ident) => {
-        impl FromVal for $LowerCase {
+        impl DevVal for $LowerCase {
             #[inline]
             fn ty() -> DType {DType::$BigCase}
             #[inline]

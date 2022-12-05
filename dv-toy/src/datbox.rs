@@ -1,5 +1,4 @@
 use dvapi::*;
-use std::alloc::*;
 
 use std::fmt::Display;
 use std::ptr::null_mut;
@@ -18,7 +17,7 @@ impl Clone for ToyDatBox {
     fn clone(&self) -> Self {
         let a = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
         let b = a.clone();
-        let r = Symbol::from_byte(b, self.dtype);
+        let r = ToyDatBox::from_byte(b, self.dtype);
         std::mem::forget(a); r
     }
 }
@@ -182,7 +181,7 @@ mod check_array_print {
     #[test]
     fn new_and_drop() {
         let a: Vec<_> = (0..(3*4*5)).map(|_| {random::<bool>()}).collect();
-        let a = DatBox::from_vec(WBool(a));
+        let a = ToyDatBox::from_vec(WBool(a));
         println!("{a:?}");
         println!("{}", a.print(vec![4,3,5]));
     }

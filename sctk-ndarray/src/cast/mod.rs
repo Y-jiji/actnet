@@ -1,1 +1,1 @@
-//! implements type transformation for ndarray
+//! implements type convertions for ndarray

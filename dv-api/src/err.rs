@@ -33,3 +33,5 @@ pub enum DevErr<D: Device> {
     /// a fall back option
     #[default] Fallback,
 }
+
+pub use DevErr::*;

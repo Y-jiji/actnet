@@ -232,7 +232,7 @@ pub enum Func<'t, S: Debug + Symbol> {
     /// ### *effect*
     /// ```pseudocode
     /// for k in 0..len {
-    ///     sample a[k] uniformly from [0, len)
+    ///     sample a[k] uniformly from [0, upper)
     /// }
     /// ```
     RandUnif {

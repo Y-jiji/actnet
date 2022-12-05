@@ -7,4 +7,7 @@ edition = "2021"
 
 [dependencies]
 slotvec = {package="mm-slotvec", version="*", path="../mm-slotvec"}
-dvapi = {package="dv-api", version="*", path="../dv-api"}
+# dvapi = {package="dv-api", version="*", path="../dv-api"}
+
+[dev-dependencies]
+rand = "0.8.5"              # Random number generators and other randomness functionality. 
