@@ -1,5 +1,5 @@
 use dvapi::*;
-use std::{mem::size_of, ptr::copy_nonoverlapping};
+use std::ptr::copy_nonoverlapping;
 
 mod datbox;
 use datbox::*;
@@ -45,6 +45,7 @@ impl Device for Toy {
     }
 
     fn emit(&self, func: Func<ToySymbol>) -> Result<(), DevErr<Self>> {
+        // emit dispatches function calls to implementations
         match func {
             Func::Add { i: (a, b), o: (c, ), m: (bat_a, bat_b) } => add(a, b, c, bat_a, bat_b),
             Func::Sub { i: (a, b), o: (c, ), m: (bat_a, bat_b) } => sub(a, b, c, bat_a, bat_b),
@@ -58,6 +59,10 @@ impl Device for Toy {
             f => Err(DevErr::FuncNotimplemented(format!("{f:?}"), ()))
         }
     }
+
+    fn name(&self) -> String {
+        format!("Toy(thread_id: {:?})", std::thread::current().id())
+    }
 }
 
 #[cfg(test)]
@@ -65,7 +70,7 @@ mod check_device_toy {
     use super::*;
 
     #[test]
-    fn add_f32() {for _ in 0..100 {
+    fn add_f32() {
         let toy = Toy::new();
         let mut a = toy.defn(f32::msize(256), f32::ty()).unwrap();
         let mut b = toy.defn(f32::msize(3*256), f32::ty()).unwrap();
@@ -82,5 +87,5 @@ mod check_device_toy {
         assert!(c == vec![3.0; 3*256]);
         toy.drop(a).unwrap();
         toy.drop(b).unwrap();
-    }}
+    }
 }

@@ -47,9 +47,9 @@ where Self::Symbol: Debug + Symbol + Default + Eq,
     fn emit(&self, func: Func<Self::Symbol>) -> Result<(), DevErr<Self>>
     { todo!("Device.emit({func:?})") }
 
-    /// define a symbol on this device, size: memory size in bytes, ty: datatype
-    fn defn(&self, sz: usize, ty: DType) -> Result<Self::Symbol, DevErr<Self>>
-    { todo!("Device.defn(sz:{sz:?}, ty:{ty:?})") }
+    /// define a symbol on this device, msz: memory size **in bytes**, ty: datatype
+    fn defn(&self, msz: usize, ty: DType) -> Result<Self::Symbol, DevErr<Self>>
+    { todo!("Device.defn(msz:{msz:?}, ty:{ty:?})") }
 
     /// dump given symbol to a datbox, not consuming this symbol
     fn dump(&self, symbol: &Self::Symbol) -> Result<Self::DatBox, DevErr<Self>>

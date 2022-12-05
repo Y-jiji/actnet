@@ -4,6 +4,8 @@
 
 Goal of this crate is to provide a standard stream computation model for testing. 
 
+It is likely to be slow, but should be definitely right. 
+
 Whatever complex hardware they utilize or scheduling algorithms they use, stream computation models (trait Device) should be equivalent to device-toy in the sense of weak stream equivalence. 
 
 ## What is "weak stream equivalence"?

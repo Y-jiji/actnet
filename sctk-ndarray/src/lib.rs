@@ -6,13 +6,13 @@ mod ops;
 mod cast;
 mod marker;
 
+#[cfg(test)]
+mod dvtst;
+
 pub use fmt::*;
 pub use ops::*;
 pub use cast::*;
 use marker::*;
-
-pub(crate)
-const SCTK_CRATE_NAME: &str = "sctk-ndarray";
 
 /// n-dimensional array
 pub struct NDArray<'a, D: Device, T: DevVal> {
