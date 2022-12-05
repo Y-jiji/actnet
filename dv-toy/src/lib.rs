@@ -44,21 +44,13 @@ impl Device for Toy {
 
     fn emit(&self, func: Func<ToySymbol>) -> Result<(), DevErr<Self>> {
         match func {
-            Func::Add { i: (a, b), o: (c, ), m: (len, ) } => add(a, b, c, len),
-            Func::Sub { i: (a, b), o: (c, ), m: (len, ) } => sub(a, b, c, len),
-            Func::Mul { i: (a, b), o: (c, ), m: (len, ) } => mul(a, b, c, len),
-            Func::Div { i: (a, b), o: (c, ), m: (len, ) } => div(a, b, c, len),
+            Func::Add { i: (a, b), o: (c, ), m: (len_a, len_b) } => add(a, b, c, len_a, len_b),
+            Func::Sub { i: (a, b), o: (c, ), m: (len_a, len_b) } => sub(a, b, c, len_a, len_b),
+            Func::Mul { i: (a, b), o: (c, ), m: (len_a, len_b) } => mul(a, b, c, len_a, len_b),
+            Func::Div { i: (a, b), o: (c, ), m: (len_a, len_b) } => div(a, b, c, len_a, len_b),
             Func::MMul { i: (a, b), o: (c, ), m } => mmul(a, b, c, m),
             Func::Copy { i: (a,), o: (b, ), m: () } => copy(a, b),
-            Func::RandUnif { i: (), o: (a, ), m: (len, upper, ) } => 
-                match upper {
-                    WrapVal::F32(upper) => rand_f(upper, len, a),
-                    WrapVal::F64(upper) => rand_f(upper, len, a),
-                    WrapVal::I32(upper) => rand_i(upper, len, a),
-                    WrapVal::I64(upper) => rand_i(upper, len, a),
-                    WrapVal::Bool(upper) => rand_b(upper, len, a),
-                    _ => Ok(()),
-                },
+            Func::RandUnif { i: (), o: (a, ), m: (len, upper, ) } => rand_unif(upper, len, a),
             f => Err(DevErr::FuncNotimplemented(format!("{f:?}"), ()))
         }
     }
@@ -70,20 +62,5 @@ mod check_device_toy {
 
     #[test]
     fn add_f32() {for _ in 0..100 {
-        const CASE_SIZE: usize = 1<<15;
-        let toy = Toy;
-        let mut a = toy.defn(CASE_SIZE*4, DF32).unwrap();
-        toy.emit(Func::RandUnif { i: (), o: (&mut a, ), m: (CASE_SIZE, 1_f32.wrap(), ) }).unwrap();
-        let mut b = toy.defn(CASE_SIZE*4, DF32).unwrap();
-        toy.emit(Func::RandUnif { i: (), o: (&mut b, ), m: (CASE_SIZE, 1_f32.wrap(), ) }).unwrap();
-        let mut c = toy.defn(CASE_SIZE*4, DF32).unwrap();
-        toy.emit(Func::Add { i: (&a, &b), o: (&mut c, ), m: (CASE_SIZE, ) }).unwrap();
-        let cvec = if let WF32(x) = toy.dump(&c).unwrap().as_vec() { x } else { todo!() };
-        let mean: f32 = cvec.iter().sum::<f32>() / cvec.len() as f32;
-        println!("{mean:?}");
-        assert!((mean - 1.0).abs() < 0.01);
-        toy.drop(a).unwrap();
-        toy.drop(b).unwrap();
-        toy.drop(c).unwrap();
     }}
 }
