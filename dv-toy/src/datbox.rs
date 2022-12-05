@@ -1,11 +1,10 @@
 use dvapi::*;
-use std::alloc::*;
 
 use std::fmt::Display;
 use std::ptr::null_mut;
 
 #[derive(Debug)]
-pub struct DatBox {
+pub struct ToyDatBox {
     /// data type
     pub(crate) dtype: DType,
     /// inner pointer
@@ -14,32 +13,20 @@ pub struct DatBox {
     pub(crate) msize: usize,
 }
 
-impl Clone for DatBox {
+impl Clone for ToyDatBox {
     fn clone(&self) -> Self {
         let a = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
         let b = a.clone();
-        let r = ByteConvert::from_byte(b, self.dtype);
+        let r = ToyDatBox::from_byte(b, self.dtype);
         std::mem::forget(a); r
     }
 }
 
-impl GetDType for DatBox {fn dtype(&self) -> DType {self.dtype}}
-
-impl ByteConvert for DatBox {
-    fn as_byte(self) -> Vec<u8> {
-        let r = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
-        std::mem::forget(self); r
-    }
-    fn from_byte(mut x: Vec<u8>, ty: DType) -> Self {
-        x.shrink_to_fit();
-        let msize = x.len();
-        DatBox { dtype: ty, inner: Vec::leak(x).as_ptr() as *mut u8, msize }
-    }
-}
-
-impl VecConvert for DatBox {
-    fn as_vec(self) -> WrapVec {        
-        fn f<T>(_self: DatBox, _cons: fn(Vec<T>)-> WrapVec) -> WrapVec {
+impl DatBox for ToyDatBox {
+    fn dtype(&self) -> DType {self.dtype}
+    fn msize(&self) -> usize {self.msize}
+    fn as_vec(self) -> WrapVec {
+        fn f<T>(_self: ToyDatBox, _cons: fn(Vec<T>)-> WrapVec) -> WrapVec {
             let len = _self.msize/std::mem::size_of::<T>();
             let r = _cons(unsafe{Vec::from_raw_parts(_self.inner as *mut T, len, len)});
             std::mem::forget(_self); r
@@ -53,12 +40,12 @@ impl VecConvert for DatBox {
             _ => todo!()
         }
     }
-    fn from_vec(x: WrapVec) -> DatBox {
-        fn f<T>(mut x: Vec<T>, dtype: DType) -> DatBox {
+    fn from_vec(x: WrapVec) -> ToyDatBox {
+        fn f<T>(mut x: Vec<T>, dtype: DType) -> ToyDatBox {
             let x = {x.shrink_to_fit(); x};
             let msize = if dtype != DBool { x.len() * std::mem::size_of::<T>() } else { (x.len() + 7) / 8 };
             let inner = Vec::leak(x).as_ptr() as *mut u8;
-            return DatBox { dtype, inner, msize }
+            return ToyDatBox { dtype, inner, msize }
         }
         match x {
             WF32(x) => f::<f32>(x, DF32),
@@ -69,13 +56,54 @@ impl VecConvert for DatBox {
             _ => todo!(),
         }
     }
+    fn as_byte(self) -> Vec<u8> {
+        let r = unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)};
+        std::mem::forget(self); r
+    }
+    fn from_byte(mut x: Vec<u8>, ty: DType) -> Self {
+        x.shrink_to_fit();
+        let msize = x.len();
+        ToyDatBox { dtype: ty, inner: Vec::leak(x).as_ptr() as *mut u8, msize }
+    }
+    fn print(&self, shape: Vec<usize>) -> String {
+        let shape = shape.as_slice();
+        let shape_prod = shape.iter().map(|x| *x).reduce(|a, b| a*b).unwrap_or(0);
+        match self.dtype {
+            DType::F32 => {
+                let p = self.inner as *const f32;
+                debug_assert!(shape_prod * 4 == self.msize);
+                print_rec(p, shape, 1, width_rec(p, shape))
+            },
+            DType::F64 => {
+                let p = self.inner as *const f64;
+                debug_assert!(shape_prod * 8 == self.msize);
+                print_rec(p, shape, 1, width_rec(p, shape))
+            }
+            DType::I32 => {
+                let p = self.inner as *const i32; 
+                debug_assert!(shape_prod * 4 == self.msize);
+                print_rec(p, shape, 1, width_rec(p, shape))
+            },
+            DType::I64 => {
+                let p = self.inner as *const i64; 
+                debug_assert!(shape_prod * 8 == self.msize);
+                print_rec(p, shape, 1, width_rec(p, shape))
+            },
+            DType::Bool => {
+                let p = self.inner as *const bool; 
+                debug_assert!((shape_prod + 7) / 8 == self.msize);
+                print_rec(p, shape, 1, width_rec(p, shape))    
+            },
+            _ => String::from("")
+        }
+    }
 }
 
-impl Default for DatBox {
-    fn default() -> Self {DatBox { dtype: DFallBack, inner: null_mut(), msize: 0 }}
+impl Default for ToyDatBox {
+    fn default() -> Self {ToyDatBox { dtype: DFallBack, inner: null_mut(), msize: 0 }}
 }
 
-impl Drop for DatBox {
+impl Drop for ToyDatBox {
     fn drop(&mut self) {
         drop(unsafe{Vec::from_raw_parts(self.inner, self.msize, self.msize)});
     }
@@ -132,41 +160,6 @@ fn width_rec<T: Display>(p: *const T, shape: &[usize]) -> usize {
     }
 }
 
-impl ArrayPrint for DatBox {
-    fn print(&self, shape: Vec<usize>) -> String {
-        let shape = shape.as_slice();
-        let shape_prod = shape.iter().map(|x| *x).reduce(|a, b| a*b).unwrap_or(0);
-        match self.dtype {
-            DType::F32 => {
-                let p = self.inner as *const f32;
-                debug_assert!(shape_prod * 4 == self.msize);
-                print_rec(p, shape, 1, width_rec(p, shape))
-            },
-            DType::F64 => {
-                let p = self.inner as *const f64;
-                debug_assert!(shape_prod * 8 == self.msize);
-                print_rec(p, shape, 1, width_rec(p, shape))
-            }
-            DType::I32 => {
-                let p = self.inner as *const i32; 
-                debug_assert!(shape_prod * 4 == self.msize);
-                print_rec(p, shape, 1, width_rec(p, shape))
-            },
-            DType::I64 => {
-                let p = self.inner as *const i64; 
-                debug_assert!(shape_prod * 8 == self.msize);
-                print_rec(p, shape, 1, width_rec(p, shape))
-            },
-            DType::Bool => {
-                let p = self.inner as *const bool; 
-                debug_assert!((shape_prod + 7) / 8 == self.msize);
-                print_rec(p, shape, 1, width_rec(p, shape))    
-            },
-            _ => String::from("")
-        }
-    }
-}
-
 #[cfg(test)]
 mod check_array_print {
     use super::*;
@@ -188,7 +181,7 @@ mod check_array_print {
     #[test]
     fn new_and_drop() {
         let a: Vec<_> = (0..(3*4*5)).map(|_| {random::<bool>()}).collect();
-        let a = DatBox::from_vec(WBool(a));
+        let a = ToyDatBox::from_vec(WBool(a));
         println!("{a:?}");
         println!("{}", a.print(vec![4,3,5]));
     }
