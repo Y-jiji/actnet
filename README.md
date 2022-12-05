@@ -18,7 +18,7 @@ Actnet's abstraction for computation resources is unified at any level. The idea
 | pipelining classic five-stage dataflow              | pipelining multi-GPU dataflow           |
 | shared RAM                                          | seperated RAM                           |
 
-The only difference is where data lives, and this is the problem actnet is trying to tackle. 
+The only difference is where data lives, which is the problem actnet is trying to tackle. 
 
 # Architecture
 
