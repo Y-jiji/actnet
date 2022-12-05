@@ -31,6 +31,19 @@ pub enum WrapVal {
     FallBack,
 }
 
+impl WrapVal {
+    pub fn dtype(&self) -> DType {
+        match self {
+            WrapVal::Bool(_) => DBool,
+            WrapVal::F32(_) => DF32,
+            WrapVal::F64(_) => DF64,
+            WrapVal::I32(_) => DI32,
+            WrapVal::I64(_) => DI64,
+            WrapVal::FallBack => DFallBack,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum WrapVec {
     F32(Vec<f32>),
@@ -53,11 +66,14 @@ pub use WrapVec::{
 /// data type recognized by device. 
 /// can be wrapped into wrapval type. 
 /// ```
-pub trait DevVal {
+pub trait DevVal 
+where Self: Copy {
     /// give correspondent data type
     fn ty() -> DType;
     /// wrap self with data type
     fn wrap(self) -> WrapVal;
+    /// unwrap from WrapVal
+    fn unwrap(wv: WrapVal) -> Self;
     /// memory size from array size
     fn msize(len: usize) -> usize;
 }
@@ -72,8 +88,12 @@ macro_rules! impl_from_val {
             #[inline]
             fn wrap(self) -> WrapVal {WrapVal::$BigCase(self)}
             #[inline]
+            fn unwrap(x: WrapVal) -> Self {
+                match x { WrapVal::$BigCase(x) => x, _ => panic!("unmatched unwrap of devval") }
+            }
+            #[inline]
             fn msize(x: usize) -> usize {
-                if Self::ty() == DBool { return (x + 7) & (usize::MAX<<3) }
+                if Self::ty() == DBool { return (x + 7) >> 3 }
                 else { return x * size_of::<Self>() }
             }
         }

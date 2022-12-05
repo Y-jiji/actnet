@@ -1,9 +1,6 @@
 //! elementwise operations
 
 use crate::*;
-use std::ops::{Add, Sub, Mul, Div, Neg};
-
-const MODULE_NAME: &str = "ops::elem";
 
 // @TODO(Y-jiji: implement IPow for interger types, implement FPow for float types) 
 trait IPow
@@ -17,39 +14,53 @@ where Self: Sized {
     fn log<Fp>(&self, p: Fp) -> Self;
 }
 
-#[inline]
-/// shape check
-fn sh_check<'t, D: Device, T: DevVal>
-(a: &NDArray<'t, D, T>, b: &NDArray<'t, D, T>) -> Result<(Vec<usize>, usize), DevErr<D>> {
-    let mut ret = (Vec::new(), 0usize);
-    let b_suff = if a.len() < b.len() { ret=(b.sh.to_vec(), b.ln); b.sh.split_at(b.sh.len() - a.sh.len()).0 } else { b };
-    let a_suff = if a.len() > b.len() { ret=(a.sh.to_vec(), a.ln); a.sh.split_at(a.sh.len() - b.sh.len()).0 } else { a };
-    if a_suff != b_suff {
-        let msg = format!(
-            "element-wise add|sub|mul|div ... requires suffix-broadcasting. {}",
-            "neither {a:?} nor {b:?} can be the other's suffix. [{SCTK_CRATE_NAME}::{MODULE_NAME}]"
-        );
-        Err(FuncInvalidInputMeta(msg, D::DevErr::default()))
-    }
-    else { Ok(ret) }
+use std::ops::{Add, Sub, Mul, Div};
+
+macro_rules! impl_elem_op {
+    ($op: tt, $OpName: tt, $op_name: tt) => {
+
+        impl<'t, D: Device, T: DevVal> $OpName for &NDArray<'t, D, T> 
+        where T: $OpName<Output=T> {
+            type Output = Result<NDArray<'t, D, T>, DevErr<D>>;
+            fn $op_name(self, rhs: Self) -> Self::Output {
+                let (a, b) = if self.sh.len() > rhs.sh.len() {(self, rhs)} else {(rhs, self)};
+                // shape and device check
+                if a.dv != b.dv 
+                { Err(FuncInvalidInputDifferentDevice(format!("{}: expected operands of {} on the same device, but found two: {:?} and {:?}", module_path!(), stringify!($op), a.dv, b.dv), D::DevErr::default()))? }
+                if a.sh.split_at(a.len() - b.len()).1 != &b.sh 
+                { Err(FuncInvalidInputShape(format!("{}: operands of {} cannot suffix broadcast: shorter shape vector {:?} is not a suffix of longer shape vector {:?}. ", module_path!(), stringify!($op), b.sh, a.sh), D::DevErr::default()))? }
+                // calculate type and shape
+                let (c_dv, c_ty, c_sh, c_ln) = (a.dv, a.ty, a.sh.clone(), a.ln);
+                let mut c_sy = c_dv.defn(a.sy.msize(), a.sy.dtype())?;
+                let (a, b) = (self, rhs);
+                match c_dv.emit(Func::$OpName{
+                    i: (&a.sy, &b.sy), 
+                    o: (&mut c_sy, ), 
+                    m: (a.len(), b.len())
+                }) {
+                    Err(e) => {c_dv.drop(c_sy)?; Err(e)},
+                    Ok(()) => {Ok(NDArray { sy: nodrop(c_sy), ty: c_ty, dv: c_dv, ln: c_ln, sh: c_sh, nil: false })}
+                }
+            }
+        }
+
+    };
 }
 
-impl<'t, D: Device, T: DevVal> Add for &NDArray<'t, D, T> {
-    type Output = Result<Self, DevErr<D>>;
-    fn add(self, rhs: Self) -> Self::Output {
-        let a = self;
-        let b = rhs;
-        let (c_sh, c_ln) = sh_check(a, b)?;
-        todo!("@TODO(Y-jiji: implement element-wise add)");
-    }
-}
-
+impl_elem_op!(+, Add, add);
+impl_elem_op!(-, Sub, sub);
+impl_elem_op!(*, Mul, mul);
+impl_elem_op!(/, Div, div);
 
 #[cfg(test)]
 mod check_elem {
-    use super::*;
+    use crate::{NDArray, dvtst::*};
+    use crate::ops::init::*;
 
     #[test]
     fn add() {
+        let dv = dvnew();
+        let a = NDArray::fill(15.0, &[1, 3, 5], &dv).unwrap();
+        println!("{a}");
     }
 }

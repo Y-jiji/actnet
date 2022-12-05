@@ -1,5 +1,3 @@
-use std::ptr::copy_nonoverlapping;
-
 mod elem;
 mod gemm;
 mod _rand;

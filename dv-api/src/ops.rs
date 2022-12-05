@@ -15,90 +15,90 @@ pub enum Func<'t, S: Debug + Symbol> {
 
     /// ### *fields*
     /// ```pseudocode
-    /// i: (a, b); o: (c, ); m: (len_a, len_b, )
+    /// i: (a, b); o: (c, ); m: (bat_a, bat_b, )
     /// ```
     /// 
     /// ### *assumptions*
     /// ```pseudocode
-    /// len_a % len_b == 0 || len_b % len_a == 0
+    /// bat_a % bat_b == 0 || bat_b % bat_a == 0
     /// ```
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// for k in 0..max(len_a, len_b) {
-    ///     c[k] <-- a[k % len_a] + b[k % len_b]
+    /// for k in 0..max(bat_a, bat_b) {
+    ///     c[k] <-- a[k % bat_a] + b[k % bat_b]
     /// }
     /// ```
     Add {
         i: (&'t S, &'t S, ), 
         o: (&'t mut S, ),
-        m: (usize, ),
+        m: (usize, usize),
     },
 
     /// ### *fields*
     /// ```pseudocode
-    /// i: (a, b); o: (c, ); m: (len_a, len_b, )
+    /// i: (a, b); o: (c, ); m: (bat_a, bat_b, )
     /// ```
     /// 
     /// ### *assumptions*
     /// ```pseudocode
-    /// len_a % len_b == 0 || len_b % len_a == 0
+    /// bat_a % bat_b == 0 || bat_b % bat_a == 0
     /// ```
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// for k in 0..max(len_a, len_b) {
-    ///     c[k] <-- a[k % len_a] - b[k % len_b]
+    /// for k in 0..max(bat_a, bat_b) {
+    ///     c[k] <-- a[k % bat_a] - b[k % bat_b]
     /// }
     /// ```
     Sub {
         i: (&'t S, &'t S, ), 
         o: (&'t mut S, ),
-        m: (usize, )
+        m: (usize, usize)
     },
 
     /// ### *fields*
     /// ```pseudocode
-    /// i: (a, b); o: (c, ); m: (len_a, len_b, )
+    /// i: (a, b); o: (c, ); m: (bat_a, bat_b, )
     /// ```
     /// 
     /// ### *assumptions*
     /// ```pseudocode
-    /// len_a % len_b == 0 || len_b % len_a == 0
+    /// bat_a % bat_b == 0 || bat_b % bat_a == 0
     /// ```
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// for k in 0..max(len_a, len_b) {
-    ///     c[k] <-- a[k % len_a] * b[k % len_b]
+    /// for k in 0..max(bat_a, bat_b) {
+    ///     c[k] <-- a[k % bat_a] * b[k % bat_b]
     /// }
     /// ```
     Mul {
         i: (&'t S, &'t S, ), 
         o: (&'t mut S, ),
-        m: (usize, )
+        m: (usize, usize)
     },
 
     /// ### *fields*
     /// ```pseudocode
-    /// i: (a, b); o: (c, ); m: (len_a, len_b, )
+    /// i: (a, b); o: (c, ); m: (bat_a, bat_b, )
     /// ```
     /// 
     /// ### *assumptions*
     /// ```pseudocode
-    /// len_a % len_b == 0 || len_b % len_a == 0
+    /// bat_a % bat_b == 0 || bat_b % bat_a == 0
     /// ```
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// for k in 0..max(len_a, len_b) {
-    ///     c[k] <-- a[k % len_a] / b[k % len_b]
+    /// for k in 0..max(bat_a, bat_b) {
+    ///     c[k] <-- a[k % bat_a] / b[k % bat_b]
     /// }
     /// ```
     Div {
         i: (&'t S, &'t S, ), 
         o: (&'t mut S, ),
-        m: (usize, )
+        m: (usize, usize)
     },
 
     /// ### *fields*
@@ -113,7 +113,7 @@ pub enum Func<'t, S: Debug + Symbol> {
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// for k in 0..len_a {
+    /// for k in 0..bat_a {
     ///     b[k] <-- a[k] ** p
     /// }
     /// ```
@@ -264,7 +264,7 @@ pub enum Func<'t, S: Debug + Symbol> {
     },
 
 /* ----------------------------------- compare and sort --------------------------------- */
-// @TODO(Y-jiji: argument sort, argument max, argument min, top k)
+// @TODO(Y-jiji: argument sort, argument max, argument min, top k selection)
 
     ArgSort {},
 
@@ -307,7 +307,7 @@ pub enum Func<'t, S: Debug + Symbol> {
     ///     with b shape as (bat_b, l0_b, l1_b, l2_b)
     ///     with c shape as (bat_c, l0_a, l0_b, l2_a, l2_b)
     ///     for (j0_a, j0_b, j1_ab, j2_a, j2_b) in 0..l0_a # 0..l0_b # 0..l1_ab # 0..l2_a # 0..l2_b {
-    ///         c[i, j0_a, j2_a, j0_b, j2_b] <-- a[i%bat_a, j0_a, j1_ab, j2_a] * b[i%bat_b, j0_a, j1_ab, j2_b]
+    ///         c[i, j0_a, j0_b, j2_a, j2_b] <-- a[i%bat_a, j0_a, j1_ab, j2_a] * b[i%bat_b, j0_a, j1_ab, j2_b]
     ///     }
     /// }
     /// ```
@@ -321,23 +321,35 @@ pub enum Func<'t, S: Debug + Symbol> {
     /// ```pseudocode
     /// i: x
     /// o: y
-    /// m: (i_sh, i_idx, o_idx)
+    /// m: (bat, sh, idx)
     /// ```
     /// 
     /// ### *assumptions*
     /// ```pseudocode
-    /// i_sh[k] is shape of x[k]
-    /// i_idx[k] have same length as i_sh 
+    /// forall i: exists c: forall j: sh[idx[i][j]] = c
     /// ```
     /// 
     /// ### *effect*
     /// ```pseudocode
-    /// @TODO(Y-jiji: write computational description for einstein summation convention)
+    /// index_enumeration = [ for t: [ 0..sh[idx[t][0]] ) ].cartesian_product()
+    /// len = sh.len()
+    /// y is initially filled with zeros
+    /// for i in index_enumeration {
+    ///     with y shape as sh[len-1]
+    ///     with x[k] shape as sh[k]
+    ///     project(i, k): [ for d: i[ choose t such that (k, d) in idx[t] ] ]
+    ///     y[project(i, len - 1)] += [for k: x[k][project(i, k)]].product()
+    /// }
+    /// ```
+    /// 
+    /// ### *comment*
+    /// ```pseudocode
+    /// this function is intrinsicly complex (to implement), but it is very pleasant to use. 
     /// ```
     EinSum {
         i: &'t [&'t S],
         o: (&'t mut S, ),
-        m: (&'t [&'t [usize]], &'t [&'t [usize]], &'t [usize])
+        m: (&'t [usize], &'t [&'t [usize]], &'t [&'t [(usize, usize)]])
     },
 
 /* ----------------------------- linear algebraic operations -------------------------- */

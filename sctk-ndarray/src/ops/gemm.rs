@@ -25,8 +25,6 @@ where Self: Sized {
     fn sum(&self, at: usize) -> Result<Self, DevErr<D>>;
 }
 
-
-
 //@TODO(Y-jiji: implement reindex operations)
 trait ReIndex<D: Device>
 where Self: Sized {
