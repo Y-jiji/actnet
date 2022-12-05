@@ -1,6 +1,8 @@
 # Caution
 
-Contemporarily, this repository is experimental and under solo-development, even the main branch may contain code that don't compile. 
+Contemporarily, this repository is experimental and under solo-development. 
+
+Even the main branch may contain code that don't compile. 
 
 # Actnet: Scaling out painlessly
 
