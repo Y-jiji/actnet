@@ -6,7 +6,7 @@ use std::ptr::null_mut;
 
 use crate::Void;
 use super::err::*;
-use super::zk::*;
+use super::thrdkp::*;
 
 /* ----------------------------------------------------------------------------------- */
 
@@ -147,8 +147,8 @@ mod check_jit_output_builder {
 
     #[test]
     fn init() {
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 1024).unwrap();
+        let tk = ThreadKeeper::new().unwrap();
+        let cd = CuDev::new(&tk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         builder.lazy_init().unwrap();
         println!("{builder:?}");
@@ -157,8 +157,8 @@ mod check_jit_output_builder {
 
     #[test]
     fn data() {
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 1024).unwrap();
+        let tk = ThreadKeeper::new().unwrap();
+        let cd = CuDev::new(&tk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let p = include_str!("../../cu-target/test-case-1.ptx");
         builder.data(
@@ -174,8 +174,8 @@ mod check_jit_output_builder {
 
     #[test]
     fn file() {
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 1024).unwrap();
+        let tk = ThreadKeeper::new().unwrap();
+        let cd = CuDev::new(&tk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let path = current_dir().unwrap();
         let path = path.join("cu-target").join("test-case-1.ptx");
@@ -193,8 +193,8 @@ mod check_jit_output_builder {
 
     #[test]
     fn link_and_build() {
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 1024).unwrap();
+        let tk = ThreadKeeper::new().unwrap();
+        let cd = CuDev::new(&tk, 0, 1024).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let mut add_f = |target: &str| {
             let path = current_dir().unwrap();
@@ -265,8 +265,8 @@ mod check_jit_caller {
     fn new() { 
         let mut cnt = 0;
         for _ in 0..128 {
-            let zk = ZooKeeper::new().unwrap();
-            let cd = CuDev::new(&zk, 0, 1024).unwrap();
+            let tk = ThreadKeeper::new().unwrap();
+            let cd = CuDev::new(&tk, 0, 1024).unwrap();
             let mut builder = JITOutputBuilder::new(&cd);
             let p = include_str!("../../cu-target/test-case-1.ptx");
             builder.data(

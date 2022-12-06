@@ -1,8 +1,8 @@
 mod err;
 pub use err::*;
 
-mod zk;
-pub use zk::*;
+mod thrdkp;
+pub use thrdkp::*;
 
 mod jit;
 pub use jit::*;

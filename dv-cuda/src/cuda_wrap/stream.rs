@@ -6,7 +6,7 @@ use std::ptr::null_mut;
 
 use crate::Void;
 use super::err::*;
-use super::zk::*;
+use super::thrdkp::*;
 use super::jit::*;
 
 /* ----------------------------------------------------------------------------------- */
@@ -47,7 +47,7 @@ pub struct CuLayout(
 
 /* ----------------------------------------------------------------------------------- */
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct CuStream<'a> {
     p: *mut CUstream_st,
     cd: &'a CuDev,
@@ -188,12 +188,12 @@ mod check_stream {
     #[test]
     fn new_and_drop() {
         // zoo keeper for devices
-        let zk = ZooKeeper::new().unwrap();
+        let tk = ThreadKeeper::new().unwrap();
         // collect handles for test threads
         let hs = (0..8).map(|_| {
-            let zk = zk.clone();
+            let tk = tk.clone();
             std::thread::spawn(move || {
-                let cd = CuDev::new(&zk, 0, 1024).unwrap();
+                let cd = CuDev::new(&tk, 0, 1024).unwrap();
                 let st = CuStream::new(&cd).unwrap();
                 println!("{st:?}");
             })
@@ -201,14 +201,14 @@ mod check_stream {
         // join all handles
         for h in hs {h.join().unwrap();}
         // when all stream & device are dropped, zoo keeper will be empty
-        assert!(zk.is_empty());
+        assert!(tk.is_empty());
     }
 
     #[test]
     fn launch() {
         // zoo keeper for devices
-        let zk = ZooKeeper::new().unwrap();
-        let cd = CuDev::new(&zk, 0, 3*size_of::<i32>()*256*32).unwrap();
+        let tk = ThreadKeeper::new().unwrap();
+        let cd = CuDev::new(&tk, 0, 3*size_of::<i32>()*256*32).unwrap();
         let mut builder = JITOutputBuilder::new(&cd);
         let p = include_str!("../../cu-target/test-case-1.ptx");
         // the jit builder that wraps a compiler invocation
@@ -270,6 +270,6 @@ mod check_stream {
         // drop the cuda device
         drop(cd);
         // when all stream & device are dropped, zoo keeper will be empty
-        assert!(zk.is_empty());
+        assert!(tk.is_empty());
     }
 }

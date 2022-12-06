@@ -1,8 +1,8 @@
 use dvapi::*;
-use mem_allocator::*;
+use mm_alloc::*;
 
 mod cuda_wrap;
-mod cuda_stream;
+// mod cuda_stream;
 mod cuda_device;
 mod cuda_bundle;
 
@@ -17,9 +17,3 @@ struct DevBox {
     /// type of the boxed array
     t: DType,
 }
-
-// impl Device for CudaStream {
-//     type DatBuf = DevBox;
-//     type DevBox = DevBox;
-//     type DevErr = raw::drv::cudaError_enum;
-// }
