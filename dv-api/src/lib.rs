@@ -28,7 +28,7 @@ pub trait Device
 where Self::Symbol: Debug + Symbol + Default + Eq, 
       Self::DatBox: Debug + DatBox + Default, 
       Self::DevErr: Debug + Default, 
-      Self: Debug + Clone + Sized + PartialEq + Eq, {
+      Self: Debug + Sized + PartialEq + Eq, {
 
     /// symbol on device, models a flat vector of given data type
     /// 

@@ -1,7 +1,7 @@
+use dvapi::*;
 use slotvec::*;
 
-use std::{ffi::c_void, ptr::null_mut, fmt::Debug};
-use dvapi::ComErr;
+use std::{ffi::c_void, ptr::null_mut, fmt::Debug, marker::PhantomData};
 
 type Void = c_void;
 
@@ -42,7 +42,7 @@ where T : Debug + Clone {
 impl<const ALIGN: usize, T> MemShadow<ALIGN, T> 
 where T: Debug + Clone {
     /// create an empty MemShadow
-    pub fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> MemShadow<ALIGN, T> {
+    pub fn new(msize: usize, mbase: *mut Void, level: Vec<usize>) -> Self {
         let mut state = Vec::new();
         let ll = level.len();
         for i in 0..ll 
@@ -155,10 +155,10 @@ where T: Debug + Clone {
         return n;
     }
     /// find a suitable block and return
-    pub fn alloc(&mut self, s: usize) -> Result<usize, ComErr> {
+    pub fn alloc(&mut self, s: usize) -> Result<usize, DevErr<D>> {
         let s = Self::align(s);
         let n = match self.find(s) { 
-            None => Err({let (a, b) = self.usage(); ComErr::MemNotEnough(a + s, b)})?, 
+            None => Err({let (a, b) = self.usage(); DevErr::MemNotEnough(format!("requested {}: total {}", a + s, b), D::DevErr::default())})?, 
             Some(n) => n 
         };
         self.pull_free(n);
@@ -178,10 +178,10 @@ where T: Debug + Clone {
         self.state[n].s
     }
     /// free a block
-    pub fn free(&mut self, n: usize) -> Result<(), ComErr> {
+    pub fn free(&mut self, n: usize) -> Result<(), DevErr<D>> {
         debug_assert!(self.state[n].s & 1 == 1);
         match self.state.get(n) {
-            None => Err(ComErr::MemInvalidAccess)?,
+            None => Err(DevErr::MemInvalidAccess(format!("accessing mm slot {n}, which is already free!"), D::DevErr::default()))?,
             Some(x) => { self.usage -= x.s }
         };
         let n = self.merge(n);

@@ -2,7 +2,7 @@ use crate::*;
 
 pub trait Init<'a, D: Device, T: DevVal> 
 where Self: Sized {
-    /// initialize an ndarray with value
+    /// initialize an ndarray with given value
     fn fill(value: T, shape: &[usize], device: &'a D) -> Result<Self, DevErr<D>>;
     /// initialize an ndarray with uniformly distributed random value in [0, upper)
     fn unif(upper: T, shape: &[usize], device: &'a D) -> Result<Self, DevErr<D>>;

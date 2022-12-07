@@ -8,9 +8,6 @@
 #define __OP__ +
 #endif
 
-static const size_t STEP = ( blockDim.x * blockDim.y * blockDim.z * gridDim.x * gridDim.y * gridDim.z );
-static const size_t ID = ( (((( blockIdx.x * blockDim.y + blockIdx.y ) * blockDim.z + blockIdx.z) * gridDim.x + threadIdx.x) * gridDim.y + threadIdx.y) * gridDim.z + threadIdx.z );
-
 extern "C"
 __global__ void __NAME__(
     __TYPE__ * __restrict__ a,
@@ -19,6 +16,8 @@ __global__ void __NAME__(
     size_t bat_a,
     size_t bat_b
 ) {
+    const size_t STEP = ( blockDim.x * blockDim.y * blockDim.z * gridDim.x * gridDim.y * gridDim.z );
+    const size_t ID = ( (((( blockIdx.x * blockDim.y + blockIdx.y ) * blockDim.z + blockIdx.z) * gridDim.x + threadIdx.x) * gridDim.y + threadIdx.y) * gridDim.z + threadIdx.z );
     if (bat_a % bat_b == 0 && ID < bat_a) {
         size_t ISTEP = bat_b * ((bat_b < STEP) ? 1 : STEP/bat_b);
         size_t JSTEP = (bat_b < STEP) ? bat_b : STEP;
@@ -38,8 +37,8 @@ __global__ void __NAME__(
         size_t JSTART = ID % JSTEP;
         size_t IEND = ISTART + ISTEP + (bat_b/ISTEP)*bat_a;
         size_t JEND = JSTART + JSTEP + bat_a/JSTEP;
-        for (size_t i = 0; i != bat_b; i += bat_a) {
-            for (size_t j = 0; j != bat_a; j += 1) {
+        for (size_t i = 0; i != IEND; i += ISTEP) {
+            for (size_t j = 0; j != JEND; j += JSTEP) {
                 c[i + j] = a[j] __OP__ b[i + j];
             }
         }
