@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "ir-ndvar"
-version = "0.1.0"
+name = "ir-ndexp"
+version = "0.1.1"
