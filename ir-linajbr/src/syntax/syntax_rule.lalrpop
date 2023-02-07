@@ -23,7 +23,7 @@ Either<A, B>: Either<A, B> = {
 //     ---------------------------------------------------     //
 
 pub Func: Func = {
-    "<" <generic:List<Binder, ",">> ">" "(" <args:List<Arg, ",">> ")"
+    "<" <generic:List<LiteralBinder, ",">> ">" "(" <args:List<Arg, ",">> ")"
         "->" <t:Type>
     "{"
         <body:List<Stmt, ";">> ";"
@@ -31,13 +31,13 @@ pub Func: Func = {
     "}"
     => Func { generic, args, body, return_expr: expr, return_type: t },
 
-    "<" <generic:List<Binder, ",">> ">" "(" ")" 
+    "<" <generic:List<LiteralBinder, ",">> ">" "(" ")" 
         "->" <t:Type>
     "{" 
         <body:List<Stmt, ";">> ";"
         "return" <expr:Expr> ";"
     "}"
-    => Func { generic, args: Vec::new(), body, return_expr: expr, return_type: t },
+    => Func { generic, args: vec![], body, return_expr: expr, return_type: t },
 
     "(" <args:List<Arg, ",">> ")"
         "->" <t:Type>
@@ -53,18 +53,46 @@ pub Func: Func = {
         <body:List<Stmt, ";">> ";"
         "return" <expr:Expr> ";"
     "}"
-    => Func { generic: vec![], args: Vec::new(), body, return_expr: expr, return_type: t },
+    => Func { generic: vec![], args: vec![], body, return_expr: expr, return_type: t },
+
+    "<" <generic:List<LiteralBinder, ",">> ">" "(" <args:List<Arg, ",">> ")"
+        "->" <t:Type>
+    "{"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic, args, body: vec![], return_expr: expr, return_type: t },
+
+    "<" <generic:List<LiteralBinder, ",">> ">" "(" ")" 
+        "->" <t:Type>
+    "{" 
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic, args: vec![], body: vec![], return_expr: expr, return_type: t },
+
+    "(" <args:List<Arg, ",">> ")"
+        "->" <t:Type>
+    "{" 
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic: vec![], args, body: vec![], return_expr: expr, return_type: t },
+
+    "()"
+        "->" <t:Type>
+    "{"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic: vec![], args: vec![], body: vec![], return_expr: expr, return_type: t },
 }
 
-Arg : (String, Type) = {
-    <binder: Binder> ":" <ty: Type>
-        => (binder, ty)
+Arg : (LiteralBinder, Type) = {
+    <bind: LiteralBinder> ":" <ty: Type>
+        => (bind, ty)
 }
 
 Stmt: Stmt = {
-    "let" <bind:Binder> "=" <expr:Expr>
+    "let" <bind:LiteralBinder> "=" <expr:Expr>
         => Stmt::LetIn { bind, expr, ty: None },
-    "let" <bind:Binder> ":" <ty:Type> "=" <expr:Expr>
+    "let" <bind:LiteralBinder> ":" <ty:Type> "=" <expr:Expr>
         => Stmt::LetIn { bind, expr, ty: Some(ty) },
 }
 
@@ -74,52 +102,56 @@ Stmt: Stmt = {
 
 Expr = { ExprLevel0 }
 
-// Add, Sub
+// ArrBuild
 ExprLevel0: Expr = {
-    <lhs:ExprLevel1> "+" <rhs:ExprLevel0> => 
+    "[" <bind:List<LiteralBinder, ",">> "]" "->" <expr:Expr>
+        => Expr::ArrBuild { bind, expr: Box::new(expr) },
+    ExprLevel1,
+}
+
+// Add, Sub
+ExprLevel1: Expr = {
+    <lhs:ExprLevel1> "+" <rhs:ExprLevel2> => 
         Expr::BinOps { ops: BinOps::Add, lhs: Box::new(lhs), rhs: Box::new(rhs) },
-    <lhs:ExprLevel1> "-" <rhs:ExprLevel0> => 
+    <lhs:ExprLevel1> "-" <rhs:ExprLevel2> => 
         Expr::BinOps { ops: BinOps::Sub, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+    ExprLevel2
 }
 
 // Mul, Div
-ExprLevel1: Expr = {
-    <lhs:ExprLevel2> "*" <rhs:ExprLevel1> 
+ExprLevel2: Expr = {
+    <lhs:ExprLevel2> "*" <rhs:ExprLevel3> 
         => Expr::BinOps { ops: BinOps::Mul, lhs: Box::new(lhs), rhs: Box::new(rhs) },
-    <lhs:ExprLevel2> "/" <rhs:ExprLevel1>
+    <lhs:ExprLevel2> "/" <rhs:ExprLevel3>
         => Expr::BinOps { ops: BinOps::Div, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+    ExprLevel3
 }
 
-// ArrBuild
-ExprLevel2: Expr = {
-    "[" <bind:List<Binder, ",">> "]" "->" <expr:Expr>
-        => Expr::ArrBuild { bind, expr: Box::new(expr) },
-}
 
 // ArrIndex, SetBuild
 ExprLevel3: Expr = {
     "(" <expr:Expr> ")" => expr,
 
-    <bind:Binder> => Expr::Bind(bind),
+    <bind:LiteralBinder> => Expr::Bind(bind),
 
-    <func:Binder> "(" <args:List<Expr, ",">> ")" => Expr::Call{ func, args },
+    <func:LiteralBinder> "(" <args:List<Expr, ",">> ")" => Expr::Call{ func, args },
 
-    <func:Binder> "(" ")" => Expr::Call{ func, args: vec![] },
+    <func:LiteralBinder> "(" ")" => Expr::Call{ func, args: vec![] },
 
     <arr:ExprLevel3> "[" <idx:List<Expr, ",">> "]"
         => Expr::ArrIndex { arr: Box::new(arr), idx },
 
-    "{" <expr:Expr> ":" <bind:List<Binder, ",">> "where" <cond:Expr> "}"
+    "{" <expr:Expr> ":" <bind:List<LiteralBinder, ",">> "where" <cond:Expr> "}"
         => Expr::SetBuild { expr: Box::new(expr), bind, cond: Box::new(cond) },
 }
 
 //     ---------------------------------------------------     //
-//                 binder-related definitions                  //
+//                 LiteralBinder-related definitions                  //
 //     ---------------------------------------------------     //
 
-Binder: String = { 
-    r"[A-Za-z_][A-Za-z0-9_]*" 
-        => String::from_str(<>).expect(&format!("error converting binder string {:?}", <>)) 
+LiteralBinder: LiteralBinder = { 
+    r"[A-Za-z_][A-Za-z0-9_]*"
+        => LiteralBinder(<>.to_string()),
 }
 
 //     ---------------------------------------------------     //
@@ -144,5 +176,5 @@ Scalar: Type = {
 }
 
 Array: Type = {
-    "[" <shape:List<Either<Int, Binder>, ",">> ";" <t:Type> "]" => Type::Arr(shape, Box::new(t)),
+    "[" <shape:List<Either<Int, LiteralBinder>, ",">> ";" <t:Type> "]" => Type::Arr(shape, Box::new(t)),
 }

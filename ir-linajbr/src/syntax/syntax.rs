@@ -1,61 +1,70 @@
+#[derive(Debug)]
 pub enum Either<A, B> { A(A), B(B) }
 
-pub struct Func {
-    pub args: Vec<(String, Type)>,
-    pub body: Vec<Stmt>,
-    pub return_expr: Expr,
-    pub generic: Vec<String>,
-    pub return_type: Type,
+#[derive(Debug)]
+pub struct LiteralBinder(pub String);
+
+#[derive(Debug)]
+pub struct Func<Binder=LiteralBinder> {
+    pub args: Vec<(Binder, Type<Binder>)>,
+    pub body: Vec<Stmt<Binder>>,
+    pub generic: Vec<Binder>,
+    pub return_expr: Expr<Binder>,
+    pub return_type: Type<Binder>,
 }
 
 #[non_exhaustive]
-pub enum Stmt {
+#[derive(Debug)]
+pub enum Stmt<Binder=LiteralBinder> {
     LetIn {
-        bind: String,
-        ty: Option<Type>,
-        expr: Expr,
+        bind: Binder,
+        ty: Option<Type<Binder>>,
+        expr: Expr<Binder>,
     },
 }
 
 #[non_exhaustive]
-pub enum Type {
+#[derive(Debug)]
+pub enum Type<Binder=LiteralBinder> {
     F32,
     F64,
     I32,
     I64,
     Bool,
     // Array: (Shape(may contain generic args), ContentType)
-    Arr(Vec<Either<usize, String>>, Box<Type>),
+    Arr(Vec<Either<usize, Binder>>, Box<Type<Binder>>),
 }
 
 #[non_exhaustive]
-pub enum Expr {
+#[derive(Debug)]
+pub enum Expr<Binder=LiteralBinder> {
     ArrBuild {
-        bind: Vec<String>,
-        expr: Box<Expr>,
+        bind: Vec<Binder>,
+        expr: Box<Expr<Binder>>,
     },
     ArrIndex {
-        arr: Box<Expr>,
-        idx: Vec<Expr>,
+        arr: Box<Expr<Binder>>,
+        idx: Vec<Expr<Binder>>,
     },
     SetBuild {
-        expr: Box<Expr>,
-        bind: Vec<String>,
-        cond: Box<Expr>,
+        expr: Box<Expr<Binder>>,
+        bind: Vec<Binder>,
+        cond: Box<Expr<Binder>>,
     },
     BinOps {
         ops: BinOps,
-        lhs: Box<Expr>,
-        rhs: Box<Expr>,
+        lhs: Box<Expr<Binder>>,
+        rhs: Box<Expr<Binder>>,
     },
     Call {
-        func: String,
-        args: Vec<Expr>,
+        func: Binder,
+        args: Vec<Expr<Binder>>,
     },
-    Bind(String),
+    Bind(Binder),
 }
 
 #[non_exhaustive]
+#[derive(Debug)]
 pub enum BinOps {
     Add,
     Mul,
