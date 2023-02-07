@@ -1,0 +1,148 @@
+use super::syntax::*;
+use std::str::FromStr;
+
+grammar;
+
+//     ---------------------------------------------------     //
+//                 lalrpop is really epic!                     //
+//        util: turn something into a list, either type        //
+//     ---------------------------------------------------     //
+
+List<X, Sep>: Vec<X> = {
+    X => vec![<>],
+    <head:List<X, Sep>> Sep <tail:X> => { let mut head = head; head.push(tail); head }
+}
+
+Either<A, B>: Either<A, B> = {
+    A => Either::A(<>),
+    B => Either::B(<>),
+}
+
+//     ---------------------------------------------------     //
+//                   start point of a parse                    //
+//     ---------------------------------------------------     //
+
+pub Func: Func = {
+    "<" <generic:List<Binder, ",">> ">" "(" <args:List<Arg, ",">> ")"
+        "->" <t:Type>
+    "{"
+        <body:List<Stmt, ";">> ";"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic, args, body, return_expr: expr, return_type: t },
+
+    "<" <generic:List<Binder, ",">> ">" "(" ")" 
+        "->" <t:Type>
+    "{" 
+        <body:List<Stmt, ";">> ";"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic, args: Vec::new(), body, return_expr: expr, return_type: t },
+
+    "(" <args:List<Arg, ",">> ")"
+        "->" <t:Type>
+    "{" 
+        <body:List<Stmt, ";">> ";"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic: vec![], args, body, return_expr: expr, return_type: t },
+
+    "()"
+        "->" <t:Type>
+    "{"
+        <body:List<Stmt, ";">> ";"
+        "return" <expr:Expr> ";"
+    "}"
+    => Func { generic: vec![], args: Vec::new(), body, return_expr: expr, return_type: t },
+}
+
+Arg : (String, Type) = {
+    <binder: Binder> ":" <ty: Type>
+        => (binder, ty)
+}
+
+Stmt: Stmt = {
+    "let" <bind:Binder> "=" <expr:Expr>
+        => Stmt::LetIn { bind, expr, ty: None },
+    "let" <bind:Binder> ":" <ty:Type> "=" <expr:Expr>
+        => Stmt::LetIn { bind, expr, ty: Some(ty) },
+}
+
+//     ---------------------------------------------------     //
+//               expression-related definitions                //
+//     ---------------------------------------------------     //
+
+Expr = { ExprLevel0 }
+
+// Add, Sub
+ExprLevel0: Expr = {
+    <lhs:ExprLevel1> "+" <rhs:ExprLevel0> => 
+        Expr::BinOps { ops: BinOps::Add, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+    <lhs:ExprLevel1> "-" <rhs:ExprLevel0> => 
+        Expr::BinOps { ops: BinOps::Sub, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+}
+
+// Mul, Div
+ExprLevel1: Expr = {
+    <lhs:ExprLevel2> "*" <rhs:ExprLevel1> 
+        => Expr::BinOps { ops: BinOps::Mul, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+    <lhs:ExprLevel2> "/" <rhs:ExprLevel1>
+        => Expr::BinOps { ops: BinOps::Div, lhs: Box::new(lhs), rhs: Box::new(rhs) },
+}
+
+// ArrBuild
+ExprLevel2: Expr = {
+    "[" <bind:List<Binder, ",">> "]" "->" <expr:Expr>
+        => Expr::ArrBuild { bind, expr: Box::new(expr) },
+}
+
+// ArrIndex, SetBuild
+ExprLevel3: Expr = {
+    "(" <expr:Expr> ")" => expr,
+
+    <bind:Binder> => Expr::Bind(bind),
+
+    <func:Binder> "(" <args:List<Expr, ",">> ")" => Expr::Call{ func, args },
+
+    <func:Binder> "(" ")" => Expr::Call{ func, args: vec![] },
+
+    <arr:ExprLevel3> "[" <idx:List<Expr, ",">> "]"
+        => Expr::ArrIndex { arr: Box::new(arr), idx },
+
+    "{" <expr:Expr> ":" <bind:List<Binder, ",">> "where" <cond:Expr> "}"
+        => Expr::SetBuild { expr: Box::new(expr), bind, cond: Box::new(cond) },
+}
+
+//     ---------------------------------------------------     //
+//                 binder-related definitions                  //
+//     ---------------------------------------------------     //
+
+Binder: String = { 
+    r"[A-Za-z_][A-Za-z0-9_]*" 
+        => String::from_str(<>).expect(&format!("error converting binder string {:?}", <>)) 
+}
+
+//     ---------------------------------------------------     //
+//                  literal-related definitions                //
+//     ---------------------------------------------------     //
+
+Int: usize = { r"[0-9]+" => usize::from_str_radix(<>, 10).unwrap() }
+Flt: f32 = { r"[0-9]+\.[0-9]+" => f32::from_str(<>).unwrap() }
+
+//     ---------------------------------------------------     //
+//                   type-related definitions                  //
+//     ---------------------------------------------------     //
+
+Type = { Scalar, Array }
+
+Scalar: Type = {
+    "f32" => Type::F32,
+    "f64" => Type::F64,
+    "i32" => Type::I32,
+    "i64" => Type::I64,
+    "bool" => Type::Bool,
+}
+
+Array: Type = {
+    "[" <shape:List<Either<Int, Binder>, ",">> ";" <t:Type> "]" => Type::Arr(shape, Box::new(t)),
+}
