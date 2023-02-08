@@ -1,0 +1,19 @@
+[package]
+name = "construct-str-repr"
+version = "0.1.0"
+edition = "2021"
+autotests = false
+description = "pack construct-str-repr-core with construct-str-repr-derive"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[test]]
+name = "test"
+path = "test/main.rs"
+
+[dependencies]
+repr-derive = {path="../construct-str-repr-derive", package="construct-str-repr-derive"}
+repr-core = {path="../construct-str-repr-core", package="construct-str-repr-core"}
+
+[dev-dependencies]
+trybuild = {version="1.0.77", features=["diff"]}              # Test harness for ui tests of compiler diagnostics

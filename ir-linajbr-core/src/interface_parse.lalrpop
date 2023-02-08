@@ -22,7 +22,7 @@ Either<A, B>: Either<A, B> = {
 //                   start point of a parse                    //
 //     ---------------------------------------------------     //
 
-pub Func: Func = {
+pub Func: Func<LiteralBinder> = {
     "<" <generic:List<LiteralBinder, ",">> ">" "(" <args:List<Arg, ",">> ")"
         "->" <t:Type>
     "{"
@@ -84,12 +84,12 @@ pub Func: Func = {
     => Func { generic: vec![], args: vec![], body: vec![], return_expr: expr, return_type: t },
 }
 
-Arg : (LiteralBinder, Type) = {
+Arg : Arg<LiteralBinder> = {
     <bind: LiteralBinder> ":" <ty: Type>
-        => (bind, ty)
+        => Arg(bind, ty)
 }
 
-Stmt: Stmt = {
+Stmt: Stmt<LiteralBinder> = {
     "let" <bind:LiteralBinder> "=" <expr:Expr>
         => Stmt::LetIn { bind, expr, ty: None },
     "let" <bind:LiteralBinder> ":" <ty:Type> "=" <expr:Expr>
@@ -103,14 +103,14 @@ Stmt: Stmt = {
 Expr = { ExprLevel0 }
 
 // ArrBuild
-ExprLevel0: Expr = {
+ExprLevel0: Expr<LiteralBinder> = {
     "[" <bind:List<LiteralBinder, ",">> "]" "->" <expr:Expr>
         => Expr::ArrBuild { bind, expr: Box::new(expr) },
     ExprLevel1,
 }
 
 // Add, Sub
-ExprLevel1: Expr = {
+ExprLevel1: Expr<LiteralBinder> = {
     <lhs:ExprLevel1> "+" <rhs:ExprLevel2> => 
         Expr::BinOps { ops: BinOps::Add, lhs: Box::new(lhs), rhs: Box::new(rhs) },
     <lhs:ExprLevel1> "-" <rhs:ExprLevel2> => 
@@ -119,7 +119,7 @@ ExprLevel1: Expr = {
 }
 
 // Mul, Div
-ExprLevel2: Expr = {
+ExprLevel2: Expr<LiteralBinder> = {
     <lhs:ExprLevel2> "*" <rhs:ExprLevel3> 
         => Expr::BinOps { ops: BinOps::Mul, lhs: Box::new(lhs), rhs: Box::new(rhs) },
     <lhs:ExprLevel2> "/" <rhs:ExprLevel3>
@@ -129,7 +129,7 @@ ExprLevel2: Expr = {
 
 
 // ArrIndex, SetBuild
-ExprLevel3: Expr = {
+ExprLevel3: Expr<LiteralBinder> = {
     "(" <expr:Expr> ")" => expr,
 
     <bind:LiteralBinder> => Expr::Bind(bind),
@@ -167,7 +167,7 @@ Flt: f32 = { r"[0-9]+\.[0-9]+" => f32::from_str(<>).unwrap() }
 
 Type = { Scalar, Array }
 
-Scalar: Type = {
+Scalar: Type<LiteralBinder> = {
     "f32" => Type::F32,
     "f64" => Type::F64,
     "i32" => Type::I32,
@@ -175,6 +175,6 @@ Scalar: Type = {
     "bool" => Type::Bool,
 }
 
-Array: Type = {
+Array: Type<LiteralBinder> = {
     "[" <shape:List<Either<Int, LiteralBinder>, ",">> ";" <t:Type> "]" => Type::Arr(shape, Box::new(t)),
 }

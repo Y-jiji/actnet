@@ -1,5 +1,5 @@
 // auto-generated: "lalrpop 0.19.8"
-// sha3: 817ae2e6c5aafa80a696d07ba149fc5fa7ff83a3ca95a505638007cf18c34c67
+// sha3: 9a389fa2085fe9021e3fae15270376bc6429b2873ad49c1d7abc76638caae7f0
 use super::syntax::*;
 use std::str::FromStr;
 #[allow(unused_extern_crates)]
@@ -26,20 +26,20 @@ mod __parse__Func {
     pub(crate) enum __Symbol<'input>
      {
         Variant0(&'input str),
-        Variant1((LiteralBinder, Type)),
-        Variant2(Type),
+        Variant1(Arg<LiteralBinder>),
+        Variant2(Type<LiteralBinder>),
         Variant3(Either<usize, LiteralBinder>),
-        Variant4(Expr),
+        Variant4(Expr<LiteralBinder>),
         Variant5(f32),
-        Variant6(Func),
+        Variant6(Func<LiteralBinder>),
         Variant7(usize),
-        Variant8(Vec<(LiteralBinder, Type)>),
+        Variant8(Vec<Arg<LiteralBinder>>),
         Variant9(Vec<Either<usize, LiteralBinder>>),
-        Variant10(Vec<Expr>),
+        Variant10(Vec<Expr<LiteralBinder>>),
         Variant11(Vec<LiteralBinder>),
-        Variant12(Vec<Stmt>),
+        Variant12(Vec<Stmt<LiteralBinder>>),
         Variant13(LiteralBinder),
-        Variant14(Stmt),
+        Variant14(Stmt<LiteralBinder>),
     }
     const __ACTION: &[i16] = &[
         // State 0
@@ -755,7 +755,7 @@ mod __parse__Func {
         type Token = Token<'input>;
         type TokenIndex = usize;
         type Symbol = __Symbol<'input>;
-        type Success = Func;
+        type Success = Func<LiteralBinder>;
         type StateIndex = i16;
         type Action = i16;
         type ReduceIndex = i16;
@@ -914,7 +914,7 @@ mod __parse__Func {
         >(
             &self,
             input: &'input str,
-        ) -> Result<Func, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
+        ) -> Result<Func<LiteralBinder>, __lalrpop_util::ParseError<usize, Token<'input>, &'static str>>
         {
             let mut __tokens = self.builder.matcher(input);
             __state_machine::Parser::drive(
@@ -935,7 +935,7 @@ mod __parse__Func {
         __states: &mut alloc::vec::Vec<i16>,
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>,
         _: core::marker::PhantomData<(&'input ())>,
-    ) -> Option<Result<Func,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
+    ) -> Option<Result<Func<LiteralBinder>,__lalrpop_util::ParseError<usize, Token<'input>, &'static str>>>
     {
         let (__pop_states, __nonterminal) = match __action {
             0 => {
@@ -1110,7 +1110,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, (LiteralBinder, Type), usize)
+    ) -> (usize, Arg<LiteralBinder>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant1(__v), __r)) => (__l, __v, __r),
@@ -1132,7 +1132,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Expr, usize)
+    ) -> (usize, Expr<LiteralBinder>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant4(__v), __r)) => (__l, __v, __r),
@@ -1143,7 +1143,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Func, usize)
+    ) -> (usize, Func<LiteralBinder>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant6(__v), __r)) => (__l, __v, __r),
@@ -1165,7 +1165,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Stmt, usize)
+    ) -> (usize, Stmt<LiteralBinder>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant14(__v), __r)) => (__l, __v, __r),
@@ -1176,7 +1176,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Type, usize)
+    ) -> (usize, Type<LiteralBinder>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant2(__v), __r)) => (__l, __v, __r),
@@ -1187,7 +1187,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<(LiteralBinder, Type)>, usize)
+    ) -> (usize, Vec<Arg<LiteralBinder>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant8(__v), __r)) => (__l, __v, __r),
@@ -1209,7 +1209,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<Expr>, usize)
+    ) -> (usize, Vec<Expr<LiteralBinder>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant10(__v), __r)) => (__l, __v, __r),
@@ -1231,7 +1231,7 @@ mod __parse__Func {
       'input,
     >(
         __symbols: &mut alloc::vec::Vec<(usize,__Symbol<'input>,usize)>
-    ) -> (usize, Vec<Stmt>, usize)
+    ) -> (usize, Vec<Stmt<LiteralBinder>>, usize)
      {
         match __symbols.pop() {
             Some((__l, __Symbol::Variant12(__v), __r)) => (__l, __v, __r),
@@ -2325,8 +2325,8 @@ fn __action0<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Func, usize),
-) -> Func
+    (_, __0, _): (usize, Func<LiteralBinder>, usize),
+) -> Func<LiteralBinder>
 {
     __0
 }
@@ -2340,18 +2340,18 @@ fn __action1<
     (_, generic, _): (usize, Vec<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, args, _): (usize, Vec<(LiteralBinder, Type)>, usize),
+    (_, args, _): (usize, Vec<Arg<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, body, _): (usize, Vec<Stmt>, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, body, _): (usize, Vec<Stmt<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+    (_, _, _): (usize, &'input str, usize),
+    (_, _, _): (usize, &'input str, usize),
+) -> Func<LiteralBinder>
 {
     Func { generic, args, body, return_expr: expr, return_type: t }
 }
@@ -2367,15 +2367,15 @@ fn __action2<
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, body, _): (usize, Vec<Stmt>, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, body, _): (usize, Vec<Stmt<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+    (_, _, _): (usize, &'input str, usize),
+    (_, _, _): (usize, &'input str, usize),
+) -> Func<LiteralBinder>
 {
     Func { generic, args: vec![], body, return_expr: expr, return_type: t }
 }
@@ -2386,18 +2386,18 @@ fn __action3<
 >(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, args, _): (usize, Vec<(LiteralBinder, Type)>, usize),
+    (_, args, _): (usize, Vec<Arg<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, body, _): (usize, Vec<Stmt>, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, body, _): (usize, Vec<Stmt<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+    (_, _, _): (usize, &'input str, usize),
+    (_, _, _): (usize, &'input str, usize),
+) -> Func<LiteralBinder>
 {
     Func { generic: vec![], args, body, return_expr: expr, return_type: t }
 }
@@ -2409,15 +2409,15 @@ fn __action4<
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, body, _): (usize, Vec<Stmt>, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, body, _): (usize, Vec<Stmt<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+    (_, _, _): (usize, &'input str, usize),
+    (_, _, _): (usize, &'input str, usize),
+) -> Func<LiteralBinder>
 {
     Func { generic: vec![], args: vec![], body, return_expr: expr, return_type: t }
 }
@@ -2431,16 +2431,16 @@ fn __action5<
     (_, generic, _): (usize, Vec<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, args, _): (usize, Vec<(LiteralBinder, Type)>, usize),
+    (_, args, _): (usize, Vec<Arg<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+) -> Func<LiteralBinder>
 {
     Func { generic, args, body: vec![], return_expr: expr, return_type: t }
 }
@@ -2456,13 +2456,13 @@ fn __action6<
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+) -> Func<LiteralBinder>
 {
     Func { generic, args: vec![], body: vec![], return_expr: expr, return_type: t }
 }
@@ -2473,16 +2473,16 @@ fn __action7<
 >(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, args, _): (usize, Vec<(LiteralBinder, Type)>, usize),
+    (_, args, _): (usize, Vec<Arg<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+) -> Func<LiteralBinder>
 {
     Func { generic: vec![], args, body: vec![], return_expr: expr, return_type: t }
 }
@@ -2494,13 +2494,13 @@ fn __action8<
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Func
+) -> Func<LiteralBinder>
 {
     Func { generic: vec![], args: vec![], body: vec![], return_expr: expr, return_type: t }
 }
@@ -2512,10 +2512,10 @@ fn __action9<
     input: &'input str,
     (_, bind, _): (usize, LiteralBinder, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, ty, _): (usize, Type, usize),
-) -> (LiteralBinder, Type)
+    (_, ty, _): (usize, Type<LiteralBinder>, usize),
+) -> Arg<LiteralBinder>
 {
-    (bind, ty)
+    Arg(bind, ty)
 }
 
 #[allow(unused_variables)]
@@ -2526,8 +2526,8 @@ fn __action10<
     (_, _, _): (usize, &'input str, usize),
     (_, bind, _): (usize, LiteralBinder, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
-) -> Stmt
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+) -> Stmt<LiteralBinder>
 {
     Stmt::LetIn { bind, expr, ty: None }
 }
@@ -2540,10 +2540,10 @@ fn __action11<
     (_, _, _): (usize, &'input str, usize),
     (_, bind, _): (usize, LiteralBinder, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, ty, _): (usize, Type, usize),
+    (_, ty, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
-) -> Stmt
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+) -> Stmt<LiteralBinder>
 {
     Stmt::LetIn { bind, expr, ty: Some(ty) }
 }
@@ -2553,8 +2553,8 @@ fn __action12<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Expr, usize),
-) -> Expr
+    (_, __0, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     __0
 }
@@ -2568,8 +2568,8 @@ fn __action13<
     (_, bind, _): (usize, Vec<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
-) -> Expr
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     Expr::ArrBuild { bind, expr: Box::new(expr) }
 }
@@ -2579,8 +2579,8 @@ fn __action14<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Expr, usize),
-) -> Expr
+    (_, __0, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     __0
 }
@@ -2590,10 +2590,10 @@ fn __action15<
     'input,
 >(
     input: &'input str,
-    (_, lhs, _): (usize, Expr, usize),
+    (_, lhs, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, rhs, _): (usize, Expr, usize),
-) -> Expr
+    (_, rhs, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     Expr::BinOps { ops: BinOps::Add, lhs: Box::new(lhs), rhs: Box::new(rhs) }
 }
@@ -2603,10 +2603,10 @@ fn __action16<
     'input,
 >(
     input: &'input str,
-    (_, lhs, _): (usize, Expr, usize),
+    (_, lhs, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, rhs, _): (usize, Expr, usize),
-) -> Expr
+    (_, rhs, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     Expr::BinOps { ops: BinOps::Sub, lhs: Box::new(lhs), rhs: Box::new(rhs) }
 }
@@ -2616,8 +2616,8 @@ fn __action17<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Expr, usize),
-) -> Expr
+    (_, __0, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     __0
 }
@@ -2627,10 +2627,10 @@ fn __action18<
     'input,
 >(
     input: &'input str,
-    (_, lhs, _): (usize, Expr, usize),
+    (_, lhs, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, rhs, _): (usize, Expr, usize),
-) -> Expr
+    (_, rhs, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     Expr::BinOps { ops: BinOps::Mul, lhs: Box::new(lhs), rhs: Box::new(rhs) }
 }
@@ -2640,10 +2640,10 @@ fn __action19<
     'input,
 >(
     input: &'input str,
-    (_, lhs, _): (usize, Expr, usize),
+    (_, lhs, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, rhs, _): (usize, Expr, usize),
-) -> Expr
+    (_, rhs, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     Expr::BinOps { ops: BinOps::Div, lhs: Box::new(lhs), rhs: Box::new(rhs) }
 }
@@ -2653,8 +2653,8 @@ fn __action20<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Expr, usize),
-) -> Expr
+    (_, __0, _): (usize, Expr<LiteralBinder>, usize),
+) -> Expr<LiteralBinder>
 {
     __0
 }
@@ -2665,9 +2665,9 @@ fn __action21<
 >(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     expr
 }
@@ -2678,7 +2678,7 @@ fn __action22<
 >(
     input: &'input str,
     (_, bind, _): (usize, LiteralBinder, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     Expr::Bind(bind)
 }
@@ -2690,9 +2690,9 @@ fn __action23<
     input: &'input str,
     (_, func, _): (usize, LiteralBinder, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, args, _): (usize, Vec<Expr>, usize),
+    (_, args, _): (usize, Vec<Expr<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     Expr::Call{ func, args }
 }
@@ -2705,7 +2705,7 @@ fn __action24<
     (_, func, _): (usize, LiteralBinder, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     Expr::Call{ func, args: vec![] }
 }
@@ -2715,11 +2715,11 @@ fn __action25<
     'input,
 >(
     input: &'input str,
-    (_, arr, _): (usize, Expr, usize),
+    (_, arr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, idx, _): (usize, Vec<Expr>, usize),
+    (_, idx, _): (usize, Vec<Expr<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     Expr::ArrIndex { arr: Box::new(arr), idx }
 }
@@ -2730,13 +2730,13 @@ fn __action26<
 >(
     input: &'input str,
     (_, _, _): (usize, &'input str, usize),
-    (_, expr, _): (usize, Expr, usize),
+    (_, expr, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
     (_, bind, _): (usize, Vec<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, cond, _): (usize, Expr, usize),
+    (_, cond, _): (usize, Expr<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Expr
+) -> Expr<LiteralBinder>
 {
     Expr::SetBuild { expr: Box::new(expr), bind, cond: Box::new(cond) }
 }
@@ -2779,8 +2779,8 @@ fn __action30<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Type, usize),
-) -> Type
+    (_, __0, _): (usize, Type<LiteralBinder>, usize),
+) -> Type<LiteralBinder>
 {
     __0
 }
@@ -2790,8 +2790,8 @@ fn __action31<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Type, usize),
-) -> Type
+    (_, __0, _): (usize, Type<LiteralBinder>, usize),
+) -> Type<LiteralBinder>
 {
     __0
 }
@@ -2802,7 +2802,7 @@ fn __action32<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::F32
 }
@@ -2813,7 +2813,7 @@ fn __action33<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::F64
 }
@@ -2824,7 +2824,7 @@ fn __action34<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::I32
 }
@@ -2835,7 +2835,7 @@ fn __action35<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::I64
 }
@@ -2846,7 +2846,7 @@ fn __action36<
 >(
     input: &'input str,
     (_, __0, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::Bool
 }
@@ -2859,9 +2859,9 @@ fn __action37<
     (_, _, _): (usize, &'input str, usize),
     (_, shape, _): (usize, Vec<Either<usize, LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, t, _): (usize, Type, usize),
+    (_, t, _): (usize, Type<LiteralBinder>, usize),
     (_, _, _): (usize, &'input str, usize),
-) -> Type
+) -> Type<LiteralBinder>
 {
     Type::Arr(shape, Box::new(t))
 }
@@ -2917,8 +2917,8 @@ fn __action42<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Expr, usize),
-) -> Vec<Expr>
+    (_, __0, _): (usize, Expr<LiteralBinder>, usize),
+) -> Vec<Expr<LiteralBinder>>
 {
     vec![__0]
 }
@@ -2928,10 +2928,10 @@ fn __action43<
     'input,
 >(
     input: &'input str,
-    (_, head, _): (usize, Vec<Expr>, usize),
+    (_, head, _): (usize, Vec<Expr<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, tail, _): (usize, Expr, usize),
-) -> Vec<Expr>
+    (_, tail, _): (usize, Expr<LiteralBinder>, usize),
+) -> Vec<Expr<LiteralBinder>>
 {
     { let mut head = head; head.push(tail); head }
 }
@@ -2941,8 +2941,8 @@ fn __action44<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, Stmt, usize),
-) -> Vec<Stmt>
+    (_, __0, _): (usize, Stmt<LiteralBinder>, usize),
+) -> Vec<Stmt<LiteralBinder>>
 {
     vec![__0]
 }
@@ -2952,10 +2952,10 @@ fn __action45<
     'input,
 >(
     input: &'input str,
-    (_, head, _): (usize, Vec<Stmt>, usize),
+    (_, head, _): (usize, Vec<Stmt<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, tail, _): (usize, Stmt, usize),
-) -> Vec<Stmt>
+    (_, tail, _): (usize, Stmt<LiteralBinder>, usize),
+) -> Vec<Stmt<LiteralBinder>>
 {
     { let mut head = head; head.push(tail); head }
 }
@@ -2965,8 +2965,8 @@ fn __action46<
     'input,
 >(
     input: &'input str,
-    (_, __0, _): (usize, (LiteralBinder, Type), usize),
-) -> Vec<(LiteralBinder, Type)>
+    (_, __0, _): (usize, Arg<LiteralBinder>, usize),
+) -> Vec<Arg<LiteralBinder>>
 {
     vec![__0]
 }
@@ -2976,10 +2976,10 @@ fn __action47<
     'input,
 >(
     input: &'input str,
-    (_, head, _): (usize, Vec<(LiteralBinder, Type)>, usize),
+    (_, head, _): (usize, Vec<Arg<LiteralBinder>>, usize),
     (_, _, _): (usize, &'input str, usize),
-    (_, tail, _): (usize, (LiteralBinder, Type), usize),
-) -> Vec<(LiteralBinder, Type)>
+    (_, tail, _): (usize, Arg<LiteralBinder>, usize),
+) -> Vec<Arg<LiteralBinder>>
 {
     { let mut head = head; head.push(tail); head }
 }

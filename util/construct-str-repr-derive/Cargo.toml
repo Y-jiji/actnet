@@ -1,0 +1,22 @@
+[package]
+name = "construct-str-repr-derive"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.51"
+quote = "1.0.23"
+syn = "1.0.107"
+repr-core = { path = "../construct-str-repr-core", package="construct-str-repr-core" }
+
+[dev-dependencies]
+trybuild = { version="1.0.77", features=["diff"] }
+
+[[test]]
+name = "test"
+path = "test/main.rs"

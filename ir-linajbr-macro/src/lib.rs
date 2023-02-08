@@ -1,14 +1,15 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use proc_macro::*;
+use ir_linajbr_core::*;
+use lazy_static::*;
+use std::str::FromStr;
+
+lazy_static!{
+    static ref PARSER: FuncParser = FuncParser::new();
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[proc_macro]
+pub fn compile(ts: TokenStream) -> TokenStream {
+    let s = ts.to_string();
+    // panic!("{s}");
+    TokenStream::from_str(&PARSER.parse(&s).unwrap().str_repr()).unwrap()
 }

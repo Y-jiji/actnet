@@ -1,0 +1,7 @@
+[package]
+name = "construct-str-repr-core"
+version = "0.1.0"
+edition = "2021"
+description = "convert all-pub struct/enum into an expression that constructs it"
+
+[dependencies]
